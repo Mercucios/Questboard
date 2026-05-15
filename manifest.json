@@ -1,0 +1,15 @@
+{
+  "name": "Mana Questboard",
+  "short_name": "Mana",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#91d7f0",
+  "theme_color": "#7d421d",
+  "icons": [
+    {
+      "src": "mana_transparent.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
