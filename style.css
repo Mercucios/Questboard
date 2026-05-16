@@ -112,36 +112,45 @@ body {
 }
 
 h1 {
-  font-size: 2.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #f0e8d0;
-  text-shadow: 0 0 20px rgba(201,162,39,0.25);
+  letter-spacing: 0.08em;
+  color: #f0c040;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 28px rgba(201,162,39,0.5);
 }
 
 .logo-sub {
-  color: #7a708a;
-  font-size: 0.9rem;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  color: #f0e4c0;
+  font-size: 1.05rem;
   margin-top: 0.3rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
 }
 
 .date-chip {
   display: inline-block;
   margin-top: 0.9rem;
   padding: 0.3rem 1rem;
-  background: rgba(201,162,39,0.08);
-  border: 1px solid rgba(201,162,39,0.22);
+  background: rgba(6,4,18,0.72);
+  border: 1px solid rgba(201,162,39,0.3);
   border-radius: 20px;
   font-size: 0.8rem;
-  color: #c9a227;
+  color: #d4aa40;
   letter-spacing: 0.03em;
+  backdrop-filter: blur(8px);
 }
 
 .mood-prompt {
-  font-size: 1.1rem;
-  color: #c0b0d0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f0e4c0;
   margin-bottom: 1.4rem;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
 }
 
 .mood-grid {
@@ -166,11 +175,12 @@ h1 {
   align-items: center;
   gap: 0.4rem;
   padding: 1.2rem 0.5rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(10,5,30,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 16px;
   cursor: pointer;
   color: inherit;
+  backdrop-filter: blur(10px);
   transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
@@ -191,13 +201,27 @@ h1 {
   margin: 0 auto 0.1rem;
 }
 .mood-glyph svg { display: block; }
-.mood-name  { font-weight: 600; font-size: 0.92rem; color: #e0d8f0; }
-.mood-hint  { font-size: 0.73rem; color: #6a6080; }
+.mood-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #f0e4c0;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+}
+.mood-hint {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.82rem;
+  color: #c8b89a;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
 
 .mood-note {
-  font-size: 0.82rem;
-  color: #5a5070;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #c8b89a;
   letter-spacing: 0.02em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
 }
 
 /* ── Board Screen ─────────────────────────────────────────── */
@@ -251,10 +275,12 @@ h1 {
 }
 
 .board-title {
-  font-size: 1.1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #f0e8d0;
-  letter-spacing: 0.04em;
+  color: #f0c040;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(201,162,39,0.4);
 }
 
 .starmap-btn {
@@ -280,7 +306,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #7a708a;
+  color: #a090b8;
   margin-bottom: 0.32rem;
 }
 
@@ -302,8 +328,9 @@ h1 {
 }
 
 .mood-badge {
-  font-size: 0.78rem;
-  color: #6a6080;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.88rem;
+  color: #a090b8;
   text-align: right;
   margin-top: 0.1rem;
 }
@@ -374,9 +401,10 @@ h1 {
 }
 
 .quest-name {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #e0d8f0;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f0e4c0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -391,11 +419,11 @@ h1 {
 
 .quest-category {
   font-size: 0.7rem;
-  color: #5a5070;
-  background: rgba(255,255,255,0.04);
+  color: #8878a8;
+  background: rgba(255,255,255,0.05);
   padding: 0.13rem 0.48rem;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
 }
 
 .quest-cost {
@@ -499,9 +527,10 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
-  color: #5a5070;
-  letter-spacing: 0.07em;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #a090b8;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 0.7rem;
   padding-left: 0.1rem;
@@ -568,7 +597,7 @@ h1 {
 
 .reward-loot-label {
   font-size: 0.72rem;
-  color: #6a6080;
+  color: #9080a8;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 0.2rem;
@@ -583,9 +612,10 @@ h1 {
 }
 
 .reward-msg {
-  font-size: 0.88rem;
-  color: #7a7090;
-  line-height: 1.55;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.1rem;
+  color: #c8b8e0;
+  line-height: 1.6;
   margin-bottom: 1.5rem;
 }
 
@@ -634,8 +664,9 @@ h1 {
 }
 
 .star-msg {
-  font-size: 0.88rem;
-  color: #7a7090;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.1rem;
+  color: #c8b8e0;
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
@@ -713,8 +744,10 @@ h1 {
 }
 
 .starmap-sub {
-  font-size: 0.8rem;
-  color: #5a5070;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #a090c0;
   margin-bottom: 1rem;
 }
 
@@ -798,19 +831,11 @@ h1 {
 .update-toast #btn-update-dismiss:hover { color: rgba(200, 180, 240, 0.9); }
 
 /* ── Typography ──────────────────────────────────────────── */
-h1 { font-family: 'Cinzel', serif; }
-
-.board-title,
 .reward-loot-name,
-.star-title { font-family: 'Cinzel', serif; }
-
+.star-title,
 .starmap-header h3 { font-family: 'Cinzel', serif; }
 
-.quest-name,
-.mood-name,
-.reward-msg,
-.star-msg,
-.mood-prompt { font-family: 'Crimson Text', Georgia, serif; font-size: 1.05em; }
+.rest-msg { font-size: 1.1rem; color: #c8b8d8; }
 
 /* ── Gem Dots ──────────────────────────────────────────────── */
 .gem-dot {
