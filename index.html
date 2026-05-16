@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#060614">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Questboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- MOOD SCREEN -->
+  <section id="screen-mood" class="screen active">
+    <div class="mood-wrap">
+      <header class="logo-block">
+        <div class="logo-rune">✦</div>
+        <h1>Questboard</h1>
+        <p class="logo-sub">Dein tägliches Abenteuer</p>
+        <div class="date-chip" id="date-display"></div>
+      </header>
+      <p class="mood-prompt">Wie geht es dir heute?</p>
+      <div class="mood-grid">
+        <button class="mood-card" data-mood="gut">
+          <span class="mood-glyph">🌟</span>
+          <span class="mood-name">Gut</span>
+          <span class="mood-hint">Voll bei Kraft</span>
+        </button>
+        <button class="mood-card" data-mood="okay">
+          <span class="mood-glyph">🌙</span>
+          <span class="mood-name">Okay</span>
+          <span class="mood-hint">Geht schon</span>
+        </button>
+        <button class="mood-card" data-mood="schlecht">
+          <span class="mood-glyph">☁️</span>
+          <span class="mood-name">Schwer</span>
+          <span class="mood-hint">Harter Tag</span>
+        </button>
+      </div>
+      <p class="mood-note">✨ Es gibt keine falsche Antwort ✨</p>
+    </div>
+  </section>
+
+  <!-- QUEST BOARD SCREEN -->
+  <section id="screen-board" class="screen">
+    <div class="board-header">
+      <div class="board-top">
+        <div class="board-title">⚔️ <span>Questboard</span></div>
+        <button id="btn-starmap" class="starmap-btn" aria-label="Sternenkarte öffnen">
+          🗺️&thinsp;<span id="star-count">0</span>&thinsp;⭐
+        </button>
+      </div>
+      <div class="mana-area">
+        <div class="mana-row">
+          <span class="mana-label">💎 Energie</span>
+          <span id="mana-text" class="mana-text">10 / 10</span>
+        </div>
+        <div class="mana-track">
+          <div id="mana-fill" class="mana-fill"></div>
+        </div>
+      </div>
+      <div id="mood-badge" class="mood-badge"></div>
+    </div>
+
+    <div class="board-scroll">
+      <div id="quest-list" class="quest-list"></div>
+      <div id="treasure-section" class="treasure-section hidden">
+        <div class="treasure-heading"><span>🎁</span><span>Schatzkammer</span></div>
+        <div id="treasure-list" class="treasure-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REWARD POPUP -->
+  <div id="popup-reward" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup">
+      <div class="popup-sparkle">✦ ✨ ✦</div>
+      <div id="reward-glyph" class="reward-glyph">🌟</div>
+      <h3 class="reward-title">Quest vollendet!</h3>
+      <p id="reward-msg" class="reward-msg"></p>
+      <button id="btn-reward-close" class="btn-action">Weiter ✦</button>
+    </div>
+  </div>
+
+  <!-- STAR AWARD POPUP -->
+  <div id="popup-star" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup star-popup">
+      <div class="star-burst">⭐</div>
+      <h3 class="star-title">Ein Stern für dich!</h3>
+      <p class="star-msg">Du hast heute mindestens zwei Quests gemeistert. Das verdient einen Platz auf deiner Sternenkarte. Du bist wunderbar.</p>
+      <button id="btn-star-close" class="btn-action">Wunderbar ✦</button>
+    </div>
+  </div>
+
+  <!-- STAR MAP -->
+  <div id="popup-starmap" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup starmap-popup">
+      <div class="starmap-header">
+        <h3>✦ Sternenkarte ✦</h3>
+        <button id="btn-starmap-close" class="close-x" aria-label="Schließen">✕</button>
+      </div>
+      <p class="starmap-sub">Jeder Stern — ein tapferer Tag</p>
+      <canvas id="starmap-canvas" width="300" height="240"></canvas>
+      <p id="starmap-total" class="starmap-total"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

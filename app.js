@@ -1,0 +1,409 @@
+'use strict';
+
+const STORE_STATE = 'qb_state';
+const STORE_STARS = 'qb_stars';
+const MAX_MANA    = 10;
+
+const QUESTS_DATA = [
+  { name: 'Duschen',            mana: 2, category: 'Körperpflege',  rest: false },
+  { name: 'Haare waschen',      mana: 2, category: 'Körperpflege',  rest: false },
+  { name: 'Zähneputzen',        mana: 1, category: 'Körperpflege',  rest: false },
+  { name: 'Einkaufen',          mana: 5, category: 'Outdoor',        rest: false },
+  { name: 'Spazieren gehen',    mana: 2, category: 'Outdoor',        rest: false },
+  { name: 'Garderobe ordnen',   mana: 1, category: 'Vorraum',        rest: false },
+  { name: 'Kommode ordnen',     mana: 1, category: 'Ordnung',        rest: false },
+  { name: 'Tafeln reinigen',    mana: 1, category: 'Ordnung',        rest: false },
+  { name: 'Klopapier nachfüllen', mana: 1, category: 'WC',           rest: false },
+  { name: 'Geschirrspüler',     mana: 1, category: 'Küche',          rest: false },
+  { name: 'Kaffee Corner ordnen', mana: 1, category: 'Küche',        rest: false },
+  { name: 'Staubwischen',       mana: 1, category: 'Wohnzimmer',     rest: false },
+  { name: 'Bettwäsche wechseln', mana: 2, category: 'Schlafzimmer',  rest: false },
+  { name: 'Bett machen',        mana: 1, category: 'Schlafzimmer',   rest: false },
+  { name: 'Waschbecken wischen', mana: 1, category: 'Bad',           rest: false },
+  { name: 'Gewandkasten ordnen', mana: 2, category: 'Catze Hort',    rest: false },
+  { name: 'Waschen',            mana: 1, category: 'Wäsche',         rest: false },
+  { name: 'Aufhängen',          mana: 1, category: 'Wäsche',         rest: false },
+  { name: 'Sortieren',          mana: 1, category: 'Wäsche',         rest: false },
+  { name: 'Wegräumen',          mana: 1, category: 'Wäsche',         rest: false },
+  { name: 'Musik hören',        mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Zeichnen',           mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Häkeln',             mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Zocken',             mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Pferde',             mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Musizieren',         mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Lesen',              mana: 0, category: 'Rast & Freude',  rest: true  },
+  { name: 'Balkonieren',        mana: 0, category: 'Rast & Freude',  rest: true  },
+];
+
+const MOOD_GLYPH = { gut: '🌟', okay: '🌙', schlecht: '☁️' };
+const MOOD_LABEL = { gut: 'Gut', okay: 'Okay', schlecht: 'Schwer' };
+
+const REWARD_MSGS = [
+  'Du hast es geschafft! Kleine Schritte bewegen Berge.',
+  'Wunderbar! Jede vollendete Quest macht dich stärker.',
+  'Fantastisch! Du verdienst diese Energie.',
+  'Großartig! Du bist auf dem richtigen Weg.',
+  'Tapfer! Das war keine Kleinigkeit.',
+  'Du rockst das heute — weiter so.',
+  'Gut gemacht. Du sorgst für dich, und das zählt.',
+  'Bravo! Wieder ein Schritt nach vorne.',
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const $ = id => document.getElementById(id);
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+
+function loadDayState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_STATE));
+    return s?.date === todayStr() ? s : null;
+  } catch { return null; }
+}
+
+function saveDayState(s) {
+  localStorage.setItem(STORE_STATE, JSON.stringify(s));
+}
+
+function loadStars() {
+  try { return JSON.parse(localStorage.getItem(STORE_STARS)) || []; }
+  catch { return []; }
+}
+
+function saveStars(stars) {
+  localStorage.setItem(STORE_STARS, JSON.stringify(stars));
+}
+
+// ── Quest selection ───────────────────────────────────────────────────────────
+
+function selectQuests(allQuests, mood) {
+  const cfg = {
+    gut:      { regularCount: 5, maxCost: 10, restCount: 2 },
+    okay:     { regularCount: 4, maxCost: 3,  restCount: 3 },
+    schlecht: { regularCount: 3, maxCost: 2,  restCount: 4 },
+  }[mood];
+
+  const regular = shuffle(allQuests.filter(q => !q.rest && q.mana <= cfg.maxCost))
+    .slice(0, cfg.regularCount);
+  const rest = shuffle(allQuests.filter(q => q.rest))
+    .slice(0, cfg.restCount);
+
+  return [...regular, ...rest].map(q => ({ ...q, done: false }));
+}
+
+// ── Screens ───────────────────────────────────────────────────────────────────
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+// ── Board rendering ───────────────────────────────────────────────────────────
+
+let appState;
+
+function renderBoard() {
+  const { quests, mana } = appState;
+  const active = quests.filter(q => !q.done);
+  const done   = quests.filter(q => q.done);
+
+  $('quest-list').innerHTML    = '';
+  $('treasure-list').innerHTML = '';
+
+  active.forEach(q => $('quest-list').appendChild(makeQuestCard(q, mana)));
+
+  if (done.length > 0) {
+    $('treasure-section').classList.remove('hidden');
+    done.forEach(q => $('treasure-list').appendChild(makeDoneCard(q)));
+  } else {
+    $('treasure-section').classList.add('hidden');
+  }
+
+  $('mana-text').textContent   = `${mana} / ${MAX_MANA}`;
+  $('mana-fill').style.width   = `${(mana / MAX_MANA) * 100}%`;
+  $('star-count').textContent  = loadStars().length;
+}
+
+function makeQuestCard(q, mana) {
+  const canAfford = q.mana === 0 || mana >= q.mana;
+  const card = document.createElement('div');
+  card.className = `quest-card${q.rest ? ' rest-card' : ''}`;
+
+  const costHtml = q.mana > 0
+    ? `<span class="quest-cost">${'💎'.repeat(q.mana)}</span>`
+    : `<span class="quest-rest-tag">Rast</span>`;
+
+  card.innerHTML = `
+    <div class="quest-info">
+      <div class="quest-name">${q.name}</div>
+      <div class="quest-meta">
+        <span class="quest-category">${q.category}</span>
+        ${costHtml}
+      </div>
+    </div>
+    <button class="quest-btn${canAfford ? '' : ' cant-afford'}"
+            ${canAfford ? '' : 'disabled'}
+            aria-label="${q.name} abschließen">
+      ${canAfford ? '✦' : '—'}
+    </button>`;
+
+  if (canAfford) {
+    card.querySelector('.quest-btn').addEventListener('click', () => completeQuest(q.name));
+  }
+  return card;
+}
+
+function makeDoneCard(q) {
+  const card = document.createElement('div');
+  card.className = 'quest-card done-card';
+  card.innerHTML = `
+    <div class="quest-info">
+      <div class="quest-name">${q.name}</div>
+      <div class="quest-meta">
+        <span class="quest-category">${q.category}</span>
+      </div>
+    </div>
+    <div class="quest-done-mark">✓</div>`;
+  return card;
+}
+
+// ── Quest completion ──────────────────────────────────────────────────────────
+
+function completeQuest(name) {
+  const quest = appState.quests.find(q => q.name === name && !q.done);
+  if (!quest) return;
+
+  quest.done       = true;
+  appState.mana    = Math.max(0, appState.mana - quest.mana);
+  saveDayState(appState);
+  renderBoard();
+  showRewardPopup(quest);
+
+  const totalDone = appState.quests.filter(q => q.done).length;
+  if (totalDone >= 2 && !appState.starAwarded) {
+    setTimeout(awardStar, 1800);
+  }
+}
+
+// ── Popups ────────────────────────────────────────────────────────────────────
+
+function showRewardPopup(quest) {
+  $('reward-glyph').textContent = quest.rest ? '🌸' : '⚔️';
+  $('reward-msg').textContent   = REWARD_MSGS[Math.floor(Math.random() * REWARD_MSGS.length)];
+  $('popup-reward').classList.remove('hidden');
+}
+
+function awardStar() {
+  $('popup-reward').classList.add('hidden');
+
+  const stars = loadStars();
+  const today = todayStr();
+  if (!stars.includes(today)) {
+    stars.push(today);
+    saveStars(stars);
+  }
+  appState.starAwarded = true;
+  saveDayState(appState);
+  $('star-count').textContent = stars.length;
+  $('popup-star').classList.remove('hidden');
+}
+
+function openStarMap() {
+  const stars = loadStars();
+  $('starmap-total').textContent = stars.length === 0
+    ? 'Noch keine Sterne — du schaffst das!'
+    : `${stars.length} ${stars.length === 1 ? 'tapferer Tag' : 'tapfere Tage'}`;
+  drawStarMap(stars);
+  $('popup-starmap').classList.remove('hidden');
+}
+
+// ── Star map canvas ───────────────────────────────────────────────────────────
+
+function starPositions(n, W, H) {
+  if (n === 0) return [];
+  if (n === 1) return [{ x: W / 2, y: H / 2 }];
+
+  const cx = W / 2, cy = H / 2;
+  const positions = [];
+
+  if (n <= 8) {
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      positions.push({ x: cx + Math.cos(angle) * W * 0.33, y: cy + Math.sin(angle) * H * 0.33 });
+    }
+  } else {
+    const inner = Math.round(n * 0.38);
+    const outer = n - inner;
+    for (let i = 0; i < inner; i++) {
+      const a = (i / inner) * Math.PI * 2 - Math.PI / 2;
+      positions.push({ x: cx + Math.cos(a) * W * 0.17, y: cy + Math.sin(a) * H * 0.17 });
+    }
+    for (let i = 0; i < outer; i++) {
+      const a = (i / outer) * Math.PI * 2 - Math.PI / 2;
+      positions.push({ x: cx + Math.cos(a) * W * 0.36, y: cy + Math.sin(a) * H * 0.36 });
+    }
+  }
+  return positions;
+}
+
+function drawStarMap(stars) {
+  const canvas = $('starmap-canvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#06060e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative background dust (deterministic, no flicker on re-draw)
+  for (let i = 0; i < 55; i++) {
+    const x = ((Math.sin(i * 37.1 + 1) + 1) / 2) * W;
+    const y = ((Math.sin(i * 19.7 + 2) + 1) / 2) * H;
+    const r = ((Math.sin(i * 7.3) + 1) / 2) * 1.2 + 0.3;
+    ctx.fillStyle = `rgba(255,255,255,${0.04 + ((Math.sin(i * 5.1) + 1) / 2) * 0.1})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (stars.length === 0) return;
+
+  const pos = starPositions(stars.length, W, H);
+
+  // Connecting lines
+  if (pos.length > 1) {
+    ctx.strokeStyle = 'rgba(201,162,39,0.18)';
+    ctx.lineWidth   = 1;
+    ctx.setLineDash([3, 6]);
+    ctx.beginPath();
+    pos.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Stars
+  pos.forEach(p => {
+    const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 14);
+    grd.addColorStop(0, 'rgba(240,208,80,0.55)');
+    grd.addColorStop(1, 'rgba(240,208,80,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 14, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#f0d060';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(240,208,96,0.65)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(p.x - 7, p.y); ctx.lineTo(p.x + 7, p.y);
+    ctx.moveTo(p.x, p.y - 7); ctx.lineTo(p.x, p.y + 7);
+    ctx.stroke();
+  });
+}
+
+// ── Background animation ──────────────────────────────────────────────────────
+
+function initBgCanvas() {
+  const canvas = $('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    particles = Array.from({ length: 75 }, () => ({
+      x:     Math.random() * W,
+      y:     Math.random() * H,
+      r:     Math.random() * 1.4 + 0.3,
+      speed: Math.random() * 0.22 + 0.04,
+      base:  Math.random() * 0.45 + 0.08,
+      phase: Math.random() * Math.PI * 2,
+    }));
+  }
+
+  let tick = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    tick++;
+    particles.forEach(p => {
+      const tw = (Math.sin(p.phase + tick * 0.018) + 1) * 0.5;
+      ctx.globalAlpha = p.base * (0.45 + 0.55 * tw);
+      ctx.fillStyle   = '#fff';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.y -= p.speed;
+      if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+function init() {
+  initBgCanvas();
+
+  $('date-display').textContent = new Date().toLocaleDateString('de-AT', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  });
+
+  const allQuests = QUESTS_DATA;
+  const saved     = loadDayState();
+
+  if (saved) {
+    appState = saved;
+    $('mood-badge').textContent = `${MOOD_GLYPH[saved.mood]} ${MOOD_LABEL[saved.mood]}`;
+    renderBoard();
+    showScreen('screen-board');
+  } else {
+    showScreen('screen-mood');
+    document.querySelectorAll('.mood-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mood = btn.dataset.mood;
+        appState = {
+          date:        todayStr(),
+          mood,
+          mana:        MAX_MANA,
+          quests:      selectQuests(allQuests, mood),
+          starAwarded: false,
+        };
+        saveDayState(appState);
+        $('mood-badge').textContent = `${MOOD_GLYPH[mood]} ${MOOD_LABEL[mood]}`;
+        renderBoard();
+        showScreen('screen-board');
+      });
+    });
+  }
+
+  $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
+  $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
+  $('btn-starmap').addEventListener('click',      openStarMap);
+  $('btn-starmap-close').addEventListener('click',() => $('popup-starmap').classList.add('hidden'));
+
+  document.querySelectorAll('.overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);

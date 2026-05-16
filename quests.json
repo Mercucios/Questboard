@@ -1,0 +1,170 @@
+[
+  {
+    "name": "Duschen",
+    "mana": 2,
+    "category": "Körperpflege",
+    "rest": false
+  },
+  {
+    "name": "Haare waschen",
+    "mana": 2,
+    "category": "Körperpflege",
+    "rest": false
+  },
+  {
+    "name": "Zähneputzen",
+    "mana": 1,
+    "category": "Körperpflege",
+    "rest": false
+  },
+  {
+    "name": "Einkaufen",
+    "mana": 5,
+    "category": "Outdoor",
+    "rest": false
+  },
+  {
+    "name": "Spazieren gehen",
+    "mana": 2,
+    "category": "Outdoor",
+    "rest": false
+  },
+  {
+    "name": "Garderobe ordnen",
+    "mana": 1,
+    "category": "Vorraum",
+    "rest": false
+  },
+  {
+    "name": "Kommode ordnen",
+    "mana": 1,
+    "category": "Ordnung",
+    "rest": false
+  },
+  {
+    "name": "Tafeln reinigen",
+    "mana": 1,
+    "category": "Ordnung",
+    "rest": false
+  },
+  {
+    "name": "Klopapier nachfüllen",
+    "mana": 1,
+    "category": "WC",
+    "rest": false
+  },
+  {
+    "name": "Geschirrspüler",
+    "mana": 1,
+    "category": "Küche",
+    "rest": false
+  },
+  {
+    "name": "Kaffee Corner ordnen",
+    "mana": 1,
+    "category": "Küche",
+    "rest": false
+  },
+  {
+    "name": "Staubwischen",
+    "mana": 1,
+    "category": "Wohnzimmer",
+    "rest": false
+  },
+  {
+    "name": "Bettwäsche wechseln",
+    "mana": 2,
+    "category": "Schlafzimmer",
+    "rest": false
+  },
+  {
+    "name": "Bett machen",
+    "mana": 1,
+    "category": "Schlafzimmer",
+    "rest": false
+  },
+  {
+    "name": "Waschbecken wischen",
+    "mana": 1,
+    "category": "Bad",
+    "rest": false
+  },
+  {
+    "name": "Gewandkasten ordnen",
+    "mana": 2,
+    "category": "Catze Hort",
+    "rest": false
+  },
+  {
+    "name": "Waschen",
+    "mana": 1,
+    "category": "Wäsche",
+    "rest": false
+  },
+  {
+    "name": "Aufhängen",
+    "mana": 1,
+    "category": "Wäsche",
+    "rest": false
+  },
+  {
+    "name": "Sortieren",
+    "mana": 1,
+    "category": "Wäsche",
+    "rest": false
+  },
+  {
+    "name": "Wegräumen",
+    "mana": 1,
+    "category": "Wäsche",
+    "rest": false
+  },
+  {
+    "name": "Musik hören",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Zeichnen",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Häkeln",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Zocken",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Pferde",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Musizieren",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Lesen",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  },
+  {
+    "name": "Balkonieren",
+    "mana": 0,
+    "category": "Rast & Freude",
+    "rest": true
+  }
+]
