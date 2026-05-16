@@ -1,0 +1,19 @@
+{
+  "name": "Questboard",
+  "short_name": "Quest",
+  "description": "Dein tägliches Abenteuer",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#060614",
+  "theme_color": "#060614",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

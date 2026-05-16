@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#060614">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Quest">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
   <title>Questboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -23,6 +30,11 @@
       </header>
       <p class="mood-prompt">Wie geht es dir heute?</p>
       <div class="mood-grid">
+        <button class="mood-card" data-mood="sehr-gut">
+          <span class="mood-glyph">⚡</span>
+          <span class="mood-name">Sehr gut</span>
+          <span class="mood-hint">Volle Energie</span>
+        </button>
         <button class="mood-card" data-mood="gut">
           <span class="mood-glyph">🌟</span>
           <span class="mood-name">Gut</span>
@@ -35,8 +47,13 @@
         </button>
         <button class="mood-card" data-mood="schlecht">
           <span class="mood-glyph">☁️</span>
-          <span class="mood-name">Schwer</span>
+          <span class="mood-name">Schlecht</span>
           <span class="mood-hint">Harter Tag</span>
+        </button>
+        <button class="mood-card" data-mood="nur-ueberleben">
+          <span class="mood-glyph">🌫️</span>
+          <span class="mood-name">Überleben</span>
+          <span class="mood-hint">Minimalmodus</span>
         </button>
       </div>
       <p class="mood-note">✨ Es gibt keine falsche Antwort ✨</p>
@@ -48,13 +65,16 @@
     <div class="board-header">
       <div class="board-top">
         <div class="board-title">⚔️ <span>Questboard</span></div>
-        <button id="btn-starmap" class="starmap-btn" aria-label="Sternenkarte öffnen">
-          🗺️&thinsp;<span id="star-count">0</span>&thinsp;⭐
-        </button>
+        <div class="board-top-actions">
+          <button id="btn-reset" class="reset-btn" title="Neu starten">↺</button>
+          <button id="btn-starmap" class="starmap-btn" aria-label="Sternenkarte öffnen">
+            🗺️&thinsp;<span id="star-count">0</span>&thinsp;⭐
+          </button>
+        </div>
       </div>
       <div class="mana-area">
         <div class="mana-row">
-          <span class="mana-label">💎 Energie</span>
+          <span class="mana-label"><span class="gem-mana-icon"></span> Energie</span>
           <span id="mana-text" class="mana-text">10 / 10</span>
         </div>
         <div class="mana-track">
@@ -77,8 +97,9 @@
   <div id="popup-reward" class="overlay hidden" role="dialog" aria-modal="true">
     <div class="popup">
       <div class="popup-sparkle">✦ ✨ ✦</div>
-      <div id="reward-glyph" class="reward-glyph">🌟</div>
-      <h3 class="reward-title">Quest vollendet!</h3>
+      <div id="reward-glyph" class="reward-glyph"></div>
+      <p class="reward-loot-label">Du hast erbeutet</p>
+      <h3 id="reward-loot-name" class="reward-loot-name"></h3>
       <p id="reward-msg" class="reward-msg"></p>
       <button id="btn-reward-close" class="btn-action">Weiter ✦</button>
     </div>
@@ -107,6 +128,13 @@
     </div>
   </div>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(console.warn);
+      });
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

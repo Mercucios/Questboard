@@ -1,0 +1,84 @@
+<svg width="512" height="512" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldMain" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#fffbe0"/>
+      <stop offset="12%" stop-color="#fde87a"/>
+      <stop offset="28%" stop-color="#b86a00"/>
+      <stop offset="45%" stop-color="#fef0a0"/>
+      <stop offset="58%" stop-color="#ffffff"/>
+      <stop offset="72%" stop-color="#c97f00"/>
+      <stop offset="88%" stop-color="#7a4400"/>
+      <stop offset="100%" stop-color="#f0c040"/>
+    </linearGradient>
+    <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6b3a00"/>
+      <stop offset="35%" stop-color="#4a2800"/>
+      <stop offset="65%" stop-color="#5c3200"/>
+      <stop offset="100%" stop-color="#3a1e00"/>
+    </linearGradient>
+    <linearGradient id="specular" x1="25%" y1="5%" x2="60%" y2="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#fffde0" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="680" height="680" rx="130" fill="#06091a"/>
+  <ellipse cx="340" cy="300" rx="300" ry="260" fill="#3b0764" opacity="0.4"/>
+  <ellipse cx="420" cy="400" rx="220" ry="180" fill="#1e1b4b" opacity="0.5"/>
+  <circle cx="340" cy="340" r="280" fill="url(#bgGlow)"/>
+  <circle cx="340" cy="360" r="180" fill="url(#glowGold)"/>
+
+  <circle cx="120" cy="100" r="2.5" fill="#fff8e0"/>
+  <circle cx="200" cy="70" r="1.5" fill="#fff8e0"/>
+  <circle cx="300" cy="50" r="2" fill="#bfdbfe"/>
+  <circle cx="450" cy="65" r="2.5" fill="#fff8e0"/>
+  <circle cx="560" cy="90" r="1.5" fill="#d8b4fe"/>
+  <circle cx="590" cy="160" r="2" fill="#fff8e0"/>
+  <circle cx="80" cy="200" r="1.5" fill="#bfdbfe"/>
+  <circle cx="620" cy="280" r="2.5" fill="#fff8e0"/>
+  <circle cx="60" cy="350" r="1.5" fill="#d8b4fe"/>
+  <circle cx="610" cy="420" r="2" fill="#fff8e0"/>
+  <circle cx="100" cy="480" r="2.5" fill="#fff8e0"/>
+  <circle cx="580" cy="530" r="1.5" fill="#bfdbfe"/>
+  <circle cx="140" cy="580" r="2" fill="#fff8e0"/>
+  <circle cx="400" cy="620" r="2.5" fill="#d8b4fe"/>
+  <circle cx="520" cy="600" r="1.5" fill="#fff8e0"/>
+  <circle cx="250" cy="610" r="2" fill="#bfdbfe"/>
+  <circle cx="500" cy="130" r="2" fill="#d8b4fe"/>
+  <circle cx="640" cy="200" r="1.5" fill="#fff8e0"/>
+  <circle cx="340" cy="40" r="2" fill="#fff8e0"/>
+  <circle cx="630" cy="560" r="2" fill="#fff8e0"/>
+
+  <polygon points="180,120 186,138 205,138 190,149 196,167 180,156 164,167 170,149 155,138 174,138" fill="#f0c040"/>
+  <polygon points="510,570 515,582 528,582 518,590 522,602 510,594 498,602 502,590 492,582 505,582" fill="#d8b4fe"/>
+  <polygon points="570,190 574,202 587,202 577,210 581,222 570,214 559,222 563,210 553,202 566,202" fill="#f0c040"/>
+
+  <circle cx="150" cy="310" r="4" fill="#e879f9" opacity="0.7"/>
+  <circle cx="530" cy="240" r="5" fill="#e879f9" opacity="0.5"/>
+  <circle cx="490" cy="500" r="3.5" fill="#e879f9" opacity="0.6"/>
+
+  <text x="340" y="460" text-anchor="middle"
+    font-family="Georgia,'Times New Roman',serif"
+    font-size="420" font-weight="bold"
+    fill="url(#goldRim)"
+    stroke="#4a2800" stroke-width="10" stroke-linejoin="round"
+    paint-order="stroke">Q</text>
+  <text x="340" y="460" text-anchor="middle"
+    font-family="Georgia,'Times New Roman',serif"
+    font-size="420" font-weight="bold"
+    fill="url(#goldMain)">Q</text>
+  <text x="340" y="460" text-anchor="middle"
+    font-family="Georgia,'Times New Roman',serif"
+    font-size="420" font-weight="bold"
+    fill="url(#specular)">Q</text>
+</svg>

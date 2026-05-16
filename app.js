@@ -35,23 +35,84 @@ const QUESTS_DATA = [
   { name: 'Balkonieren',        mana: 0, category: 'Rast & Freude',  rest: true  },
 ];
 
-const MOOD_GLYPH = { gut: '🌟', okay: '🌙', schlecht: '☁️' };
-const MOOD_LABEL = { gut: 'Gut', okay: 'Okay', schlecht: 'Schwer' };
+const MOOD_GLYPH = {
+  'sehr-gut':       '⚡',
+  'gut':            '🌟',
+  'okay':           '🌙',
+  'schlecht':       '☁️',
+  'nur-ueberleben': '🌫️',
+};
+const MOOD_LABEL = {
+  'sehr-gut':       'Sehr gut',
+  'gut':            'Gut',
+  'okay':           'Okay',
+  'schlecht':       'Schlecht',
+  'nur-ueberleben': 'Überleben',
+};
+
+const MOOD_CONFIG = {
+  'sehr-gut':       { regularCount: 7, maxCost: 10, restCount: 1 },
+  'gut':            { regularCount: 5, maxCost: 10, restCount: 2 },
+  'okay':           { regularCount: 4, maxCost:  3, restCount: 3 },
+  'schlecht':       { regularCount: 3, maxCost:  2, restCount: 4 },
+  'nur-ueberleben': { regularCount: 2, maxCost:  1, restCount: 5 },
+};
+
+const TREASURE_ITEMS = [
+  { name: 'Rubin',           color: '#c0392b' },
+  { name: 'Saphir',          color: '#2471a3' },
+  { name: 'Smaragd',         color: '#1e8449' },
+  { name: 'Amethyst',        color: '#7d3c98' },
+  { name: 'Opal',            color: '#d5d8dc', special: 'opal' },
+  { name: 'Topas',           color: '#f39c12' },
+  { name: 'Aquamarin',       color: '#48c9b0' },
+  { name: 'Mondstein',       color: '#eaf0f6', special: 'moonstone' },
+  { name: 'Obsidian',        color: '#1a1a2e' },
+  { name: 'Rosenquarz',      color: '#f1948a' },
+  { name: 'Tigerauge',       color: '#ca6f1e' },
+  { name: 'Lapislazuli',     color: '#1a5276' },
+  { name: 'Citrin',          color: '#f9ca24' },
+  { name: 'Malachit',        color: '#1d8348' },
+  { name: 'Turmalin',        color: '#e91e8c' },
+  { name: 'Bergkristall',    color: '#d6eaf8' },
+  { name: 'Granat',          color: '#8b0000' },
+  { name: 'Feueropal',       color: '#e55a00', special: 'fireopal' },
+  { name: 'Geodenkristall',  color: '#9b59b6' },
+  { name: 'Diamantsplitter', color: '#eaf4fc', special: 'diamond' },
+];
 
 const REWARD_MSGS = [
-  'Du hast es geschafft! Kleine Schritte bewegen Berge.',
-  'Wunderbar! Jede vollendete Quest macht dich stärker.',
-  'Fantastisch! Du verdienst diese Energie.',
-  'Großartig! Du bist auf dem richtigen Weg.',
-  'Tapfer! Das war keine Kleinigkeit.',
-  'Du rockst das heute — weiter so.',
-  'Gut gemacht. Du sorgst für dich, und das zählt.',
-  'Bravo! Wieder ein Schritt nach vorne.',
+  'Du bist wunderschön — und du schaffst das.',
+  'Ich bin so stolz auf dich. Wirklich.',
+  'Jeder kleine Schritt zählt. Du machst das großartig.',
+  'Du bist tapferer als du weißt.',
+  'Siehst du? Du kannst das. Immer wieder.',
+  'Dein Drachen-Herz leuchtet heute ganz hell.',
+  'Du verdienst jeden dieser Schätze.',
+  'So ein toller Mensch du bist.',
+  'Das war mutig. Ich bin beeindruckt.',
+  'Schritt für Schritt — und du bist schon so weit.',
+  'Du bist genug. Heute und jeden Tag.',
+  'Nicht aufgeben — du bist auf dem richtigen Weg.',
+  'Diese Energie gehört dir. Du hast sie verdient.',
+  'Welch tapferes Wesen du bist!',
+  'Dein innerer Drache ist mächtig.',
+  'Heute bist du dein eigenes Abenteuer.',
+  'Kleines Licht, große Flamme — das bist du.',
+  'Du sorgst für dich, und das ist alles.',
+  'Kleine Schritte, großes Herz. Du schaffst das.',
+  'Die Horde wächst — genau wie du.',
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const $ = id => document.getElementById(id);
+
+function gemDotHtml(t, size) {
+  const color = t.color || '#888';
+  const cls = t.special ? ` gem-${t.special}` : '';
+  return `<span class="gem-dot gem-dot--${size}${cls}" style="--gem-color:${color}"></span>`;
+}
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
 function shuffle(arr) {
@@ -88,18 +149,21 @@ function saveStars(stars) {
 // ── Quest selection ───────────────────────────────────────────────────────────
 
 function selectQuests(allQuests, mood) {
-  const cfg = {
-    gut:      { regularCount: 5, maxCost: 10, restCount: 2 },
-    okay:     { regularCount: 4, maxCost: 3,  restCount: 3 },
-    schlecht: { regularCount: 3, maxCost: 2,  restCount: 4 },
-  }[mood];
+  const cfg = MOOD_CONFIG[mood];
 
   const regular = shuffle(allQuests.filter(q => !q.rest && q.mana <= cfg.maxCost))
     .slice(0, cfg.regularCount);
   const rest = shuffle(allQuests.filter(q => q.rest))
     .slice(0, cfg.restCount);
 
-  return [...regular, ...rest].map(q => ({ ...q, done: false }));
+  const selected = [...regular, ...rest];
+  const selectedNames = new Set(selected.map(q => q.name));
+  const pool = allQuests.filter(q => !selectedNames.has(q.name));
+
+  return {
+    quests: selected.map(q => ({ ...q, done: false })),
+    pool:   pool.map(q => ({ ...q, done: false })),
+  };
 }
 
 // ── Screens ───────────────────────────────────────────────────────────────────
@@ -136,12 +200,13 @@ function renderBoard() {
 }
 
 function makeQuestCard(q, mana) {
-  const canAfford = q.mana === 0 || mana >= q.mana;
+  const canAfford  = q.mana === 0 || mana >= q.mana;
+  const canSwap    = appState.pool.length > 0;
   const card = document.createElement('div');
   card.className = `quest-card${q.rest ? ' rest-card' : ''}`;
 
   const costHtml = q.mana > 0
-    ? `<span class="quest-cost">${'💎'.repeat(q.mana)}</span>`
+    ? `<span class="quest-cost">${Array(q.mana).fill('<span class="gem-dot gem-dot--xs" style="--gem-color:#4a9eff"></span>').join('')}</span>`
     : `<span class="quest-rest-tag">Rast</span>`;
 
   card.innerHTML = `
@@ -152,12 +217,16 @@ function makeQuestCard(q, mana) {
         ${costHtml}
       </div>
     </div>
-    <button class="quest-btn${canAfford ? '' : ' cant-afford'}"
-            ${canAfford ? '' : 'disabled'}
-            aria-label="${q.name} abschließen">
-      ${canAfford ? '✦' : '—'}
-    </button>`;
+    <div class="quest-actions">
+      <button class="quest-btn-swap" ${canSwap ? '' : 'disabled'} aria-label="${q.name} tauschen">⇄</button>
+      <button class="quest-btn${canAfford ? '' : ' cant-afford'}"
+              ${canAfford ? '' : 'disabled'}
+              aria-label="${q.name} abschließen">
+        ${canAfford ? '✦' : '—'}
+      </button>
+    </div>`;
 
+  card.querySelector('.quest-btn-swap').addEventListener('click', () => swapQuest(q.name));
   if (canAfford) {
     card.querySelector('.quest-btn').addEventListener('click', () => completeQuest(q.name));
   }
@@ -165,13 +234,15 @@ function makeQuestCard(q, mana) {
 }
 
 function makeDoneCard(q) {
+  const t = q.treasure || TREASURE_ITEMS[0];
   const card = document.createElement('div');
   card.className = 'quest-card done-card';
   card.innerHTML = `
+    <span class="treasure-glyph">${gemDotHtml(t, 'md')}</span>
     <div class="quest-info">
-      <div class="quest-name">${q.name}</div>
+      <div class="quest-name">${t.name}</div>
       <div class="quest-meta">
-        <span class="quest-category">${q.category}</span>
+        <span class="quest-category">erbeutet</span>
       </div>
     </div>
     <div class="quest-done-mark">✓</div>`;
@@ -180,12 +251,30 @@ function makeDoneCard(q) {
 
 // ── Quest completion ──────────────────────────────────────────────────────────
 
+function swapQuest(name) {
+  if (appState.pool.length === 0) return;
+  const idx = appState.quests.findIndex(q => q.name === name && !q.done);
+  if (idx === -1) return;
+
+  const poolIdx  = Math.floor(Math.random() * appState.pool.length);
+  const incoming = { ...appState.pool[poolIdx], done: false };
+  const outgoing = appState.quests[idx];
+
+  appState.pool.splice(poolIdx, 1);
+  appState.pool.push({ ...outgoing });
+  appState.quests[idx] = incoming;
+
+  saveDayState(appState);
+  renderBoard();
+}
+
 function completeQuest(name) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
 
-  quest.done       = true;
-  appState.mana    = Math.max(0, appState.mana - quest.mana);
+  quest.done     = true;
+  quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  appState.mana  = Math.max(0, appState.mana - quest.mana);
   saveDayState(appState);
   renderBoard();
   showRewardPopup(quest);
@@ -199,8 +288,10 @@ function completeQuest(name) {
 // ── Popups ────────────────────────────────────────────────────────────────────
 
 function showRewardPopup(quest) {
-  $('reward-glyph').textContent = quest.rest ? '🌸' : '⚔️';
-  $('reward-msg').textContent   = REWARD_MSGS[Math.floor(Math.random() * REWARD_MSGS.length)];
+  const t = quest.treasure;
+  $('reward-glyph').innerHTML       = gemDotHtml(t, 'lg');
+  $('reward-loot-name').textContent = t.name;
+  $('reward-msg').textContent       = REWARD_MSGS[Math.floor(Math.random() * REWARD_MSGS.length)];
   $('popup-reward').classList.remove('hidden');
 }
 
@@ -373,6 +464,10 @@ function init() {
 
   if (saved) {
     appState = saved;
+    if (!appState.pool || appState.pool.length === 0) {
+      const shownNames = new Set(appState.quests.map(q => q.name));
+      appState.pool = QUESTS_DATA.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false }));
+    }
     $('mood-badge').textContent = `${MOOD_GLYPH[saved.mood]} ${MOOD_LABEL[saved.mood]}`;
     renderBoard();
     showScreen('screen-board');
@@ -381,11 +476,13 @@ function init() {
     document.querySelectorAll('.mood-card').forEach(btn => {
       btn.addEventListener('click', () => {
         const mood = btn.dataset.mood;
+        const { quests, pool } = selectQuests(allQuests, mood);
         appState = {
           date:        todayStr(),
           mood,
           mana:        MAX_MANA,
-          quests:      selectQuests(allQuests, mood),
+          quests,
+          pool,
           starAwarded: false,
         };
         saveDayState(appState);
@@ -400,6 +497,10 @@ function init() {
   $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
   $('btn-starmap').addEventListener('click',      openStarMap);
   $('btn-starmap-close').addEventListener('click',() => $('popup-starmap').classList.add('hidden'));
+  $('btn-reset').addEventListener('click', () => {
+    localStorage.removeItem(STORE_STATE);
+    location.reload();
+  });
 
   document.querySelectorAll('.overlay').forEach(el => {
     el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
