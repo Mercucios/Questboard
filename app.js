@@ -488,85 +488,9 @@ function startStarMapAnimation(starCount) {
   starMapAnimFrame = requestAnimationFrame(frame);
 }
 
-// ── CSS Star Field ────────────────────────────────────────────────────────────
-
-function initCssStars() {
-  const field = document.createElement('div');
-  field.id = 'star-field';
-  document.body.insertAdjacentElement('afterbegin', field);
-
-  const colors = [
-    '#ffffff', '#ffffff', '#ffffff', '#ffffff',
-    '#a0c8ff', '#7eb8ff',
-    '#d4a8ff', '#c084fc',
-    '#ffb8ff', '#bfdbfe', '#ddd6fe',
-  ];
-
-  for (let i = 0; i < 90; i++) {
-    const el  = document.createElement('span');
-    el.className = 'css-star';
-    const size = (Math.random() * 2.2 + 0.5).toFixed(1);
-    const dur  = (Math.random() * 3 + 1).toFixed(2);
-    const del  = (Math.random() * 5).toFixed(2);
-    const col  = colors[Math.floor(Math.random() * colors.length)];
-    el.style.cssText =
-      `left:${(Math.random() * 100).toFixed(2)}%;` +
-      `top:${(Math.random()  * 100).toFixed(2)}%;` +
-      `width:${size}px;height:${size}px;` +
-      `background:${col};` +
-      `animation-duration:${dur}s;animation-delay:-${del}s;`;
-    field.appendChild(el);
-  }
-}
-
-// ── Background animation ──────────────────────────────────────────────────────
-
-function initBgCanvas() {
-  const canvas = $('bg-canvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H, particles = [];
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    particles = Array.from({ length: 75 }, () => ({
-      x:     Math.random() * W,
-      y:     Math.random() * H,
-      r:     Math.random() * 1.4 + 0.3,
-      speed: Math.random() * 0.22 + 0.04,
-      base:  Math.random() * 0.45 + 0.08,
-      phase: Math.random() * Math.PI * 2,
-    }));
-  }
-
-  let tick = 0;
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    tick++;
-    particles.forEach(p => {
-      const tw = (Math.sin(p.phase + tick * 0.018) + 1) * 0.5;
-      ctx.globalAlpha = p.base * (0.45 + 0.55 * tw);
-      ctx.fillStyle   = '#fff';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      p.y -= p.speed;
-      if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
-    });
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', resize);
-  resize();
-  draw();
-}
-
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function init() {
-  initCssStars();
-  initBgCanvas();
 
   $('date-display').textContent = new Date().toLocaleDateString('de-AT', {
     timeZone: 'Europe/Vienna', weekday: 'long', day: 'numeric', month: 'long',

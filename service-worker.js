@@ -8,6 +8,8 @@ const PRECACHE_URLS = [
   './app.js',
   './icon.svg',
   './manifest.json',
+  './constellations.js',
+  './galaxy.jpg',
 ];
 
 self.addEventListener('install', event => {
