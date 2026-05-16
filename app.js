@@ -36,11 +36,11 @@ const QUESTS_DATA = [
 ];
 
 const MOOD_GLYPH = {
-  'sehr-gut':       '⚡',
-  'gut':            '🌟',
-  'okay':           '🌙',
+  'sehr-gut':       '☀️',
+  'gut':            '🌤️',
+  'okay':           '⛅',
   'schlecht':       '☁️',
-  'nur-ueberleben': '🌫️',
+  'nur-ueberleben': '🌧️',
 };
 const MOOD_LABEL = {
   'sehr-gut':       'Sehr gut',
@@ -81,6 +81,17 @@ const TREASURE_ITEMS = [
   { name: 'Diamantsplitter', color: '#eaf4fc', special: 'diamond' },
 ];
 
+const REST_MSGS = [
+  'Heute reicht es, einfach da zu sein. Das ist genug.',
+  'Manche Tage sind zum Überstehen da. Du machst das.',
+  'Kein Kampf heute – nur Ruhe. Du hast sie verdient.',
+  'Es ist okay, heute nichts zu leisten. Du bist mehr als deine Aufgaben.',
+  'Heute darfst du einfach atmen. Alles andere kann warten.',
+  'Selbst die leiseste Flamme leuchtet noch. Du auch.',
+  'Du musst heute nichts beweisen – nicht mir, nicht dir.',
+  'Ruh dich aus. Morgen ist ein neuer Tag mit neuer Energie.',
+];
+
 const REWARD_MSGS = [
   'Du bist wunderschön — und du schaffst das.',
   'Ich bin so stolz auf dich. Wirklich.',
@@ -113,7 +124,8 @@ function gemDotHtml(t, size) {
   const cls = t.special ? ` gem-${t.special}` : '';
   return `<span class="gem-dot gem-dot--${size}${cls}" style="--gem-color:${color}"></span>`;
 }
-const todayStr = () => new Date().toISOString().slice(0, 10);
+const todayStr = () =>
+  new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Vienna' }).format(new Date());
 
 function shuffle(arr) {
   const a = [...arr];
@@ -149,16 +161,23 @@ function saveStars(stars) {
 // ── Quest selection ───────────────────────────────────────────────────────────
 
 function selectQuests(allQuests, mood) {
-  const cfg = MOOD_CONFIG[mood];
+  if (mood === 'nur-ueberleben') {
+    const rests = shuffle(allQuests.filter(q => q.rest));
+    return {
+      quests: rests.map(q => ({ ...q, done: false })),
+      pool:   [],
+    };
+  }
 
+  const cfg     = MOOD_CONFIG[mood];
   const regular = shuffle(allQuests.filter(q => !q.rest && q.mana <= cfg.maxCost))
     .slice(0, cfg.regularCount);
-  const rest = shuffle(allQuests.filter(q => q.rest))
+  const rest    = shuffle(allQuests.filter(q => q.rest))
     .slice(0, cfg.restCount);
 
-  const selected = [...regular, ...rest];
+  const selected      = [...regular, ...rest];
   const selectedNames = new Set(selected.map(q => q.name));
-  const pool = allQuests.filter(q => !selectedNames.has(q.name));
+  const pool          = allQuests.filter(q => !selectedNames.has(q.name));
 
   return {
     quests: selected.map(q => ({ ...q, done: false })),
@@ -176,6 +195,7 @@ function showScreen(id) {
 // ── Board rendering ───────────────────────────────────────────────────────────
 
 let appState;
+let starMapAnimFrame = null;
 
 function renderBoard() {
   const { quests, mana } = appState;
@@ -310,101 +330,193 @@ function awardStar() {
   $('popup-star').classList.remove('hidden');
 }
 
+function getConstellationInfo(starCount) {
+  let cumulative = 0;
+  for (let i = 0; i < CONSTELLATIONS.length; i++) {
+    const c = CONSTELLATIONS[i];
+    if (starCount <= cumulative + c.starsNeeded) {
+      return {
+        idx: i,
+        constellation: c,
+        earned: starCount - cumulative,
+        completedCount: i,
+        allComplete: false,
+      };
+    }
+    cumulative += c.starsNeeded;
+  }
+  const last = CONSTELLATIONS[CONSTELLATIONS.length - 1];
+  return {
+    idx: CONSTELLATIONS.length - 1,
+    constellation: last,
+    earned: last.starsNeeded,
+    completedCount: CONSTELLATIONS.length,
+    allComplete: true,
+  };
+}
+
 function openStarMap() {
-  const stars = loadStars();
-  $('starmap-total').textContent = stars.length === 0
-    ? 'Noch keine Sterne — du schaffst das!'
-    : `${stars.length} ${stars.length === 1 ? 'tapferer Tag' : 'tapfere Tage'}`;
-  drawStarMap(stars);
+  const starCount = loadStars().length;
+  const info = getConstellationInfo(starCount);
+  const c = info.constellation;
+  const allDone = info.earned >= c.stars.length;
+
+  if (starCount === 0) {
+    $('starmap-total').textContent = 'Noch keine Sterne — du schaffst das!';
+  } else if (info.allComplete) {
+    $('starmap-total').textContent = `${starCount} tapfere Tage · Alle Sternbilder entdeckt ✦`;
+  } else {
+    const label = starCount === 1 ? 'tapferer Tag' : 'tapfere Tage';
+    $('starmap-total').textContent = allDone
+      ? `${starCount} ${label} · ${c.name} ✦`
+      : `${starCount} ${label} · ${c.name} (${info.earned}/${c.starsNeeded})`;
+  }
+
   $('popup-starmap').classList.remove('hidden');
+  if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
+  startStarMapAnimation(starCount);
 }
 
 // ── Star map canvas ───────────────────────────────────────────────────────────
 
-function starPositions(n, W, H) {
-  if (n === 0) return [];
-  if (n === 1) return [{ x: W / 2, y: H / 2 }];
-
-  const cx = W / 2, cy = H / 2;
-  const positions = [];
-
-  if (n <= 8) {
-    for (let i = 0; i < n; i++) {
-      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-      positions.push({ x: cx + Math.cos(angle) * W * 0.33, y: cy + Math.sin(angle) * H * 0.33 });
-    }
-  } else {
-    const inner = Math.round(n * 0.38);
-    const outer = n - inner;
-    for (let i = 0; i < inner; i++) {
-      const a = (i / inner) * Math.PI * 2 - Math.PI / 2;
-      positions.push({ x: cx + Math.cos(a) * W * 0.17, y: cy + Math.sin(a) * H * 0.17 });
-    }
-    for (let i = 0; i < outer; i++) {
-      const a = (i / outer) * Math.PI * 2 - Math.PI / 2;
-      positions.push({ x: cx + Math.cos(a) * W * 0.36, y: cy + Math.sin(a) * H * 0.36 });
-    }
-  }
-  return positions;
-}
-
-function drawStarMap(stars) {
+function startStarMapAnimation(starCount) {
   const canvas = $('starmap-canvas');
   const ctx    = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#06060e';
-  ctx.fillRect(0, 0, W, H);
+  const info          = getConstellationInfo(starCount);
+  const c             = info.constellation;
+  const earnedInConst = Math.min(info.earned, c.stars.length);
+  const allStarsEarned = earnedInConst >= c.stars.length;
 
-  // Decorative background dust (deterministic, no flicker on re-draw)
-  for (let i = 0; i < 55; i++) {
-    const x = ((Math.sin(i * 37.1 + 1) + 1) / 2) * W;
-    const y = ((Math.sin(i * 19.7 + 2) + 1) / 2) * H;
-    const r = ((Math.sin(i * 7.3) + 1) / 2) * 1.2 + 0.3;
-    ctx.fillStyle = `rgba(255,255,255,${0.04 + ((Math.sin(i * 5.1) + 1) / 2) * 0.1})`;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
+  const srng = s => { const x = Math.sin(s) * 10000; return x - Math.floor(x); };
+  const bgStars = Array.from({ length: 180 }, (_, i) => ({
+    x:     srng(i * 1.1  + 0.3) * W,
+    y:     srng(i * 2.3  + 0.7) * H,
+    r:     srng(i * 3.7  + 1.2) * 1.5 + 0.3,
+    phase: srng(i * 5.1  + 0.9) * Math.PI * 2,
+    speed: srng(i * 7.3  + 2.1) * 0.8 + 0.4,
+  }));
+
+  const cStars = c.stars.map(s => ({ x: s.x * W, y: s.y * H }));
+
+  const DELAY    = 700;
+  const LINE_DUR = 380;
+  const TITLE_DUR = 900;
+  const linesEndTime = allStarsEarned ? DELAY + c.lines.length * LINE_DUR : 0;
+
+  let startTime = null;
+
+  function frame(now) {
+    if (!startTime) startTime = now;
+    const elapsed = now - startTime;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#06060e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Twinkling background stars
+    for (const bs of bgStars) {
+      const alpha = 0.04 + (Math.sin((now / 1000) * bs.speed + bs.phase) * 0.5 + 0.5) * 0.18;
+      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(bs.x, bs.y, bs.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (starCount > 0) {
+      // Constellation lines with draw animation
+      if (allStarsEarned && elapsed > DELAY) {
+        for (let li = 0; li < c.lines.length; li++) {
+          const lineStart = DELAY + li * LINE_DUR;
+          if (elapsed < lineStart) break;
+          const progress = Math.min(1, (elapsed - lineStart) / LINE_DUR);
+          const [ai, bi] = c.lines[li];
+          const a = cStars[ai], b = cStars[bi];
+          ctx.strokeStyle = 'rgba(160,100,255,0.45)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(a.x + (b.x - a.x) * progress, a.y + (b.y - a.y) * progress);
+          ctx.stroke();
+        }
+      }
+
+      // Constellation stars
+      for (let si = 0; si < c.stars.length; si++) {
+        const p = cStars[si];
+        if (si < earnedInConst) {
+          const pulse  = Math.sin(now / 800 + si * 1.3) * 0.5 + 0.5;
+          const glowR  = 10 + pulse * 6;
+          const grd    = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+          grd.addColorStop(0,   'rgba(200,160,255,0.85)');
+          grd.addColorStop(0.4, 'rgba(160,100,255,0.4)');
+          grd.addColorStop(1,   'rgba(120,60,255,0)');
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ecdaff';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = 'rgba(130,80,180,0.22)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Constellation title fade-in after lines finish
+      if (allStarsEarned && elapsed > linesEndTime) {
+        const alpha = Math.min(1, (elapsed - linesEndTime) / TITLE_DUR);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle   = '#c8a0ff';
+        ctx.font        = '13px Cinzel, serif';
+        ctx.textAlign   = 'center';
+        ctx.fillText(c.name, W / 2, H - 10);
+        ctx.restore();
+      }
+    }
+
+    starMapAnimFrame = requestAnimationFrame(frame);
   }
 
-  if (stars.length === 0) return;
+  starMapAnimFrame = requestAnimationFrame(frame);
+}
 
-  const pos = starPositions(stars.length, W, H);
+// ── CSS Star Field ────────────────────────────────────────────────────────────
 
-  // Connecting lines
-  if (pos.length > 1) {
-    ctx.strokeStyle = 'rgba(201,162,39,0.18)';
-    ctx.lineWidth   = 1;
-    ctx.setLineDash([3, 6]);
-    ctx.beginPath();
-    pos.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-    ctx.setLineDash([]);
+function initCssStars() {
+  const field = document.createElement('div');
+  field.id = 'star-field';
+  document.body.insertAdjacentElement('afterbegin', field);
+
+  const colors = [
+    '#ffffff', '#ffffff', '#ffffff', '#ffffff',
+    '#a0c8ff', '#7eb8ff',
+    '#d4a8ff', '#c084fc',
+    '#ffb8ff', '#bfdbfe', '#ddd6fe',
+  ];
+
+  for (let i = 0; i < 90; i++) {
+    const el  = document.createElement('span');
+    el.className = 'css-star';
+    const size = (Math.random() * 2.2 + 0.5).toFixed(1);
+    const dur  = (Math.random() * 3 + 1).toFixed(2);
+    const del  = (Math.random() * 5).toFixed(2);
+    const col  = colors[Math.floor(Math.random() * colors.length)];
+    el.style.cssText =
+      `left:${(Math.random() * 100).toFixed(2)}%;` +
+      `top:${(Math.random()  * 100).toFixed(2)}%;` +
+      `width:${size}px;height:${size}px;` +
+      `background:${col};` +
+      `animation-duration:${dur}s;animation-delay:-${del}s;`;
+    field.appendChild(el);
   }
-
-  // Stars
-  pos.forEach(p => {
-    const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 14);
-    grd.addColorStop(0, 'rgba(240,208,80,0.55)');
-    grd.addColorStop(1, 'rgba(240,208,80,0)');
-    ctx.fillStyle = grd;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 14, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#f0d060';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = 'rgba(240,208,96,0.65)';
-    ctx.lineWidth   = 1;
-    ctx.beginPath();
-    ctx.moveTo(p.x - 7, p.y); ctx.lineTo(p.x + 7, p.y);
-    ctx.moveTo(p.x, p.y - 7); ctx.lineTo(p.x, p.y + 7);
-    ctx.stroke();
-  });
 }
 
 // ── Background animation ──────────────────────────────────────────────────────
@@ -453,10 +565,11 @@ function initBgCanvas() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function init() {
+  initCssStars();
   initBgCanvas();
 
   $('date-display').textContent = new Date().toLocaleDateString('de-AT', {
-    weekday: 'long', day: 'numeric', month: 'long',
+    timeZone: 'Europe/Vienna', weekday: 'long', day: 'numeric', month: 'long',
   });
 
   const allQuests = QUESTS_DATA;
@@ -489,21 +602,36 @@ function init() {
         $('mood-badge').textContent = `${MOOD_GLYPH[mood]} ${MOOD_LABEL[mood]}`;
         renderBoard();
         showScreen('screen-board');
+        if (mood === 'nur-ueberleben') {
+          $('rest-msg').textContent = REST_MSGS[Math.floor(Math.random() * REST_MSGS.length)];
+          $('popup-rest').classList.remove('hidden');
+        }
       });
     });
   }
 
   $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
   $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
+  $('btn-rest-close').addEventListener('click',   () => $('popup-rest').classList.add('hidden'));
   $('btn-starmap').addEventListener('click',      openStarMap);
-  $('btn-starmap-close').addEventListener('click',() => $('popup-starmap').classList.add('hidden'));
+  $('btn-starmap-close').addEventListener('click', () => {
+    if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
+    $('popup-starmap').classList.add('hidden');
+  });
   $('btn-reset').addEventListener('click', () => {
     localStorage.removeItem(STORE_STATE);
     location.reload();
   });
 
   document.querySelectorAll('.overlay').forEach(el => {
-    el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+    el.addEventListener('click', e => {
+      if (e.target === el) {
+        if (el.id === 'popup-starmap' && starMapAnimFrame) {
+          cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null;
+        }
+        el.classList.add('hidden');
+      }
+    });
   });
 }
 

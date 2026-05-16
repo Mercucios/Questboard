@@ -55,17 +55,67 @@ body {
   margin-bottom: 2.5rem;
 }
 
-.logo-rune {
-  font-size: 2.5rem;
-  color: #c9a227;
-  display: block;
-  margin-bottom: 0.5rem;
-  animation: pulse-gold 3s ease-in-out infinite;
+/* ── Galaxy Logo ──────────────────────────────────────────── */
+.logo-galaxy {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.5rem;
+  position: relative;
 }
 
-@keyframes pulse-gold {
-  0%, 100% { text-shadow: 0 0 10px rgba(201,162,39,0.4); }
-  50%       { text-shadow: 0 0 28px rgba(201,162,39,0.9), 0 0 56px rgba(201,162,39,0.35); }
+.logo-galaxy::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent                0%,
+    rgba(180, 50,255,0.90)    12%,
+    rgba(255, 80,220,0.55)    22%,
+    transparent               35%,
+    rgba(100, 20,230,0.85)    52%,
+    rgba(230, 90,255,0.50)    65%,
+    transparent               78%,
+    rgba(180, 50,255,0.40)    90%,
+    transparent              100%
+  );
+  filter: blur(2px);
+  animation: galaxy-arms-spin 9s linear infinite;
+}
+
+.logo-galaxy::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #fff                        0%,
+    rgba(255,170,255,0.95)     10%,
+    rgba(190, 60,255,0.65)     28%,
+    rgba(100, 20,190,0.35)     50%,
+    transparent                70%
+  );
+  box-shadow: 0 0 14px rgba(210,80,255,0.8), 0 0 32px rgba(160,40,255,0.35);
+  animation: galaxy-core-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes galaxy-arms-spin {
+  from { transform: scaleY(0.45) rotate(0deg); }
+  to   { transform: scaleY(0.45) rotate(360deg); }
+}
+
+@keyframes galaxy-core-pulse {
+  0%, 100% {
+    box-shadow: 0 0 14px rgba(210, 80,255,0.80),
+                0 0 32px rgba(160, 40,255,0.35);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(230,110,255,1.00),
+                0 0 52px rgba(170, 50,255,0.60),
+                0 0 80px rgba(140, 30,255,0.20);
+  }
 }
 
 h1 {
@@ -140,7 +190,14 @@ h1 {
   outline: none;
 }
 
-.mood-glyph { font-size: 2rem; }
+.mood-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  margin: 0 auto 0.1rem;
+}
+.mood-glyph svg { display: block; }
 .mood-name  { font-weight: 600; font-size: 0.92rem; color: #e0d8f0; }
 .mood-hint  { font-size: 0.73rem; color: #6a6080; }
 
@@ -590,6 +647,35 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
+/* ── Rest Popup (nur-ueberleben) ──────────────────────────── */
+.rest-popup {
+  border-color: rgba(120,80,160,0.3);
+}
+
+.rest-flame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+
+.rest-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #9a80c0;
+  margin-bottom: 0.75rem;
+}
+
+.rest-msg {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.12rem;
+  color: #8a8098;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
 /* ── Star Map Popup ───────────────────────────────────────── */
 .starmap-popup {
   max-width: 360px;
@@ -648,6 +734,26 @@ h1 {
   font-size: 0.84rem;
   color: #c9a227;
   letter-spacing: 0.04em;
+}
+
+/* ── CSS Star Field ────────────────────────────────────────── */
+#star-field {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.css-star {
+  position: absolute;
+  border-radius: 50%;
+  animation: star-twinkle ease-in-out infinite;
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.12; transform: scale(0.75); }
+  50%       { opacity: 1;    transform: scale(1.2);  }
 }
 
 /* ── Typography ──────────────────────────────────────────── */
