@@ -278,11 +278,52 @@
     </div>
   </div>
 
+  <!-- UPDATE TOAST -->
+  <div id="update-toast" class="update-toast hidden" role="alert">
+    <span class="update-toast-msg">✨ Neue Version verfügbar</span>
+    <button id="btn-update-confirm">Jetzt updaten</button>
+    <button id="btn-update-dismiss" aria-label="Schließen">✕</button>
+  </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js').catch(console.warn);
+        navigator.serviceWorker.register('./service-worker.js').then(reg => {
+
+          // Neue SW-Version gefunden → Toast zeigen sobald sie installiert ist
+          reg.addEventListener('updatefound', () => {
+            const incoming = reg.installing;
+            incoming.addEventListener('statechange', () => {
+              if (incoming.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast(reg);
+              }
+            });
+          });
+
+          // Beim Start: falls bereits ein wartender SW vorhanden ist (z.B. Tab war offen)
+          if (reg.waiting && navigator.serviceWorker.controller) {
+            showUpdateToast(reg);
+          }
+
+        }).catch(console.warn);
+
+        // Wenn der neue SW die Kontrolle übernimmt → Seite neu laden
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
       });
+    }
+
+    function showUpdateToast(reg) {
+      const toast   = document.getElementById('update-toast');
+      const confirm = document.getElementById('btn-update-confirm');
+      const dismiss = document.getElementById('btn-update-dismiss');
+      toast.classList.remove('hidden');
+      confirm.onclick = () => {
+        toast.classList.add('hidden');
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      };
+      dismiss.onclick = () => toast.classList.add('hidden');
     }
   </script>
   <script src="constellations.js"></script>

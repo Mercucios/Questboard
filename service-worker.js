@@ -1,25 +1,29 @@
 'use strict';
 
-const CACHE = 'questboard-v1';
+// ── Versionsnummer: beim Deploy auf aktuelles Datum/Uhrzeit setzen ────────────
+// Format: YYYYMMDD-N  (N hochzählen bei mehreren Deploys am selben Tag)
+const CACHE = 'questboard-20260516-1';
+
 const PRECACHE_URLS = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './constellations.js',
   './icon.svg',
   './manifest.json',
-  './constellations.js',
   './galaxy.jpg',
 ];
 
+// Install: Dateien cachen, aber NICHT sofort übernehmen (skipWaiting fehlt absichtlich)
+// → App fragt den User zuerst, bevor die neue Version aktiviert wird
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(PRECACHE_URLS))
   );
 });
 
+// Activate: alte Caches löschen, dann alle Clients übernehmen
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -30,10 +34,9 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Fetch: Cache-first, Fallback auf Netzwerk
 self.addEventListener('fetch', event => {
-  // Skip cross-origin requests (e.g. Google Fonts — served by browser cache)
   if (!event.request.url.startsWith(self.location.origin)) return;
-
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
@@ -46,4 +49,9 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// Nachricht von der App: sofort übernehmen (ausgelöst durch User-Klick auf "Jetzt updaten")
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
