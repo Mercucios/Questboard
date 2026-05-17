@@ -7,12 +7,12 @@ html, body {
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Crimson Text', Georgia, serif;
   background:
     linear-gradient(rgba(3, 3, 18, 0.58), rgba(3, 3, 18, 0.58)),
     url('galaxy.jpg') center / cover no-repeat fixed;
   background-color: #060614;
-  color: #e8e0f0;
+  color: #f0e4c0;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -280,7 +280,7 @@ h1 {
   font-weight: 700;
   color: #f0c040;
   letter-spacing: 0.05em;
-  text-shadow: 0 0 18px rgba(201,162,39,0.4);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 18px rgba(201,162,39,0.4);
 }
 
 .starmap-btn {
@@ -305,12 +305,14 @@ h1 {
 .mana-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  color: #a090b8;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.9rem;
+  color: #c8b89a;
   margin-bottom: 0.32rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
-.mana-text { color: #4a9eff; font-weight: 600; }
+.mana-text { color: #4a9eff; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
 
 .mana-track {
   height: 6px;
@@ -330,9 +332,10 @@ h1 {
 .mood-badge {
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 0.88rem;
-  color: #a090b8;
+  color: #c8b89a;
   text-align: right;
   margin-top: 0.1rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 /* ── Board Scroll ─────────────────────────────────────────── */
@@ -408,6 +411,7 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
 }
 
 .quest-meta {
@@ -418,12 +422,14 @@ h1 {
 }
 
 .quest-category {
-  font-size: 0.7rem;
-  color: #8878a8;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.78rem;
+  color: #c8b89a;
   background: rgba(255,255,255,0.05);
   padding: 0.13rem 0.48rem;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.09);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 .quest-cost {
@@ -434,12 +440,14 @@ h1 {
 }
 
 .quest-rest-tag {
-  font-size: 0.7rem;
-  color: #9060e0;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.78rem;
+  color: #c0a0f0;
   background: rgba(144,96,224,0.1);
   padding: 0.13rem 0.48rem;
   border-radius: 10px;
   border: 1px solid rgba(144,96,224,0.18);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 .quest-actions {
@@ -596,27 +604,30 @@ h1 {
 }
 
 .reward-loot-label {
-  font-size: 0.72rem;
-  color: #9080a8;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.78rem;
+  color: #c8b89a;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 0.2rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 .reward-loot-name {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #f0d060;
+  color: #f0c040;
   margin-bottom: 0.6rem;
-  text-shadow: 0 0 18px rgba(240,208,96,0.45);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 18px rgba(240,192,64,0.55);
 }
 
 .reward-msg {
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 1.1rem;
-  color: #c8b8e0;
+  color: #f0e4c0;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
 }
 
 .btn-action {
@@ -625,11 +636,13 @@ h1 {
   background: rgba(201,162,39,0.1);
   border: 1px solid rgba(201,162,39,0.38);
   border-radius: 24px;
-  color: #c9a227;
-  font-size: 0.92rem;
+  color: #f0c040;
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -659,16 +672,18 @@ h1 {
 .star-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #f0d060;
+  color: #f0c040;
   margin-bottom: 0.55rem;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(240,192,64,0.4);
 }
 
 .star-msg {
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 1.1rem;
-  color: #c8b8e0;
+  color: #f0e4c0;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
 }
 
 /* ── Rest Popup (nur-ueberleben) ──────────────────────────── */
@@ -687,17 +702,19 @@ h1 {
   font-family: 'Cinzel', serif;
   font-size: 1.15rem;
   font-weight: 600;
-  color: #9a80c0;
+  color: #c8b89a;
   margin-bottom: 0.75rem;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
 }
 
 .rest-msg {
   font-family: 'Crimson Text', Georgia, serif;
   font-size: 1.12rem;
-  color: #8a8098;
+  color: #f0e4c0;
   line-height: 1.7;
   margin-bottom: 1.5rem;
   font-style: italic;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
 }
 
 /* ── Star Map Popup ───────────────────────────────────────── */
@@ -719,8 +736,9 @@ h1 {
 
 .starmap-header h3 {
   font-size: 1.1rem;
-  color: #f0e8d0;
+  color: #f0c040;
   letter-spacing: 0.1em;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 18px rgba(201,162,39,0.4);
 }
 
 .close-x {
@@ -747,8 +765,9 @@ h1 {
   font-family: 'Crimson Text', Georgia, serif;
   font-style: italic;
   font-size: 0.95rem;
-  color: #a090c0;
+  color: #c8b89a;
   margin-bottom: 1rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 #starmap-canvas {
@@ -761,9 +780,11 @@ h1 {
 
 .starmap-total {
   margin-top: 0.85rem;
-  font-size: 0.84rem;
-  color: #c9a227;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.9rem;
+  color: #f0c040;
   letter-spacing: 0.04em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 
@@ -795,9 +816,11 @@ h1 {
 }
 
 .update-toast-msg {
-  font-size: 0.83rem;
-  color: #c0a8f0;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.9rem;
+  color: #f0e4c0;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
 
 .update-toast #btn-update-confirm {
@@ -834,8 +857,6 @@ h1 {
 .reward-loot-name,
 .star-title,
 .starmap-header h3 { font-family: 'Cinzel', serif; }
-
-.rest-msg { font-size: 1.1rem; color: #c8b8d8; }
 
 /* ── Gem Dots ──────────────────────────────────────────────── */
 .gem-dot {
