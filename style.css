@@ -48,67 +48,12 @@ body {
   margin-bottom: 2.5rem;
 }
 
-/* ── Galaxy Logo ──────────────────────────────────────────── */
-.logo-galaxy {
-  width: 64px;
-  height: 64px;
+/* ── Constellation Logo ───────────────────────────────────── */
+.constellation-logo {
+  display: block;
   margin: 0 auto 0.5rem;
-  position: relative;
-}
-
-.logo-galaxy::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent                0%,
-    rgba(180, 50,255,0.90)    12%,
-    rgba(255, 80,220,0.55)    22%,
-    transparent               35%,
-    rgba(100, 20,230,0.85)    52%,
-    rgba(230, 90,255,0.50)    65%,
-    transparent               78%,
-    rgba(180, 50,255,0.40)    90%,
-    transparent              100%
-  );
-  filter: blur(2px);
-  animation: galaxy-arms-spin 9s linear infinite;
-}
-
-.logo-galaxy::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 50%,
-    #fff                        0%,
-    rgba(255,170,255,0.95)     10%,
-    rgba(190, 60,255,0.65)     28%,
-    rgba(100, 20,190,0.35)     50%,
-    transparent                70%
-  );
-  box-shadow: 0 0 14px rgba(210,80,255,0.8), 0 0 32px rgba(160,40,255,0.35);
-  animation: galaxy-core-pulse 2.8s ease-in-out infinite;
-}
-
-@keyframes galaxy-arms-spin {
-  from { transform: scaleY(0.45) rotate(0deg); }
-  to   { transform: scaleY(0.45) rotate(360deg); }
-}
-
-@keyframes galaxy-core-pulse {
-  0%, 100% {
-    box-shadow: 0 0 14px rgba(210, 80,255,0.80),
-                0 0 32px rgba(160, 40,255,0.35);
-  }
-  50% {
-    box-shadow: 0 0 22px rgba(230,110,255,1.00),
-                0 0 52px rgba(170, 50,255,0.60),
-                0 0 80px rgba(140, 30,255,0.20);
-  }
+  width: 160px;
+  height: 160px;
 }
 
 h1 {

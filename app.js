@@ -560,3 +560,117 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ── Constellation Logo ─────────────────────────────────────────────────────────
+function initConstellationLogo() {
+  const canvas = document.getElementById('constellation-logo');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 160, H = 160;
+
+  const STARS = [
+    {x:270,y: 95,r:4.5,bright:true },
+    {x:230,y: 72,r:3.5,bright:false},
+    {x:190,y: 62,r:4.0,bright:false},
+    {x:150,y: 68,r:3.2,bright:false},
+    {x:118,y: 88,r:3.8,bright:false},
+    {x: 98,y:118,r:3.2,bright:false},
+    {x: 88,y:155,r:5.2,bright:true },
+    {x: 92,y:195,r:3.5,bright:false},
+    {x:105,y:232,r:3.2,bright:false},
+    {x:128,y:260,r:3.8,bright:false},
+    {x:162,y:278,r:3.2,bright:false},
+    {x:202,y:285,r:4.0,bright:false},
+    {x:242,y:278,r:3.5,bright:false},
+    {x:272,y:258,r:4.5,bright:true },
+  ];
+  const LINES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12],[12,13]];
+
+  const xs = STARS.map(s => s.x), ys = STARS.map(s => s.y);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const PAD = 16;
+  const scale = Math.min((W - 2*PAD) / (xMax - xMin), (H - 2*PAD) / (yMax - yMin));
+  const offX  = (W - (xMax - xMin) * scale) / 2;
+  const offY  = (H - (yMax - yMin) * scale) / 2;
+
+  const pts = STARS.map(s => ({
+    x: (s.x - xMin) * scale + offX,
+    y: (s.y - yMin) * scale + offY,
+    r: s.r,
+    bright: s.bright,
+  }));
+
+  let t = 0;
+  const INV2 = Math.SQRT1_2;
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Connection lines
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240,180,40,0.25)';
+    ctx.lineWidth = 0.9;
+    LINES.forEach(([a, b]) => {
+      ctx.beginPath();
+      ctx.moveTo(pts[a].x, pts[a].y);
+      ctx.lineTo(pts[b].x, pts[b].y);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Stars
+    pts.forEach((s, i) => {
+      const pulse = s.bright ? 0.82 + 0.18 * Math.sin(t * 1.6 + i * 0.9) : 1;
+      const r = s.r * pulse;
+
+      // Glow halo
+      const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 5);
+      grd.addColorStop(0,    s.bright ? 'rgba(255,230,130,0.85)' : 'rgba(255,220,100,0.65)');
+      grd.addColorStop(0.28, `rgba(240,180,40,${s.bright ? 0.5 : 0.35})`);
+      grd.addColorStop(1,    'rgba(240,150,20,0)');
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, r * 5, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Core disc
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = s.bright ? 'rgba(255,248,210,1)' : 'rgba(245,210,90,0.92)';
+      ctx.fill();
+
+      // Diffraction spikes (bright stars only)
+      if (s.bright) {
+        const spikeLen = r * 5.5 * pulse;
+        ctx.save();
+        // Cardinal spikes
+        ctx.strokeStyle = `rgba(255,230,120,${0.55 * pulse})`;
+        ctx.lineWidth = 0.75;
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
+          ctx.beginPath();
+          ctx.moveTo(s.x + dx * r * 1.1, s.y + dy * r * 1.1);
+          ctx.lineTo(s.x + dx * spikeLen, s.y + dy * spikeLen);
+          ctx.stroke();
+        });
+        // Diagonal spikes (fainter)
+        const diagLen = spikeLen * 0.55;
+        ctx.strokeStyle = `rgba(255,230,120,${0.22 * pulse})`;
+        [[INV2,INV2],[-INV2,INV2],[INV2,-INV2],[-INV2,-INV2]].forEach(([dx,dy]) => {
+          ctx.beginPath();
+          ctx.moveTo(s.x + dx * r, s.y + dy * r);
+          ctx.lineTo(s.x + dx * diagLen, s.y + dy * diagLen);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+    });
+
+    t += 0.016;
+    requestAnimationFrame(frame);
+  }
+
+  frame();
+}
+
+document.addEventListener('DOMContentLoaded', initConstellationLogo);
