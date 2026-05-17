@@ -18,6 +18,7 @@ const QUESTS_DATA = [
   { name: 'Kaffee Corner ordnen', mana: 1, category: 'Küche',        rest: false },
   { name: 'Staubwischen',       mana: 1, category: 'Wohnzimmer',     rest: false },
   { name: 'Bettwäsche wechseln', mana: 2, category: 'Schlafzimmer',  rest: false },
+  { name: 'Handtücher wechseln', mana: 2, category: 'Bad',           rest: false },
   { name: 'Bett machen',        mana: 1, category: 'Schlafzimmer',   rest: false },
   { name: 'Waschbecken wischen', mana: 1, category: 'Bad',           rest: false },
   { name: 'Gewandkasten ordnen', mana: 2, category: 'Catze Hort',    rest: false },
@@ -51,11 +52,26 @@ const MOOD_LABEL = {
 };
 
 const MOOD_CONFIG = {
-  'sehr-gut':       { regularCount: 7, maxCost: 10, restCount: 1 },
-  'gut':            { regularCount: 5, maxCost: 10, restCount: 2 },
-  'okay':           { regularCount: 4, maxCost:  3, restCount: 3 },
-  'schlecht':       { regularCount: 3, maxCost:  2, restCount: 4 },
-  'nur-ueberleben': { regularCount: 2, maxCost:  1, restCount: 5 },
+  'sehr-gut':       { regularCount: 4, restCount: 2 },
+  'gut':            { regularCount: 3, restCount: 2 },
+  'okay':           { regularCount: 2, restCount: 2 },
+  'schlecht':       { regularCount: 1, restCount: 2 },
+  'nur-ueberleben': { regularCount: 0, restCount: 2 },
+};
+
+const STORE_RHYTHM = 'qb_rhythm';
+
+// Interval in days; array = random pick between the values
+const RHYTHM_RULES = {
+  'Bettwäsche wechseln':  14,
+  'Handtücher wechseln':  14,
+  'Gewandkasten ordnen':  7,
+  'Waschbecken wischen':  7,
+  'Staubwischen':         7,
+  'Kaffee Corner ordnen': 7,
+  'Haare waschen':        [2, 3],
+  'Geschirrspüler':       [2, 3],
+  'Waschen':              [2, 3],
 };
 
 const TREASURE_ITEMS = [
@@ -158,29 +174,71 @@ function saveStars(stars) {
   localStorage.setItem(STORE_STARS, JSON.stringify(stars));
 }
 
+function loadRhythm() {
+  try { return JSON.parse(localStorage.getItem(STORE_RHYTHM)) || {}; }
+  catch { return {}; }
+}
+
+function saveRhythm(r) {
+  localStorage.setItem(STORE_RHYTHM, JSON.stringify(r));
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Vienna' }).format(d);
+}
+
+function isQuestDue(name, rhythm) {
+  const rule = RHYTHM_RULES[name];
+  if (!rule) return true;
+  const entry = rhythm[name];
+  if (!entry) return true;
+  return todayStr() >= entry.nextDue;
+}
+
+function markRhythmDone(name, rhythm) {
+  const rule = RHYTHM_RULES[name];
+  if (!rule) return;
+  const interval = Array.isArray(rule)
+    ? rule[Math.floor(Math.random() * rule.length)]
+    : rule;
+  rhythm[name] = { lastDone: todayStr(), nextDue: addDays(todayStr(), interval) };
+}
+
 // ── Quest selection ───────────────────────────────────────────────────────────
 
 function selectQuests(allQuests, mood) {
+  const rhythm     = loadRhythm();
+  const restQuests = allQuests.filter(q => q.rest);
+
   if (mood === 'nur-ueberleben') {
-    const rests = shuffle(allQuests.filter(q => q.rest));
+    const shown = shuffle(restQuests).slice(0, 2);
+    const shownNames = new Set(shown.map(q => q.name));
     return {
-      quests: rests.map(q => ({ ...q, done: false })),
-      pool:   [],
+      quests: shown.map(q => ({ ...q, done: false })),
+      pool:   restQuests.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false })),
     };
   }
 
-  const cfg     = MOOD_CONFIG[mood];
-  const regular = shuffle(allQuests.filter(q => !q.rest && q.mana <= cfg.maxCost))
-    .slice(0, cfg.regularCount);
-  const rest    = shuffle(allQuests.filter(q => q.rest))
-    .slice(0, cfg.restCount);
+  const cfg        = MOOD_CONFIG[mood];
+  const dueActions = allQuests.filter(q => !q.rest && isQuestDue(q.name, rhythm));
 
-  const selected      = [...regular, ...rest];
-  const selectedNames = new Set(selected.map(q => q.name));
+  // Duschen is always first if due
+  const shower   = dueActions.find(q => q.name === 'Duschen');
+  const others   = shuffle(dueActions.filter(q => q.name !== 'Duschen'));
+  const fillCount = shower ? cfg.regularCount - 1 : cfg.regularCount;
+  const actions  = shower
+    ? [shower, ...others.slice(0, fillCount)]
+    : others.slice(0, fillCount);
+
+  const rests         = shuffle(restQuests).slice(0, cfg.restCount);
+  const allSelected   = [...actions, ...rests];
+  const selectedNames = new Set(allSelected.map(q => q.name));
   const pool          = allQuests.filter(q => !selectedNames.has(q.name));
 
   return {
-    quests: selected.map(q => ({ ...q, done: false })),
+    quests: allSelected.map(q => ({ ...q, done: false })),
     pool:   pool.map(q => ({ ...q, done: false })),
   };
 }
@@ -221,7 +279,7 @@ function renderBoard() {
 
 function makeQuestCard(q, mana) {
   const canAfford  = q.mana === 0 || mana >= q.mana;
-  const canSwap    = appState.pool.length > 0;
+  const canSwap    = appState.pool.some(p => p.rest === q.rest);
   const card = document.createElement('div');
   card.className = `quest-card${q.rest ? ' rest-card' : ''}`;
 
@@ -272,15 +330,20 @@ function makeDoneCard(q) {
 // ── Quest completion ──────────────────────────────────────────────────────────
 
 function swapQuest(name) {
-  if (appState.pool.length === 0) return;
   const idx = appState.quests.findIndex(q => q.name === name && !q.done);
   if (idx === -1) return;
 
-  const poolIdx  = Math.floor(Math.random() * appState.pool.length);
-  const incoming = { ...appState.pool[poolIdx], done: false };
+  const isRest     = appState.quests[idx].rest;
+  const candidates = appState.pool
+    .map((q, i) => ({ q, i }))
+    .filter(({ q }) => q.rest === isRest);
+  if (candidates.length === 0) return;
+
+  const pick     = candidates[Math.floor(Math.random() * candidates.length)];
+  const incoming = { ...pick.q, done: false };
   const outgoing = appState.quests[idx];
 
-  appState.pool.splice(poolIdx, 1);
+  appState.pool.splice(pick.i, 1);
   appState.pool.push({ ...outgoing });
   appState.quests[idx] = incoming;
 
@@ -295,6 +358,13 @@ function completeQuest(name) {
   quest.done     = true;
   quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
   appState.mana  = Math.max(0, appState.mana - quest.mana);
+
+  if (!quest.rest) {
+    const rhythm = loadRhythm();
+    markRhythmDone(quest.name, rhythm);
+    saveRhythm(rhythm);
+  }
+
   saveDayState(appState);
   renderBoard();
   showRewardPopup(quest);
@@ -355,31 +425,45 @@ function getConstellationInfo(starCount) {
   };
 }
 
+function getStarsNeededForNext(starCount) {
+  let cumulative = 0;
+  for (const c of CONSTELLATIONS) {
+    cumulative += c.starsNeeded;
+    if (starCount < cumulative) return cumulative - starCount;
+  }
+  return 0;
+}
+
 function openStarMap() {
   const starCount = loadStars().length;
-  const info = getConstellationInfo(starCount);
-  const c = info.constellation;
-  const allDone = info.earned >= c.stars.length;
+  const info      = getConstellationInfo(starCount);
+  const c         = info.constellation;
+  const allDone   = info.earned >= c.stars.length;
+  const label     = starCount === 1 ? 'tapferer Tag' : 'tapfere Tage';
 
   if (starCount === 0) {
     $('starmap-total').textContent = 'Noch keine Sterne — du schaffst das!';
   } else if (info.allComplete) {
     $('starmap-total').textContent = `${starCount} tapfere Tage · Alle Sternbilder entdeckt ✦`;
+  } else if (allDone) {
+    $('starmap-total').textContent = `${starCount} ${label} · ???`;
   } else {
-    const label = starCount === 1 ? 'tapferer Tag' : 'tapfere Tage';
-    $('starmap-total').textContent = allDone
-      ? `${starCount} ${label} · ${c.name} ✦`
-      : `${starCount} ${label} · ${c.name} (${info.earned}/${c.starsNeeded})`;
+    $('starmap-total').textContent = `${starCount} ${label} · ${c.name} (${info.earned}/${c.starsNeeded})`;
   }
 
   $('popup-starmap').classList.remove('hidden');
   if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
-  startStarMapAnimation(starCount);
+
+  const onNameReveal = (allDone && !info.allComplete) ? () => {
+    $('starmap-total').textContent = `${starCount} ${label} · ${c.name} ✦`;
+  } : null;
+
+  startStarMapAnimation(starCount, onNameReveal);
 }
 
 // ── Star map canvas ───────────────────────────────────────────────────────────
 
-function startStarMapAnimation(starCount) {
+function startStarMapAnimation(starCount, onNameReveal) {
   const canvas = $('starmap-canvas');
   const ctx    = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
@@ -405,7 +489,8 @@ function startStarMapAnimation(starCount) {
   const TITLE_DUR = 900;
   const linesEndTime = allStarsEarned ? DELAY + c.lines.length * LINE_DUR : 0;
 
-  let startTime = null;
+  let startTime    = null;
+  let nameRevealed = false;
 
   function frame(now) {
     if (!startTime) startTime = now;
@@ -469,16 +554,30 @@ function startStarMapAnimation(starCount) {
         }
       }
 
-      // Constellation title fade-in after lines finish
-      if (allStarsEarned && elapsed > linesEndTime) {
-        const alpha = Math.min(1, (elapsed - linesEndTime) / TITLE_DUR);
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle   = '#c8a0ff';
-        ctx.font        = '13px Cinzel, serif';
-        ctx.textAlign   = 'center';
-        ctx.fillText(c.name, W / 2, H - 10);
-        ctx.restore();
+      // Constellation title: "???" during lines, real name fades in after
+      if (allStarsEarned) {
+        if (elapsed <= linesEndTime) {
+          ctx.save();
+          ctx.globalAlpha = 0.55;
+          ctx.fillStyle   = '#7060a0';
+          ctx.font        = 'bold 13px Cinzel, serif';
+          ctx.textAlign   = 'center';
+          ctx.fillText('???', W / 2, H - 10);
+          ctx.restore();
+        } else {
+          const alpha = Math.min(1, (elapsed - linesEndTime) / TITLE_DUR);
+          if (!nameRevealed && alpha >= 1) {
+            nameRevealed = true;
+            if (onNameReveal) onNameReveal();
+          }
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle   = '#c8a0ff';
+          ctx.font        = '13px Cinzel, serif';
+          ctx.textAlign   = 'center';
+          ctx.fillText(c.name, W / 2, H - 10);
+          ctx.restore();
+        }
       }
     }
 
@@ -542,6 +641,7 @@ function init() {
     if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
     $('popup-starmap').classList.add('hidden');
   });
+  $('btn-next-constellation').addEventListener('click', openTelescopePopup);
   $('btn-reset').addEventListener('click', () => {
     localStorage.removeItem(STORE_STATE);
     location.reload();
@@ -557,9 +657,229 @@ function init() {
       }
     });
   });
+
+  $('btn-telescope-close').addEventListener('click', () => {
+    $('popup-telescope').classList.add('hidden');
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ── Telescope Popup ────────────────────────────────────────────────────────────
+
+let telescopeAnimFrame = null;
+
+function openTelescopePopup() {
+  const starsNeeded = getStarsNeededForNext(loadStars().length);
+  $('popup-telescope').classList.remove('hidden');
+  if (telescopeAnimFrame) { cancelAnimationFrame(telescopeAnimFrame); telescopeAnimFrame = null; }
+  startTelescopeAnimation(starsNeeded);
+}
+
+function startTelescopeAnimation(starsNeeded) {
+  const canvas = $('telescope-canvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const PHASE1 = 600;   // telescope enters
+  const PHASE2 = 1100;  // iris opens
+  const PHASE3 = 2000;  // number visible
+
+  let startTime = null;
+
+  // Lens position
+  const LX = 226, LY = 88, LR = 26;
+
+  function drawTelescope(ctx, bodyAlpha, yOff) {
+    ctx.save();
+    ctx.globalAlpha = bodyAlpha;
+    ctx.translate(0, yOff);
+
+    // Tripod legs
+    ctx.strokeStyle = '#c9a227';
+    ctx.lineWidth   = 2;
+    ctx.lineCap     = 'round';
+    ctx.beginPath();
+    ctx.moveTo(132, 108); ctx.lineTo(62, 190);
+    ctx.moveTo(132, 108); ctx.lineTo(202, 190);
+    ctx.moveTo(132, 108); ctx.lineTo(132, 190);
+    ctx.stroke();
+    ctx.strokeStyle = '#a07820';
+    ctx.lineWidth   = 5;
+    ctx.beginPath();
+    ctx.moveTo(54, 190); ctx.lineTo(70, 190);
+    ctx.moveTo(124, 190); ctx.lineTo(140, 190);
+    ctx.moveTo(194, 190); ctx.lineTo(210, 190);
+    ctx.stroke();
+
+    // Main tube
+    ctx.fillStyle   = '#12122a';
+    ctx.strokeStyle = '#c9a227';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    ctx.rect(28, 72, 178, 32);
+    ctx.fill(); ctx.stroke();
+
+    // Tube highlight strip
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.beginPath();
+    ctx.rect(28, 72, 178, 8);
+    ctx.fill();
+
+    // Focus ring (brass bump)
+    ctx.fillStyle = '#c9a227';
+    ctx.beginPath();
+    ctx.rect(118, 68, 16, 40);
+    ctx.fill();
+    ctx.fillStyle = '#e8b830';
+    ctx.beginPath();
+    ctx.rect(122, 68, 5, 40);
+    ctx.fill();
+
+    // Eyepiece
+    ctx.fillStyle   = '#0c0c1e';
+    ctx.strokeStyle = '#c9a227';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    ctx.rect(10, 80, 22, 16);
+    ctx.fill(); ctx.stroke();
+
+    // Objective cap (flared)
+    ctx.fillStyle   = '#0c0c1e';
+    ctx.strokeStyle = '#c9a227';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(200, 72); ctx.lineTo(LX, 62);
+    ctx.lineTo(LX, 114); ctx.lineTo(200, 104);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Lens ring
+    ctx.strokeStyle = '#c9a227';
+    ctx.lineWidth   = 3.5;
+    ctx.beginPath();
+    ctx.arc(LX, LY, LR, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = '#e8b830';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.arc(LX, LY, LR - 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Lens dark fill
+    ctx.fillStyle = '#06061a';
+    ctx.beginPath();
+    ctx.arc(LX, LY, LR - 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawIrisAndNumber(ctx, irisP, numAlpha, starsNeeded) {
+    ctx.save();
+
+    // Clip to lens interior
+    ctx.beginPath();
+    ctx.arc(LX, LY, LR - 4, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Stars glow behind iris
+    if (numAlpha > 0) {
+      const grd = ctx.createRadialGradient(LX, LY, 0, LX, LY, LR);
+      grd.addColorStop(0,   `rgba(240,192,64,${numAlpha * 0.55})`);
+      grd.addColorStop(0.6, `rgba(200,140,20,${numAlpha * 0.25})`);
+      grd.addColorStop(1,   'rgba(200,140,20,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(LX, LY, LR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Iris shutter: shrinking dark circle
+    if (irisP < 1) {
+      const irisR = (LR - 4) * (1 - irisP);
+      ctx.fillStyle = '#06061a';
+      ctx.beginPath();
+      ctx.arc(LX, LY, irisR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+
+    // Number — drawn outside clip so it sits on top
+    if (numAlpha > 0 && starsNeeded > 0) {
+      ctx.save();
+      ctx.globalAlpha = numAlpha;
+      ctx.fillStyle   = '#f0c040';
+      ctx.font        = `bold ${starsNeeded >= 10 ? 16 : 20}px Cinzel, serif`;
+      ctx.textAlign   = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(240,192,64,0.9)';
+      ctx.shadowBlur  = 10;
+      ctx.fillText(String(starsNeeded), LX, LY);
+      ctx.restore();
+    } else if (numAlpha > 0 && starsNeeded === 0) {
+      ctx.save();
+      ctx.globalAlpha = numAlpha;
+      ctx.fillStyle   = '#c8a0ff';
+      ctx.font        = 'bold 11px Cinzel, serif';
+      ctx.textAlign   = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✦', LX, LY);
+      ctx.restore();
+    }
+
+    // Lens highlight
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.arc(LX - 8, LY - 9, 5, Math.PI * 1.1, Math.PI * 1.85);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function frame(now) {
+    if (!startTime) startTime = now;
+    const elapsed = now - startTime;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0c0c22';
+    ctx.fillRect(0, 0, W, H);
+
+    // Phase 1: telescope enters (slides up + fades in)
+    const p1     = Math.min(1, elapsed / PHASE1);
+    const ep1    = ease(p1);
+    const yOff   = (1 - ep1) * 45;
+    drawTelescope(ctx, ep1, yOff);
+
+    // Phase 2: iris opens
+    const p2     = elapsed < PHASE1 ? 0 : Math.min(1, (elapsed - PHASE1) / (PHASE2 - PHASE1));
+    const irisP  = ease(p2);
+
+    // Phase 3: number fades in
+    const p3     = elapsed < PHASE2 ? 0 : Math.min(1, (elapsed - PHASE2) / (PHASE3 - PHASE2));
+    drawIrisAndNumber(ctx, irisP, ease(p3), starsNeeded);
+
+    // Label below
+    if (p3 > 0) {
+      ctx.save();
+      ctx.globalAlpha = ease(p3);
+      ctx.fillStyle   = '#c8b89a';
+      ctx.font        = '13px Crimson Text, Georgia, serif';
+      ctx.textAlign   = 'center';
+      ctx.fillText(starsNeeded === 0 ? 'Alle Sternbilder entdeckt!' : 'Sterne bis zum nächsten Sternbild', W / 2, 215);
+      ctx.restore();
+    }
+
+    telescopeAnimFrame = requestAnimationFrame(frame);
+  }
+
+  telescopeAnimFrame = requestAnimationFrame(frame);
+}
 
 // ── Constellation Logo ─────────────────────────────────────────────────────────
 function initConstellationLogo() {

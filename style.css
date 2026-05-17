@@ -898,5 +898,52 @@ h1 {
 .btn-action:hover::before,
 .starmap-btn:hover::before { left: 130%; }
 
+/* ── Next Constellation Button ───────────────────────────── */
+.btn-next-constellation {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.55rem 1rem;
+  background: rgba(100,60,200,0.12);
+  border: 1px solid rgba(160,110,255,0.3);
+  border-radius: 20px;
+  color: #c8b89a;
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-next-constellation:hover {
+  background: rgba(100,60,200,0.22);
+  border-color: rgba(180,140,255,0.5);
+}
+
+/* ── Telescope Popup ──────────────────────────────────────── */
+.telescope-popup {
+  max-width: 340px;
+  padding: 1.5rem 1.5rem 1.6rem;
+  border-color: rgba(201,162,39,0.2);
+}
+
+.telescope-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: #f0c040;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 18px rgba(201,162,39,0.4);
+}
+
+#telescope-canvas {
+  display: block;
+  border-radius: 12px;
+  border: 1px solid rgba(201,162,39,0.15);
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
 /* ── Utility ──────────────────────────────────────────────── */
 .hidden { display: none !important; }
