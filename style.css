@@ -77,14 +77,14 @@ body {
 h1 {
   font-family: 'Star2', serif;
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.08em;
   color: #f0c040;
   text-shadow: 0 0 20px rgba(240,192,64,0.7), 0 2px 4px rgba(0,0,0,1);
 }
 
 .logo-sub {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Star2', serif;
   font-style: italic;
   font-weight: 400;
   color: #c8b89a;
@@ -95,27 +95,30 @@ h1 {
 }
 
 .date-chip {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 0.9rem;
-  padding: 0.3rem 1rem;
+  padding: 0.65rem 1.4rem 0.9rem;
   background: rgba(6,4,18,0.72);
   border: 1px solid rgba(201,162,39,0.3);
-  border-radius: 20px;
-  font-family: 'Star2', serif;
-  font-size: 0.8rem;
-  color: #d4aa40;
-  letter-spacing: 0.03em;
+  border-radius: 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0e4c0;
   backdrop-filter: blur(8px);
 }
 
 .mood-prompt {
   font-family: 'Star2', serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 400;
   color: #f0e4c0;
   margin-bottom: 1.4rem;
   letter-spacing: 0.04em;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+  text-shadow: -1px -1px 0 #3b0764, 1px -1px 0 #3b0764, -1px 1px 0 #3b0764, 1px 1px 0 #3b0764;
 }
 
 .mood-grid {
@@ -146,13 +149,16 @@ h1 {
   cursor: pointer;
   color: inherit;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  opacity: 0.75;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
 .mood-card:hover,
-.mood-card:focus-visible {
+.mood-card:focus-visible,
+.mood-card:active {
   transform: translateY(-4px);
   box-shadow: 0 8px 30px rgba(100,0,200,0.4);
+  opacity: 1;
   outline: none;
 }
 
@@ -199,11 +205,37 @@ h1 {
 
 .mood-note {
   font-family: 'Star2', serif;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #c8b89a;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f0e4c0;
   letter-spacing: 0.02em;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* ── Title Sparkles ───────────────────────────────────────── */
+.title-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.sparkle {
+  position: absolute;
+  color: #f0c040;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: 0 0 8px rgba(240,192,64,0.9);
+  animation: sparkle-blink 3s ease-in-out infinite;
+}
+
+.sparkle.s1 { top: -8px;   left:  6%;  font-size: 9px;  animation-delay: 0s;    }
+.sparkle.s2 { top:  0;     right: 2%;  font-size: 13px; animation-delay: 0.9s;  }
+.sparkle.s3 { bottom: 1px; left:  1%;  font-size: 10px; animation-delay: 1.8s;  }
+.sparkle.s4 { top:  15%;   right: 14%; font-size: 8px;  animation-delay: 0.45s; }
+.sparkle.s5 { bottom: -5px;right: 24%; font-size: 9px;  animation-delay: 2.4s;  }
+
+@keyframes sparkle-blink {
+  0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg);  }
+  45%, 55% { opacity: 1; transform: scale(1)   rotate(20deg); }
 }
 
 /* ── Board Screen ─────────────────────────────────────────── */

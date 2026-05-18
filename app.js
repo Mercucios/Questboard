@@ -131,6 +131,97 @@ const REWARD_MSGS = [
   'Die Horde wächst — genau wie du.',
 ];
 
+// ── Daily Symbols ─────────────────────────────────────────────────────────────
+
+const DAILY_SYMBOLS = [
+  // Drache
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <ellipse cx="25" cy="33" rx="13" ry="8" fill="none" stroke="#c084fc" stroke-width="1.8"/>
+    <ellipse cx="15" cy="23" rx="6.5" ry="5.5" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <path d="M22 27 Q30 14 42 18 Q35 24 26 27Z" fill="#7c3aed" stroke="#d8b4fe" stroke-width="1.5"/>
+    <path d="M22 27 Q20 14 10 14 Q16 22 20 27Z" fill="#7c3aed" stroke="#d8b4fe" stroke-width="1.5"/>
+    <circle cx="12.5" cy="22" r="1.8" fill="#f0c040"/>
+    <path d="M36 36 Q42 36 46 42" stroke="#c084fc" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M7 22 Q3 18 5 13 Q7 17 9 15 Q9 20 11 18 Q9 23 7 22Z" fill="#f0c040"/>
+  </svg>`,
+  // Mond
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <path d="M32 8 Q18 12 16 25 Q14 38 28 44 Q14 42 10 30 Q6 16 20 8 Q26 5 32 8Z" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.8"/>
+    <circle cx="34" cy="14" r="2" fill="#f0c040"/>
+    <circle cx="38" cy="23" r="1.3" fill="#f0c040" opacity="0.7"/>
+    <circle cx="36" cy="32" r="1.5" fill="#c084fc" opacity="0.8"/>
+    <circle cx="30" cy="10" r="1" fill="#d8b4fe" opacity="0.8"/>
+  </svg>`,
+  // Hexenhut
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <ellipse cx="25" cy="44" rx="18" ry="5" fill="#7c3aed" stroke="#d8b4fe" stroke-width="1.5"/>
+    <path d="M25 6 L12 40 L38 40 Z" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.8"/>
+    <path d="M13 34 Q25 30 37 34" fill="none" stroke="#f0c040" stroke-width="2" stroke-linecap="round"/>
+    <path d="M17 22 Q25 19 33 22" fill="none" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="25" cy="6" r="2.5" fill="#f0c040"/>
+  </svg>`,
+  // Kristall
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <path d="M25 4 L36 16 L32 44 L18 44 L14 16 Z" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.8"/>
+    <path d="M14 16 L25 4 L36 16 Z" fill="#c084fc" stroke="#d8b4fe" stroke-width="1.5"/>
+    <line x1="25" y1="4" x2="25" y2="44" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <circle cx="25" cy="4" r="2.5" fill="#f0c040"/>
+    <line x1="36" y1="16" x2="44" y2="20" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="14" y1="16" x2="6"  y2="20" stroke="#f0c040" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`,
+  // Galaxie
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <circle cx="25" cy="25" r="4" fill="#f0c040"/>
+    <ellipse cx="25" cy="25" rx="18" ry="6" fill="none" stroke="#c084fc" stroke-width="1.8" transform="rotate(-25 25 25)"/>
+    <ellipse cx="25" cy="25" rx="13" ry="4" fill="none" stroke="#a855f7" stroke-width="1.5" transform="rotate(30 25 25)"/>
+    <circle cx="8"  cy="18" r="1.5" fill="#d8b4fe"/>
+    <circle cx="42" cy="32" r="1.5" fill="#d8b4fe"/>
+    <circle cx="40" cy="15" r="1"   fill="#f0e4c0"/>
+    <circle cx="12" cy="36" r="1"   fill="#f0e4c0"/>
+    <circle cx="30" cy="10" r="1.2" fill="#c084fc"/>
+  </svg>`,
+  // Zauberstab
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <line x1="10" y1="40" x2="36" y2="14" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M36 14 L34 6 L38 12 L46 10 L40 16 L44 22 L38 18 L36 26 L34 18 L28 22 L32 14Z" fill="#f0c040" stroke="#f0e4c0" stroke-width="1"/>
+    <circle cx="10" cy="40" r="3" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <circle cx="20" cy="28" r="1.5" fill="#f0c040" opacity="0.7"/>
+    <circle cx="15" cy="34" r="1"   fill="#d8b4fe" opacity="0.8"/>
+  </svg>`,
+  // Burg
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <rect x="8"  y="22" width="34" height="22" fill="none" stroke="#c084fc" stroke-width="1.8"/>
+    <rect x="8"  y="15" width="5"  height="9"  fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <rect x="15" y="15" width="5"  height="9"  fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <rect x="30" y="15" width="5"  height="9"  fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <rect x="37" y="15" width="5"  height="9"  fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <path d="M20 44 L20 34 Q25 30 30 34 L30 44" fill="#060614" stroke="#d8b4fe" stroke-width="1.5"/>
+    <rect x="11" y="27" width="5" height="6" rx="1" fill="#f0c040" opacity="0.7"/>
+    <rect x="34" y="27" width="5" height="6" rx="1" fill="#f0c040" opacity="0.7"/>
+    <line x1="25" y1="4" x2="25" y2="16" stroke="#c084fc" stroke-width="1.5"/>
+    <path d="M25 4 L33 8 L25 12Z" fill="#f0c040"/>
+  </svg>`,
+  // Trank
+  `<svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+    <rect x="19" y="9"  width="12" height="7" rx="2" fill="#a855f7" stroke="#d8b4fe" stroke-width="1.5"/>
+    <rect x="21" y="6"  width="8"  height="5" rx="2" fill="#c084fc" stroke="#d8b4fe" stroke-width="1.5"/>
+    <path d="M19 16 L14 28 Q12 38 25 44 Q38 38 36 28 L31 16Z" fill="#7c3aed" stroke="#d8b4fe" stroke-width="1.8"/>
+    <path d="M15 32 Q25 28 35 32 Q38 38 25 43 Q12 38 15 32Z" fill="#c084fc" opacity="0.7"/>
+    <circle cx="20" cy="36" r="2"   fill="#f0e4c0" opacity="0.5"/>
+    <circle cx="28" cy="34" r="1.5" fill="#f0e4c0" opacity="0.4"/>
+    <circle cx="32" cy="21" r="2.5" fill="#f0c040"/>
+    <line x1="32" y1="17" x2="32" y2="25" stroke="#f0c040" stroke-width="1.5"/>
+    <line x1="28" y1="21" x2="36" y2="21" stroke="#f0c040" stroke-width="1.5"/>
+  </svg>`,
+];
+
+function getDailySymbol() {
+  const now   = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const day   = Math.floor((now - start) / 86400000);
+  return DAILY_SYMBOLS[day % DAILY_SYMBOLS.length];
+}
+
 // ── Category Icons ─────────────────────────────────────────────────────────────
 
 let _catIdx = 0;
@@ -689,9 +780,10 @@ function startStarMapAnimation(starCount) {
 
 function init() {
 
-  $('date-display').textContent = new Date().toLocaleDateString('de-AT', {
+  const dateStr = new Date().toLocaleDateString('de-AT', {
     timeZone: 'Europe/Vienna', weekday: 'long', day: 'numeric', month: 'long',
   });
+  $('date-display').innerHTML = `<span>${dateStr}</span>${getDailySymbol()}`;
 
   const allQuests = QUESTS_DATA;
   const saved     = loadDayState();
