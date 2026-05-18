@@ -1,7 +1,7 @@
-/* ── Star1 Font ───────────────────────────────────────────── */
+/* ── Star2 Font ───────────────────────────────────────────── */
 @font-face {
-  font-family: 'Star1';
-  src: url('fonts/star1.ttf') format('truetype');
+  font-family: 'Star2';
+  src: url('fonts/star2.ttf') format('truetype');
 }
 
 /* ── Reset & Base ─────────────────────────────────────────── */
@@ -75,7 +75,7 @@ body {
 }
 
 h1 {
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-size: 2.5rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -101,7 +101,7 @@ h1 {
   background: rgba(6,4,18,0.72);
   border: 1px solid rgba(201,162,39,0.3);
   border-radius: 20px;
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-size: 0.8rem;
   color: #d4aa40;
   letter-spacing: 0.03em;
@@ -109,7 +109,7 @@ h1 {
 }
 
 .mood-prompt {
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-size: 20px;
   font-weight: 700;
   color: #f0e4c0;
@@ -198,7 +198,7 @@ h1 {
 }
 
 .mood-note {
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-style: italic;
   font-size: 0.9rem;
   color: #c8b89a;
@@ -391,7 +391,7 @@ h1 {
 }
 
 .quest-name {
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-size: 1.2rem;
   font-weight: 600;
   color: #f0c040;
@@ -944,7 +944,7 @@ h1 {
 }
 
 .telescope-title {
-  font-family: 'Star1', serif;
+  font-family: 'Star2', serif;
   font-size: 1rem;
   color: #f0c040;
   letter-spacing: 0.1em;
