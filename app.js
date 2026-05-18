@@ -466,152 +466,219 @@ function getStarsNeededForNext(starCount) {
 }
 
 function openStarMap() {
-  const starCount = loadStars().length;
-  const info      = getConstellationInfo(starCount);
-  const c         = info.constellation;
-  const allDone   = info.earned >= c.stars.length;
-  const label     = starCount === 1 ? 'tapferer Tag' : 'tapfere Tage';
-
-  if (starCount === 0) {
-    $('starmap-total').textContent = 'Noch keine Sterne — du schaffst das!';
-  } else if (info.allComplete) {
-    $('starmap-total').textContent = `${starCount} tapfere Tage · Alle Sternbilder entdeckt ✦`;
-  } else if (allDone) {
-    $('starmap-total').textContent = `${starCount} ${label} · ???`;
-  } else {
-    $('starmap-total').textContent = `${starCount} ${label} · ${c.name} (${info.earned}/${c.starsNeeded})`;
-  }
-
   $('popup-starmap').classList.remove('hidden');
   if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
-
-  const onNameReveal = (allDone && !info.allComplete) ? () => {
-    $('starmap-total').textContent = `${starCount} ${label} · ${c.name} ✦`;
-  } : null;
-
-  startStarMapAnimation(starCount, onNameReveal);
+  const canvas  = $('starmap-canvas');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  startStarMapAnimation(loadStars().length);
 }
 
-// ── Star map canvas ───────────────────────────────────────────────────────────
+// ── Star map canvas (fullscreen) ──────────────────────────────────────────────
 
-function startStarMapAnimation(starCount, onNameReveal) {
+function startStarMapAnimation(starCount) {
   const canvas = $('starmap-canvas');
   const ctx    = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  const info          = getConstellationInfo(starCount);
-  const c             = info.constellation;
-  const earnedInConst = Math.min(info.earned, c.stars.length);
+  const info           = getConstellationInfo(starCount);
+  const c              = info.constellation;
+  const earnedInConst  = Math.min(info.earned, c.stars.length);
   const allStarsEarned = earnedInConst >= c.stars.length;
+  const starsNeeded    = getStarsNeededForNext(starCount);
 
+  // 280 seeded background stars
   const srng = s => { const x = Math.sin(s) * 10000; return x - Math.floor(x); };
-  const bgStars = Array.from({ length: 180 }, (_, i) => ({
-    x:     srng(i * 1.1  + 0.3) * W,
-    y:     srng(i * 2.3  + 0.7) * H,
-    r:     srng(i * 3.7  + 1.2) * 1.5 + 0.3,
-    phase: srng(i * 5.1  + 0.9) * Math.PI * 2,
-    speed: srng(i * 7.3  + 2.1) * 0.8 + 0.4,
+  const bgStars = Array.from({ length: 280 }, (_, i) => ({
+    ox:    srng(i * 1.1 + 0.3) * W,
+    oy:    srng(i * 2.3 + 0.7) * H,
+    r:     srng(i * 3.7 + 1.2) * 1.8 + 0.3,
+    phase: srng(i * 5.1 + 0.9) * Math.PI * 2,
+    speed: srng(i * 7.3 + 2.1) * 0.8 + 0.4,
   }));
 
   const cStars = c.stars.map(s => ({ x: s.x * W, y: s.y * H }));
+  const INV2   = Math.SQRT1_2;
 
-  const DELAY    = 700;
-  const LINE_DUR = 380;
+  // Shooting stars
+  const shootStars = [];
+  let tick = 0, nextST = 120 + Math.floor(Math.random() * 180);
+
+  // Zoom state
+  let zoom = 1.0;
+  const TARGET_ZOOM = 3.2, ZOOM_LERP = 0.035;
+  let zoomDone = false, postZoomNow = null;
+
+  const LINE_DUR  = 380;
   const TITLE_DUR = 900;
-  const linesEndTime = allStarsEarned ? DELAY + c.lines.length * LINE_DUR : 0;
 
-  let startTime    = null;
-  let nameRevealed = false;
+  function drawBg() {
+    ctx.fillStyle = '#06040f';
+    ctx.fillRect(0, 0, W, H);
+    [
+      [W * 0.28, H * 0.38, W * 0.55, 'rgba(70,20,130,0.22)',  'rgba(40,0,80,0)'],
+      [W * 0.72, H * 0.28, W * 0.42, 'rgba(20,45,150,0.18)',  'rgba(10,20,90,0)'],
+      [W * 0.50, H * 0.72, W * 0.50, 'rgba(110,20,90,0.15)',  'rgba(60,0,60,0)'],
+      [W * 0.18, H * 0.62, W * 0.38, 'rgba(50,20,140,0.12)',  'rgba(20,0,80,0)'],
+      [W * 0.80, H * 0.70, W * 0.35, 'rgba(80,30,60,0.10)',   'rgba(50,0,50,0)'],
+    ].forEach(([x, y, r, c1, c2]) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, c1); g.addColorStop(1, c2);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+    });
+  }
+
+  function drawBgStars(now) {
+    for (const bs of bgStars) {
+      const zx = (bs.ox - W / 2) * zoom + W / 2;
+      const zy = (bs.oy - H / 2) * zoom + H / 2;
+      if (zx < -6 || zx > W + 6 || zy < -6 || zy > H + 6) continue;
+      const tw = 0.25 + (Math.sin((now / 1000) * bs.speed + bs.phase) * 0.5 + 0.5) * 0.7;
+      ctx.globalAlpha = tw;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(zx, zy, bs.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tickShootStars(now) {
+    tick++;
+    if (tick >= nextST) {
+      shootStars.push({
+        x: Math.random() * W,
+        y: Math.random() * H * 0.4,
+        angle: Math.PI / 4 + (Math.random() - 0.5) * 0.5,
+        spd: 180 + Math.random() * 220,
+        t0: now,
+      });
+      nextST = tick + 120 + Math.floor(Math.random() * 180);
+    }
+  }
+
+  function drawShootStars(now) {
+    for (let i = shootStars.length - 1; i >= 0; i--) {
+      const ss  = shootStars[i];
+      const age = (now - ss.t0) / 1000;
+      if (age > 1.4) { shootStars.splice(i, 1); continue; }
+      const fade = age < 0.25 ? age / 0.25 : age > 0.85 ? 1 - (age - 0.85) / 0.55 : 1;
+      const dist = ss.spd * age;
+      const ex = ss.x + Math.cos(ss.angle) * dist;
+      const ey = ss.y + Math.sin(ss.angle) * dist;
+      const tLen = Math.min(dist, 90);
+      const tx = ex - Math.cos(ss.angle) * tLen;
+      const ty = ey - Math.sin(ss.angle) * tLen;
+      const g = ctx.createLinearGradient(tx, ty, ex, ey);
+      g.addColorStop(0, 'rgba(255,255,240,0)');
+      g.addColorStop(1, `rgba(255,255,248,${(fade * 0.88).toFixed(2)})`);
+      ctx.save();
+      ctx.strokeStyle = g; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawLines(pe) {
+    if (!allStarsEarned) return 0;
+    const total = c.lines.length * LINE_DUR;
+    ctx.lineWidth = 0.8; ctx.setLineDash([]);
+    for (let li = 0; li < c.lines.length; li++) {
+      const ls = li * LINE_DUR;
+      if (pe < ls) break;
+      const prog = Math.min(1, (pe - ls) / LINE_DUR);
+      const [ai, bi] = c.lines[li];
+      const a = cStars[ai], b = cStars[bi];
+      ctx.strokeStyle = 'rgba(210,230,255,0.55)';
+      ctx.beginPath(); ctx.moveTo(a.x, a.y);
+      ctx.lineTo(a.x + (b.x - a.x) * prog, a.y + (b.y - a.y) * prog);
+      ctx.stroke();
+    }
+    return total;
+  }
+
+  function drawCStar(p, earned, now, si) {
+    const isBright = si % Math.max(1, Math.floor(c.stars.length / 3)) === 0;
+    if (earned) {
+      const pulse = Math.sin(now / 850 + si * 1.4) * 0.5 + 0.5;
+      const r     = (isBright ? 4.5 : 3.2) + pulse * 1.8;
+      // Soft glow — no hard ring
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 5.5);
+      grd.addColorStop(0,    'rgba(255,245,160,0.9)');
+      grd.addColorStop(0.2,  'rgba(255,210,70,0.5)');
+      grd.addColorStop(0.55, 'rgba(240,170,20,0.18)');
+      grd.addColorStop(1,    'rgba(240,140,0,0)');
+      ctx.beginPath(); ctx.arc(p.x, p.y, r * 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = grd; ctx.fill();
+      // Core
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff9d5'; ctx.fill();
+      // Diffraction spikes on bright stars
+      if (isBright) {
+        const sl = r * 5 * (1 + pulse * 0.22);
+        const al = 0.52 + pulse * 0.38;
+        ctx.save();
+        ctx.strokeStyle = `rgba(255,230,100,${al.toFixed(2)})`; ctx.lineWidth = 0.7;
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
+          ctx.beginPath(); ctx.moveTo(p.x + dx*r, p.y + dy*r);
+          ctx.lineTo(p.x + dx*sl, p.y + dy*sl); ctx.stroke();
+        });
+        const dl = sl * 0.5;
+        ctx.strokeStyle = `rgba(255,220,80,${(al * 0.35).toFixed(2)})`;
+        [[INV2,INV2],[-INV2,INV2],[INV2,-INV2],[-INV2,-INV2]].forEach(([dx,dy]) => {
+          ctx.beginPath(); ctx.moveTo(p.x + dx*r*0.8, p.y + dy*r*0.8);
+          ctx.lineTo(p.x + dx*dl, p.y + dy*dl); ctx.stroke();
+        });
+        ctx.restore();
+      }
+    } else {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(180,160,240,0.18)'; ctx.fill();
+    }
+  }
+
+  function drawTitle(pe, lEnd) {
+    const after = lEnd + 350;
+    if (pe < after) return;
+    const alpha = Math.min(1, (pe - after) / TITLE_DUR);
+    ctx.save(); ctx.globalAlpha = alpha; ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 12;
+    const name = (starCount > 0 && allStarsEarned) ? c.name : (starCount > 0 ? '???' : '');
+    if (name) {
+      ctx.fillStyle = allStarsEarned ? '#f5d060' : 'rgba(190,165,255,0.9)';
+      ctx.font = 'bold 20px Cinzel, serif';
+      ctx.fillText(name, W / 2, H - 52);
+    }
+    const sub = starCount === 0
+      ? 'Noch keine Sterne — du schaffst das!'
+      : starsNeeded > 0
+        ? `noch ${starsNeeded} ${starsNeeded === 1 ? 'Stern' : 'Sterne'} bis zum nächsten Sternbild`
+        : 'Alle Sternbilder entdeckt ✦';
+    ctx.fillStyle = 'rgba(210,192,158,0.9)';
+    ctx.font = '15px Crimson Text, Georgia, serif';
+    ctx.fillText(sub, W / 2, H - 25);
+    ctx.restore();
+  }
 
   function frame(now) {
-    if (!startTime) startTime = now;
-    const elapsed = now - startTime;
-
+    tickShootStars(now);
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#06060e';
-    ctx.fillRect(0, 0, W, H);
-
-    // Twinkling background stars
-    for (const bs of bgStars) {
-      const alpha = 0.04 + (Math.sin((now / 1000) * bs.speed + bs.phase) * 0.5 + 0.5) * 0.18;
-      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
-      ctx.beginPath();
-      ctx.arc(bs.x, bs.y, bs.r, 0, Math.PI * 2);
-      ctx.fill();
+    drawBg();
+    if (!zoomDone) {
+      zoom += (TARGET_ZOOM - zoom) * ZOOM_LERP;
+      if (TARGET_ZOOM - zoom < 0.04) { zoom = TARGET_ZOOM; zoomDone = true; postZoomNow = now; }
     }
-
-    if (starCount > 0) {
-      // Constellation lines with draw animation
-      if (allStarsEarned && elapsed > DELAY) {
-        for (let li = 0; li < c.lines.length; li++) {
-          const lineStart = DELAY + li * LINE_DUR;
-          if (elapsed < lineStart) break;
-          const progress = Math.min(1, (elapsed - lineStart) / LINE_DUR);
-          const [ai, bi] = c.lines[li];
-          const a = cStars[ai], b = cStars[bi];
-          ctx.strokeStyle = 'rgba(160,100,255,0.45)';
-          ctx.lineWidth = 1;
-          ctx.setLineDash([]);
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(a.x + (b.x - a.x) * progress, a.y + (b.y - a.y) * progress);
-          ctx.stroke();
-        }
-      }
-
-      // Constellation stars
-      for (let si = 0; si < c.stars.length; si++) {
-        const p = cStars[si];
-        if (si < earnedInConst) {
-          const pulse  = Math.sin(now / 800 + si * 1.3) * 0.5 + 0.5;
-          const glowR  = 10 + pulse * 6;
-          const grd    = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
-          grd.addColorStop(0,   'rgba(200,160,255,0.85)');
-          grd.addColorStop(0.4, 'rgba(160,100,255,0.4)');
-          grd.addColorStop(1,   'rgba(120,60,255,0)');
-          ctx.fillStyle = grd;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#ecdaff';
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          ctx.fillStyle = 'rgba(130,80,180,0.22)';
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      // Constellation title: "???" during lines, real name fades in after
-      if (allStarsEarned) {
-        if (elapsed <= linesEndTime) {
-          ctx.save();
-          ctx.globalAlpha = 0.55;
-          ctx.fillStyle   = '#7060a0';
-          ctx.font        = 'bold 13px Cinzel, serif';
-          ctx.textAlign   = 'center';
-          ctx.fillText('???', W / 2, H - 10);
-          ctx.restore();
-        } else {
-          const alpha = Math.min(1, (elapsed - linesEndTime) / TITLE_DUR);
-          if (!nameRevealed && alpha >= 1) {
-            nameRevealed = true;
-            if (onNameReveal) onNameReveal();
-          }
-          ctx.save();
-          ctx.globalAlpha = alpha;
-          ctx.fillStyle   = '#c8a0ff';
-          ctx.font        = '13px Cinzel, serif';
-          ctx.textAlign   = 'center';
-          ctx.fillText(c.name, W / 2, H - 10);
-          ctx.restore();
-        }
-      }
+    drawBgStars(now);
+    drawShootStars(now);
+    if (zoomDone) {
+      const pe   = now - postZoomNow;
+      const lEnd = drawLines(pe);
+      for (let si = 0; si < c.stars.length; si++) drawCStar(cStars[si], si < earnedInConst, now, si);
+      drawTitle(pe, lEnd);
+    } else if (starCount > 0) {
+      ctx.globalAlpha = Math.max(0, (zoom - 1.2) / (TARGET_ZOOM - 1) * 0.25);
+      for (let si = 0; si < c.stars.length; si++) drawCStar(cStars[si], si < earnedInConst, now, si);
+      ctx.globalAlpha = 1;
     }
-
     starMapAnimFrame = requestAnimationFrame(frame);
   }
 
@@ -672,7 +739,6 @@ function init() {
     if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
     $('popup-starmap').classList.add('hidden');
   });
-  $('btn-next-constellation').addEventListener('click', openTelescopePopup);
   $('btn-reset').addEventListener('click', () => {
     localStorage.removeItem(STORE_STATE);
     location.reload();
@@ -912,110 +978,56 @@ function startTelescopeAnimation(starsNeeded) {
   telescopeAnimFrame = requestAnimationFrame(frame);
 }
 
-// ── Constellation Logo ─────────────────────────────────────────────────────────
-function initConstellationLogo() {
+// ── Purple Orb Logo ────────────────────────────────────────────────────────────
+function initOrbLogo() {
   const canvas = document.getElementById('constellation-logo');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = 160, H = 160;
-
-  const STARS = [
-    {x:270,y: 95,r:4.5,bright:true },
-    {x:230,y: 72,r:3.5,bright:false},
-    {x:190,y: 62,r:4.0,bright:false},
-    {x:150,y: 68,r:3.2,bright:false},
-    {x:118,y: 88,r:3.8,bright:false},
-    {x: 98,y:118,r:3.2,bright:false},
-    {x: 88,y:155,r:5.2,bright:true },
-    {x: 92,y:195,r:3.5,bright:false},
-    {x:105,y:232,r:3.2,bright:false},
-    {x:128,y:260,r:3.8,bright:false},
-    {x:162,y:278,r:3.2,bright:false},
-    {x:202,y:285,r:4.0,bright:false},
-    {x:242,y:278,r:3.5,bright:false},
-    {x:272,y:258,r:4.5,bright:true },
-  ];
-  const LINES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12],[12,13]];
-
-  const xs = STARS.map(s => s.x), ys = STARS.map(s => s.y);
-  const xMin = Math.min(...xs), xMax = Math.max(...xs);
-  const yMin = Math.min(...ys), yMax = Math.max(...ys);
-  const PAD = 16;
-  const scale = Math.min((W - 2*PAD) / (xMax - xMin), (H - 2*PAD) / (yMax - yMin));
-  const offX  = (W - (xMax - xMin) * scale) / 2;
-  const offY  = (H - (yMax - yMin) * scale) / 2;
-
-  const pts = STARS.map(s => ({
-    x: (s.x - xMin) * scale + offX,
-    y: (s.y - yMin) * scale + offY,
-    r: s.r,
-    bright: s.bright,
-  }));
-
   let t = 0;
-  const INV2 = Math.SQRT1_2;
 
   function frame() {
     ctx.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2;
+    const pulse = 0.93 + 0.07 * Math.sin(t * 1.1);
+    const r     = 52 * pulse;
 
-    // Connection lines
-    ctx.save();
-    ctx.strokeStyle = 'rgba(240,180,40,0.25)';
-    ctx.lineWidth = 0.9;
-    LINES.forEach(([a, b]) => {
-      ctx.beginPath();
-      ctx.moveTo(pts[a].x, pts[a].y);
-      ctx.lineTo(pts[b].x, pts[b].y);
-      ctx.stroke();
-    });
-    ctx.restore();
+    // Outer diffuse glow
+    const outerGlow = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r * 2.4);
+    outerGlow.addColorStop(0,   'rgba(140,60,255,0.30)');
+    outerGlow.addColorStop(0.5, 'rgba(100,30,200,0.12)');
+    outerGlow.addColorStop(1,   'rgba(60,0,160,0)');
+    ctx.beginPath(); ctx.arc(cx, cy, r * 2.4, 0, Math.PI * 2);
+    ctx.fillStyle = outerGlow; ctx.fill();
 
-    // Stars
-    pts.forEach((s, i) => {
-      const pulse = s.bright ? 0.82 + 0.18 * Math.sin(t * 1.6 + i * 0.9) : 1;
-      const r = s.r * pulse;
+    // Orb body
+    const grad = ctx.createRadialGradient(cx - r*0.28, cy - r*0.32, r*0.05, cx, cy, r);
+    grad.addColorStop(0,    '#ddb0ff');
+    grad.addColorStop(0.25, '#9040e0');
+    grad.addColorStop(0.6,  '#5010a8');
+    grad.addColorStop(1,    '#18004a');
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = grad; ctx.fill();
 
-      // Glow halo
-      const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 5);
-      grd.addColorStop(0,    s.bright ? 'rgba(255,230,130,0.85)' : 'rgba(255,220,100,0.65)');
-      grd.addColorStop(0.28, `rgba(240,180,40,${s.bright ? 0.5 : 0.35})`);
-      grd.addColorStop(1,    'rgba(240,150,20,0)');
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, r * 5, 0, Math.PI * 2);
-      ctx.fillStyle = grd;
-      ctx.fill();
+    // Specular highlight
+    const spec = ctx.createRadialGradient(cx - r*0.3, cy - r*0.35, 0, cx - r*0.1, cy - r*0.1, r*0.52);
+    spec.addColorStop(0,   'rgba(255,255,255,0.52)');
+    spec.addColorStop(0.6, 'rgba(230,190,255,0.15)');
+    spec.addColorStop(1,   'rgba(200,160,255,0)');
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = spec; ctx.fill();
 
-      // Core disc
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = s.bright ? 'rgba(255,248,210,1)' : 'rgba(245,210,90,0.92)';
-      ctx.fill();
-
-      // Diffraction spikes (bright stars only)
-      if (s.bright) {
-        const spikeLen = r * 5.5 * pulse;
-        ctx.save();
-        // Cardinal spikes
-        ctx.strokeStyle = `rgba(255,230,120,${0.55 * pulse})`;
-        ctx.lineWidth = 0.75;
-        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
-          ctx.beginPath();
-          ctx.moveTo(s.x + dx * r * 1.1, s.y + dy * r * 1.1);
-          ctx.lineTo(s.x + dx * spikeLen, s.y + dy * spikeLen);
-          ctx.stroke();
-        });
-        // Diagonal spikes (fainter)
-        const diagLen = spikeLen * 0.55;
-        ctx.strokeStyle = `rgba(255,230,120,${0.22 * pulse})`;
-        [[INV2,INV2],[-INV2,INV2],[INV2,-INV2],[-INV2,-INV2]].forEach(([dx,dy]) => {
-          ctx.beginPath();
-          ctx.moveTo(s.x + dx * r, s.y + dy * r);
-          ctx.lineTo(s.x + dx * diagLen, s.y + dy * diagLen);
-          ctx.stroke();
-        });
-        ctx.restore();
-      }
-    });
+    // Orbiting sparkles
+    for (let i = 0; i < 5; i++) {
+      const angle = (i / 5) * Math.PI * 2 + t * 0.5 + i * 0.4;
+      const dist  = r * (1.35 + 0.08 * Math.sin(t * 2.2 + i * 1.3));
+      const sx    = cx + Math.cos(angle) * dist;
+      const sy    = cy + Math.sin(angle) * dist * 0.58;
+      const alpha = 0.25 + 0.55 * (Math.sin(t * 2 + i * 1.4) * 0.5 + 0.5);
+      const sr    = 1.2 + 0.8 * Math.sin(t * 1.7 + i);
+      ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,170,255,${alpha.toFixed(2)})`; ctx.fill();
+    }
 
     t += 0.016;
     requestAnimationFrame(frame);
@@ -1024,4 +1036,4 @@ function initConstellationLogo() {
   frame();
 }
 
-document.addEventListener('DOMContentLoaded', initConstellationLogo);
+document.addEventListener('DOMContentLoaded', initOrbLogo);

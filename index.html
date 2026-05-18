@@ -265,18 +265,10 @@
     </div>
   </div>
 
-  <!-- STAR MAP -->
-  <div id="popup-starmap" class="overlay hidden" role="dialog" aria-modal="true">
-    <div class="popup starmap-popup">
-      <div class="starmap-header">
-        <h3>✦ Sternenkarte ✦</h3>
-        <button id="btn-starmap-close" class="close-x" aria-label="Schließen">✕</button>
-      </div>
-      <p class="starmap-sub">Jeder Stern — ein tapferer Tag</p>
-      <canvas id="starmap-canvas" width="300" height="240"></canvas>
-      <p id="starmap-total" class="starmap-total"></p>
-      <button id="btn-next-constellation" class="btn-next-constellation">Nächstes Sternbild ✦</button>
-    </div>
+  <!-- STAR MAP (fullscreen) -->
+  <div id="popup-starmap" class="overlay hidden starmap-fs" role="dialog" aria-modal="true">
+    <button id="btn-starmap-close" class="starmap-back-btn" aria-label="Schließen">← Zurück</button>
+    <canvas id="starmap-canvas"></canvas>
   </div>
 
   <!-- TELESCOPE POPUP -->
