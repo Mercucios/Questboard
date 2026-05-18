@@ -776,9 +776,197 @@ function startStarMapAnimation(starCount) {
   starMapAnimFrame = requestAnimationFrame(frame);
 }
 
+// ── Sky Canvas ────────────────────────────────────────────────────────────────
+
+function initSkyCanvas() {
+  const canvas = document.getElementById('sky-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const COLORS = ['#ffffff', '#d0d0d0', '#bae6fd', '#c4b5fd', '#fef9c3', '#ddd6fe'];
+
+  let W, H;
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // 220 twinkling background stars
+  const bgStars = Array.from({ length: 220 }, () => ({
+    nx:     Math.random(),
+    ny:     Math.random(),
+    r:      0.4 + Math.random() * 1.6,
+    color:  COLORS[Math.floor(Math.random() * COLORS.length)],
+    phase:  Math.random(),
+    freq:   0.4 + Math.random() * 0.8,
+    bAlpha: 0.25 + Math.random() * 0.55,
+  }));
+
+  // 15 glitter crosses at fixed normalized positions
+  const CROSS_POS = [
+    [0.05, 0.06], [0.22, 0.03], [0.50, 0.04], [0.75, 0.07], [0.93, 0.11],
+    [0.02, 0.38], [0.96, 0.44], [0.10, 0.62], [0.90, 0.56], [0.04, 0.80],
+    [0.93, 0.77], [0.18, 0.92], [0.50, 0.96], [0.70, 0.89], [0.62, 0.14],
+  ];
+  const glitCrosses = CROSS_POS.map(([nx, ny], i) => ({
+    nx, ny,
+    sz:     4 + Math.random() * 8,
+    color:  COLORS[i % COLORS.length],
+    period: 4000 + Math.random() * 5000,
+    phase:  Math.random(),
+  }));
+
+  // Shooting stars state
+  let shootTick   = 0;
+  let shootTarget = 300 + Math.floor(Math.random() * 200);
+  let lastSide    = null;
+  const sStar     = [];
+  const glitParts = [];
+
+  function spawnShoot() {
+    const side  = lastSide === 'L' ? 'R' : 'L';
+    lastSide    = side;
+    const spd   = 1 + Math.random();
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const sy    = H * (0.05 + Math.random() * 0.45);
+    const sx    = side === 'R' ? -30 : W + 30;
+    const ex    = side === 'R' ? W + 30 : -30;
+    const ey    = sy + H * (0.12 + Math.random() * 0.18);
+    const cpx   = (sx + ex) / 2 + (Math.random() - 0.5) * W * 0.2;
+    const cpy   = Math.min(sy, ey) - H * (0.05 + Math.random() * 0.12);
+    const len   = Math.hypot(ex - sx, ey - sy) * 1.15;
+    sStar.push({ sx, sy, ex, ey, cpx, cpy, t: 0, dt: spd / len, color, trail: [] });
+  }
+
+  function bezPt(ss, t) {
+    const u = 1 - t;
+    return {
+      x: u * u * ss.sx + 2 * u * t * ss.cpx + t * t * ss.ex,
+      y: u * u * ss.sy + 2 * u * t * ss.cpy + t * t * ss.ey,
+    };
+  }
+
+  function tickShoot() {
+    if (++shootTick >= shootTarget) {
+      spawnShoot();
+      shootTick   = 0;
+      shootTarget = 300 + Math.floor(Math.random() * 200);
+    }
+    for (let i = sStar.length - 1; i >= 0; i--) {
+      const ss = sStar[i];
+      ss.t = Math.min(ss.t + ss.dt, 1);
+      const p = bezPt(ss, ss.t);
+      ss.trail.push(p);
+      if (ss.trail.length > 28) ss.trail.shift();
+      if (Math.random() < 0.25) {
+        glitParts.push({
+          x: p.x + (Math.random() - 0.5) * 5,
+          y: p.y + (Math.random() - 0.5) * 5,
+          color: ss.color, r: 0.5 + Math.random() * 1.2,
+          a: 0.5 + Math.random() * 0.5, da: 0.015 + Math.random() * 0.025,
+        });
+      }
+      if (ss.t >= 1) sStar.splice(i, 1);
+    }
+    for (let i = glitParts.length - 1; i >= 0; i--) {
+      glitParts[i].a -= glitParts[i].da;
+      if (glitParts[i].a <= 0) glitParts.splice(i, 1);
+    }
+  }
+
+  function drawCross(cx, cy, sz, color, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineCap     = 'round';
+    ctx.lineWidth   = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(cx - sz, cy); ctx.lineTo(cx + sz, cy);
+    ctx.moveTo(cx, cy - sz); ctx.lineTo(cx, cy + sz);
+    ctx.stroke();
+    ctx.lineWidth = 0.7;
+    const d = sz * 0.55;
+    ctx.beginPath();
+    ctx.moveTo(cx - d, cy - d); ctx.lineTo(cx + d, cy + d);
+    ctx.moveTo(cx + d, cy - d); ctx.lineTo(cx - d, cy + d);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function skyFrame(now) {
+    ctx.clearRect(0, 0, W, H);
+    tickShoot();
+
+    // background stars
+    bgStars.forEach(s => {
+      const a = s.bAlpha * (0.4 + 0.6 * (Math.sin(now * 0.001 * s.freq + s.phase * Math.PI * 2) * 0.5 + 0.5));
+      ctx.globalAlpha = a;
+      ctx.fillStyle   = s.color;
+      ctx.beginPath();
+      ctx.arc(s.nx * W, s.ny * H, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // glitter crosses
+    glitCrosses.forEach(gc => {
+      const a = Math.max(0, Math.sin(((now / gc.period) + gc.phase) * Math.PI * 2)) * 0.82;
+      if (a > 0.01) drawCross(gc.nx * W, gc.ny * H, gc.sz, gc.color, a);
+    });
+
+    // glitter particles from shooting star trails
+    glitParts.forEach(p => {
+      ctx.globalAlpha = p.a;
+      ctx.fillStyle   = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // shooting stars
+    sStar.forEach(ss => {
+      if (ss.trail.length < 2) return;
+      for (let i = 1; i < ss.trail.length; i++) {
+        const frac = i / ss.trail.length;
+        const p0 = ss.trail[i - 1], p1 = ss.trail[i];
+        ctx.save();
+        ctx.globalAlpha = frac * 0.75;
+        ctx.strokeStyle = ss.color;
+        ctx.lineWidth   = frac * 2.2;
+        ctx.lineCap     = 'round';
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+      const head = ss.trail[ss.trail.length - 1];
+      const g = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 10);
+      g.addColorStop(0,   ss.color);
+      g.addColorStop(0.5, ss.color + '66');
+      g.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle   = g;
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    requestAnimationFrame(skyFrame);
+  }
+
+  requestAnimationFrame(skyFrame);
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function init() {
+  initSkyCanvas();
 
   const dateStr = new Date().toLocaleDateString('de-AT', {
     timeZone: 'Europe/Vienna', weekday: 'long', day: 'numeric', month: 'long',

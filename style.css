@@ -14,9 +14,6 @@ html, body {
 
 body {
   font-family: 'Crimson Text', Georgia, serif;
-  background:
-    linear-gradient(rgba(3, 3, 18, 0.58), rgba(3, 3, 18, 0.58)),
-    url('galaxy.jpg') center / cover no-repeat fixed;
   background-color: #060614;
   color: #f0e4c0;
   -webkit-font-smoothing: antialiased;
@@ -76,7 +73,7 @@ body {
 
 h1 {
   font-family: 'Star2', serif;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: 400;
   letter-spacing: 0.08em;
   color: #f0c040;
@@ -90,7 +87,7 @@ h1 {
   font-style: italic;
   font-weight: 400;
   color: #f0e4c0;
-  font-size: 18px;
+  font-size: 26px;
   margin-top: 0.3rem;
   letter-spacing: 0.03em;
   text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 0 30px rgba(0,0,0,0.8);
@@ -127,6 +124,26 @@ h1 {
   margin-bottom: 1.4rem;
   letter-spacing: 0.05em;
   text-shadow: 2px 2px 0 #1a0040, -1px -1px 0 #1a0040, 0 0 20px rgba(0,0,0,0.9);
+  position: relative;
+}
+
+.ps {
+  position: absolute;
+  font-size: 8px;
+  color: var(--c, #c4b5fd);
+  opacity: 0;
+  pointer-events: none;
+  animation-name: ps-blink;
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--d, 0s);
+  text-shadow: 0 0 5px var(--c, #c4b5fd);
+}
+
+@keyframes ps-blink {
+  0%, 100% { opacity: 0; transform: scale(0.3); }
+  45%, 55% { opacity: 0.9; transform: scale(1); }
 }
 
 .mood-grid {
@@ -230,25 +247,20 @@ h1 {
 
 .mood-note {
   font-family: 'Star2', serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
   color: #f0e4c0;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 8px rgba(0,0,0,0.9);
 }
 
-/* ── Background Twinkle Stars ────────────────────────────── */
-.bg-star {
-  position: absolute;
+/* ── Sky Canvas ────────────────────────────────────────────── */
+#sky-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0; transform: scale(0.3); }
-  50%       { opacity: var(--op, 0.8); transform: scale(1); }
+  display: block;
 }
 
 .mood-wrap {
@@ -273,7 +285,7 @@ h1 {
 }
 
 .sparkle.s1 { top: -8px;   left:  6%;  font-size: 9px;  animation-delay: 0s;    }
-.sparkle.s2 { top:  0;     right: calc(2% - 10px);  font-size: 13px; animation-delay: 0.9s;  }
+.sparkle.s2 { top:  0;     right: calc(2% - 20px);  font-size: 13px; animation-delay: 0.9s;  }
 .sparkle.s3 { bottom: 1px; left:  1%;               font-size: 10px; animation-delay: 1.8s;  }
 .sparkle.s4 { top: calc(15% - 8px); right: 14%;     font-size: 8px;  animation-delay: 0.45s; }
 .sparkle.s5 { bottom: -5px;right: 24%; font-size: 9px;  animation-delay: 2.4s;  }
