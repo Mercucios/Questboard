@@ -158,11 +158,12 @@ h1 {
   height: 80px;
   margin: 0 auto 0.1rem;
 }
-.mood-glyph img {
+.mood-glyph video {
   width: 80px;
   height: 80px;
   object-fit: contain;
   display: block;
+  mix-blend-mode: screen;
 }
 .mood-name {
   font-family: system-ui, -apple-system, sans-serif;
