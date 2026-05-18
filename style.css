@@ -48,27 +48,55 @@ body {
   margin-bottom: 2.5rem;
 }
 
-/* ── Constellation Logo ───────────────────────────────────── */
-.constellation-logo {
-  display: block;
+/* ── Purple Orb Logo ──────────────────────────────────────── */
+.logo-orb {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   margin: 0 auto 0.5rem;
-  width: 160px;
-  height: 160px;
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, #9b30ff, #3b0080);
+  box-shadow: 0 0 40px rgba(120,0,255,0.8), 0 0 80px rgba(80,0,200,0.4);
+  animation: orb-pulse 3s ease-in-out infinite;
+}
+
+.logo-orb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.4), transparent 60%);
+}
+
+.logo-orb::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+
+@keyframes orb-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.8; }
 }
 
 h1 {
-  font-family: 'Cinzel', serif;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
   color: #f0c040;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 28px rgba(201,162,39,0.5);
+  text-shadow: 0 0 20px rgba(240,192,64,0.7), 0 2px 4px rgba(0,0,0,1);
 }
 
 .logo-sub {
-  font-family: 'Crimson Text', Georgia, serif;
+  font-family: system-ui, -apple-system, sans-serif;
   font-style: italic;
-  color: #f0e4c0;
+  font-weight: 400;
+  color: #c8b89a;
   font-size: 1.05rem;
   margin-top: 0.3rem;
   letter-spacing: 0.03em;
@@ -89,13 +117,13 @@ h1 {
 }
 
 .mood-prompt {
-  font-family: 'Cinzel', serif;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
   color: #f0e4c0;
   margin-bottom: 1.4rem;
   letter-spacing: 0.04em;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
 }
 
 .mood-grid {
@@ -147,15 +175,16 @@ h1 {
 }
 .mood-glyph svg { display: block; }
 .mood-name {
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #f0e4c0;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #f0c040;
+  text-shadow: 0 0 12px rgba(240,192,64,0.5);
 }
 .mood-hint {
-  font-family: 'Crimson Text', Georgia, serif;
-  font-size: 0.82rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 13px;
   color: #c8b89a;
   text-shadow: 0 1px 6px rgba(0,0,0,0.9);
 }
