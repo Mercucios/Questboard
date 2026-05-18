@@ -81,6 +81,8 @@ h1 {
   letter-spacing: 0.08em;
   color: #f0c040;
   text-shadow: 0 0 20px rgba(240,192,64,0.7), 0 2px 4px rgba(0,0,0,1);
+  position: relative;
+  z-index: 1;
 }
 
 .logo-sub {
@@ -265,14 +267,15 @@ h1 {
   color: #f0c040;
   pointer-events: none;
   opacity: 0;
+  z-index: -1;
   text-shadow: 0 0 8px rgba(240,192,64,0.9);
   animation: sparkle-blink 3s ease-in-out infinite;
 }
 
 .sparkle.s1 { top: -8px;   left:  6%;  font-size: 9px;  animation-delay: 0s;    }
-.sparkle.s2 { top:  0;     right: 2%;  font-size: 13px; animation-delay: 0.9s;  }
-.sparkle.s3 { bottom: 1px; left:  1%;  font-size: 10px; animation-delay: 1.8s;  }
-.sparkle.s4 { top:  15%;   right: 14%; font-size: 8px;  animation-delay: 0.45s; }
+.sparkle.s2 { top:  0;     right: calc(2% - 10px);  font-size: 13px; animation-delay: 0.9s;  }
+.sparkle.s3 { bottom: 1px; left:  1%;               font-size: 10px; animation-delay: 1.8s;  }
+.sparkle.s4 { top: calc(15% - 8px); right: 14%;     font-size: 8px;  animation-delay: 0.45s; }
 .sparkle.s5 { bottom: -5px;right: 24%; font-size: 9px;  animation-delay: 2.4s;  }
 
 @keyframes sparkle-blink {
