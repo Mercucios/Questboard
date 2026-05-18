@@ -87,8 +87,8 @@ h1 {
   font-family: 'Star2', serif;
   font-style: italic;
   font-weight: 400;
-  color: #c8b89a;
-  font-size: 1.05rem;
+  color: #d8b4fe;
+  font-size: 18px;
   margin-top: 0.3rem;
   letter-spacing: 0.03em;
   text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.8);
@@ -96,11 +96,11 @@ h1 {
 
 .date-chip {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
   margin-top: 0.9rem;
-  padding: 0.65rem 1.4rem 0.9rem;
+  padding: 0.5rem 1.2rem;
   background: rgba(6,4,18,0.72);
   border: 1px solid rgba(201,162,39,0.3);
   border-radius: 16px;
@@ -111,14 +111,20 @@ h1 {
   backdrop-filter: blur(8px);
 }
 
+.date-chip svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
 .mood-prompt {
   font-family: 'Star2', serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
   color: #f0e4c0;
   margin-bottom: 1.4rem;
   letter-spacing: 0.04em;
-  text-shadow: -1px -1px 0 #3b0764, 1px -1px 0 #3b0764, -1px 1px 0 #3b0764, 1px 1px 0 #3b0764;
+  text-shadow: 0 0 20px rgba(0,0,0,0.9), 2px 2px 0 #1a0040, -1px -1px 0 #1a0040;
 }
 
 .mood-grid {
@@ -149,8 +155,8 @@ h1 {
   cursor: pointer;
   color: inherit;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  opacity: 0.75;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  opacity: 0.45;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.25s ease;
 }
 
 .mood-card:hover,
@@ -205,11 +211,30 @@ h1 {
 
 .mood-note {
   font-family: 'Star2', serif;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 400;
   color: #f0e4c0;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* ── Background Twinkle Stars ────────────────────────────── */
+.bg-star {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%       { opacity: 1; transform: scale(1.2); }
+}
+
+.mood-wrap {
+  position: relative;
+  z-index: 2;
 }
 
 /* ── Title Sparkles ───────────────────────────────────────── */
