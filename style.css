@@ -48,39 +48,24 @@ body {
   margin-bottom: 2.5rem;
 }
 
-/* ── Purple Orb Logo ──────────────────────────────────────── */
+/* ── Orb Logo ─────────────────────────────────────────────── */
 .logo-orb {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  display: block;
   margin: 0 auto 0.5rem;
-  position: relative;
-  background: radial-gradient(circle at 50% 50%, #9b30ff, #3b0080);
-  box-shadow: 0 0 40px rgba(120,0,255,0.8), 0 0 80px rgba(80,0,200,0.4);
-  animation: orb-pulse 3s ease-in-out infinite;
+  animation: orbPulse 3s ease-in-out infinite, orbSpin 30s linear infinite;
 }
 
-.logo-orb::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.4), transparent 60%);
+@keyframes orbPulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(180,60,255,0.8)); }
+  50%       { filter: drop-shadow(0 0 40px rgba(200,100,255,1)); }
 }
 
-.logo-orb::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: rgba(255,255,255,0.15);
-}
-
-@keyframes orb-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.8; }
+@keyframes orbSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 h1 {
