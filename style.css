@@ -164,7 +164,14 @@ h1 {
   object-fit: contain;
   display: block;
   mix-blend-mode: multiply;
+  filter: contrast(1.1);
   background: transparent;
+}
+
+.mood-card .video-wrap {
+  background: rgba(8,4,28,0.88);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .mood-name {
   font-family: system-ui, -apple-system, sans-serif;
