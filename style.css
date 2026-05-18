@@ -163,7 +163,8 @@ h1 {
   height: 80px;
   object-fit: contain;
   display: block;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
+  background: transparent;
 }
 .mood-name {
   font-family: system-ui, -apple-system, sans-serif;
