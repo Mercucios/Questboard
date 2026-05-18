@@ -133,22 +133,24 @@ h1 {
   align-items: center;
   gap: 0.4rem;
   padding: 1.2rem 0.5rem;
-  background: rgba(10,5,30,0.75);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: #ffffff;
+  border: none;
   border-radius: 16px;
   cursor: pointer;
   color: inherit;
-  backdrop-filter: blur(10px);
-  transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .mood-card:hover,
 .mood-card:focus-visible {
-  background: rgba(201,162,39,0.08);
-  border-color: rgba(201,162,39,0.32);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(100,0,200,0.4);
   outline: none;
+}
+
+.mood-card.selected {
+  box-shadow: 0 0 0 3px #7c3aed, 0 8px 30px rgba(100,0,200,0.5);
 }
 
 .mood-glyph {
@@ -175,17 +177,17 @@ h1 {
 }
 .mood-name {
   font-family: system-ui, -apple-system, sans-serif;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 15px;
-  color: #f0c040;
-  text-shadow: 0 0 12px rgba(240,192,64,0.5);
+  color: #3b0764;
+  text-shadow: none;
 }
-.mood-hint {
+.mood-sub {
   font-family: system-ui, -apple-system, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 13px;
-  color: #c8b89a;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+  color: #6d28d9;
+  text-shadow: none;
 }
 
 .mood-note {
