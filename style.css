@@ -173,15 +173,14 @@ h1 {
   justify-content: center;
   gap: 0.4rem;
   padding: 0.5rem;
-  width: clamp(80px, 28vw, 120px);
-  height: clamp(110px, 20vh, 160px);
+  height: clamp(100px, 22vw, 140px);
   background: #ffffff;
   border: 2px solid transparent;
   border-radius: 16px;
   cursor: pointer;
   color: inherit;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  opacity: 0.45;
+  opacity: 0.75;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -217,12 +216,12 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: clamp(36px, 8vw, 60px);
+  height: clamp(48px, 12vw, 72px);
   margin: 0 auto 0.1rem;
 }
 .mood-glyph video {
-  width: clamp(36px, 8vw, 60px);
-  height: clamp(36px, 8vw, 60px);
+  width: clamp(48px, 12vw, 72px);
+  height: clamp(48px, 12vw, 72px);
   object-fit: contain;
   display: block;
   mix-blend-mode: multiply;
@@ -238,14 +237,14 @@ h1 {
 .mood-name {
   font-family: system-ui, -apple-system, sans-serif;
   font-weight: 800;
-  font-size: clamp(11px, 2vw, 15px);
+  font-size: clamp(13px, 3.5vw, 17px);
   color: #3b0764;
   text-shadow: none;
 }
 .mood-sub {
   font-family: system-ui, -apple-system, sans-serif;
   font-weight: 500;
-  font-size: clamp(9px, 1.8vw, 13px);
+  font-size: clamp(11px, 3vw, 14px);
   color: #6d28d9;
   text-shadow: none;
 }
