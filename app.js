@@ -397,6 +397,8 @@ function renderBoard() {
   $('mana-text').textContent   = `${mana} / ${MAX_MANA}`;
   $('mana-fill').style.width   = `${(mana / MAX_MANA) * 100}%`;
   $('star-count').textContent  = loadStars().length;
+
+  renderSidequests();
 }
 
 function makeQuestCard(q, mana) {
@@ -434,7 +436,8 @@ function makeQuestCard(q, mana) {
 }
 
 function makeDoneCard(q) {
-  const t = q.treasure || TREASURE_ITEMS[0];
+  const t    = q.treasure || TREASURE_ITEMS[0];
+  const log  = getTodayLog(q.name);
   const card = document.createElement('div');
   card.className = 'quest-card done-card';
   card.innerHTML = `
@@ -445,7 +448,14 @@ function makeDoneCard(q) {
         <span class="quest-category">erbeutet</span>
       </div>
     </div>
-    <div class="quest-done-mark">✓</div>`;
+    <div class="quest-done-mark">
+      ${log
+        ? `<button class="log-view-btn" aria-label="Log ansehen" title="Quest-Log ansehen">📜</button>`
+        : '✓'}
+    </div>`;
+  if (log) {
+    card.querySelector('.log-view-btn').addEventListener('click', () => showLogView(log));
+  }
   return card;
 }
 
@@ -474,6 +484,13 @@ function swapQuest(name) {
 }
 
 function completeQuest(name) {
+  const quest = appState.quests.find(q => q.name === name && !q.done);
+  if (!quest) return;
+  _pendingCompletion = { type: 'quest', id: name, questTitle: name };
+  openLogPopup(name, name);
+}
+
+function _finalizeQuestCompletion(name) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
 
@@ -1030,6 +1047,12 @@ function init() {
         if (el.id === 'popup-starmap' && starMapAnimFrame) {
           cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null;
         }
+        if (el.id === 'popup-day-rating') {
+          _dayRatingDismissedAt = Date.now();
+        }
+        if (el.id === 'popup-quest-log') {
+          _pendingCompletion = null;
+        }
         el.classList.add('hidden');
       }
     });
@@ -1038,6 +1061,20 @@ function init() {
   $('btn-telescope-close').addEventListener('click', () => {
     $('popup-telescope').classList.add('hidden');
   });
+
+  // Feature 1 – Day Rating
+  $('btn-day-rating').addEventListener('click', showDayRatingPopup);
+  initDayRatingPopup();
+  setInterval(checkAndShowDayRating, 60000);
+
+  // Feature 2 – Sidequests
+  $('btn-sq-add').addEventListener('click',     showSqCreateModal);
+  $('btn-sq-add-hdr').addEventListener('click', showSqCreateModal);
+  initSqCreateModal();
+
+  // Feature 3 – Quest Log
+  initLogPopup();
+  $('btn-log-view-close').addEventListener('click', () => $('popup-log-view').classList.add('hidden'));
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -1317,3 +1354,329 @@ function initOrbLogo() {
 }
 
 document.addEventListener('DOMContentLoaded', initOrbLogo);
+
+// ═══════════════════════════════════════════════════════════════════
+// === FEATURE 1: Tagesbewertung =====================================
+// ═══════════════════════════════════════════════════════════════════
+
+const STORE_DAY_RATINGS   = 'questboard_day_ratings';
+let   _dayRatingDismissedAt = null;
+
+function loadDayRatings() {
+  try { return JSON.parse(localStorage.getItem(STORE_DAY_RATINGS)) || []; }
+  catch { return []; }
+}
+
+function saveDayRating(entry) {
+  const ratings = loadDayRatings();
+  const idx = ratings.findIndex(r => r.date === entry.date);
+  if (idx >= 0) ratings[idx] = entry; else ratings.push(entry);
+  localStorage.setItem(STORE_DAY_RATINGS, JSON.stringify(ratings));
+}
+
+function getTodayDayRating() {
+  return loadDayRatings().find(r => r.date === todayStr()) || null;
+}
+
+function getViennaHour() {
+  const parts = new Intl.DateTimeFormat('de-AT', {
+    timeZone: 'Europe/Vienna', hour: 'numeric', hour12: false,
+  }).formatToParts(new Date());
+  return parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10);
+}
+
+function showDayRatingPopup() {
+  if (!appState) return;
+
+  const apUsed    = MAX_MANA - appState.mana;
+  const autoHint  = $('day-rating-auto-hint');
+  const existing  = getTodayDayRating();
+
+  // Pre-select auto rating if < 2 AP used and no existing rating
+  let autoRated = false;
+  if (!existing && apUsed < 2) {
+    autoRated = true;
+    const tooMuchBtn = document.querySelector('.day-rating-opt-btn[data-rating="too_much"]');
+    document.querySelectorAll('.day-rating-opt-btn').forEach(b => b.classList.remove('selected'));
+    tooMuchBtn?.classList.add('selected');
+    autoHint.textContent = `Heute wurden weniger als 2 AP verbraucht (${apUsed} AP). Das deutet auf einen überwältigenden Tag hin – „Zu viel" wurde vorausgewählt.`;
+    autoHint.classList.remove('hidden');
+    $('btn-day-rating-save').disabled = false;
+  } else {
+    document.querySelectorAll('.day-rating-opt-btn').forEach(b => b.classList.remove('selected'));
+    if (existing) {
+      document.querySelector(`.day-rating-opt-btn[data-rating="${existing.rating}"]`)?.classList.add('selected');
+      $('btn-day-rating-save').disabled = false;
+    } else {
+      $('btn-day-rating-save').disabled = true;
+    }
+    autoHint.classList.add('hidden');
+  }
+
+  $('popup-day-rating').dataset.autoRated = autoRated ? '1' : '';
+  $('popup-day-rating').classList.remove('hidden');
+}
+
+function checkAndShowDayRating() {
+  if (!appState) return;
+  if (getTodayDayRating()) return;
+  if (getViennaHour() < 21) return;
+  if (_dayRatingDismissedAt) {
+    const minSince = (Date.now() - _dayRatingDismissedAt) / 60000;
+    if (minSince < 30) return;
+  }
+  showDayRatingPopup();
+}
+
+function initDayRatingPopup() {
+  document.querySelectorAll('.day-rating-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.day-rating-opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      $('btn-day-rating-save').disabled = false;
+    });
+  });
+
+  $('btn-day-rating-save').addEventListener('click', () => {
+    const selected  = document.querySelector('.day-rating-opt-btn.selected');
+    if (!selected) return;
+    const autoRated = $('popup-day-rating').dataset.autoRated === '1';
+    saveDayRating({
+      date:      todayStr(),
+      rating:    selected.dataset.rating,
+      apUsed:    MAX_MANA - (appState?.mana ?? MAX_MANA),
+      autoRated,
+    });
+    $('popup-day-rating').classList.add('hidden');
+  });
+
+  $('btn-day-rating-skip').addEventListener('click', () => {
+    _dayRatingDismissedAt = Date.now();
+    $('popup-day-rating').classList.add('hidden');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// === FEATURE 2: Spontane Sidequests ================================
+// ═══════════════════════════════════════════════════════════════════
+
+const STORE_SIDEQUESTS = 'questboard_sidequests';
+
+function loadTodaySidequests() {
+  try {
+    return (JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [])
+      .filter(sq => sq.date === todayStr());
+  } catch { return []; }
+}
+
+function saveSidequest(sq) {
+  try {
+    const all = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
+    const idx = all.findIndex(s => s.id === sq.id);
+    if (idx >= 0) all[idx] = sq; else all.push(sq);
+    localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(all));
+  } catch {}
+}
+
+function renderSidequests() {
+  const list = $('sidequest-list');
+  if (!list) return;
+  list.innerHTML = '';
+  loadTodaySidequests().forEach(sq => list.appendChild(makeSidequestCard(sq)));
+}
+
+function makeSidequestCard(sq) {
+  const card = document.createElement('div');
+  card.className = `sidequest-card${sq.done ? ' sidequest-done' : ''}`;
+
+  const costHtml = Array(sq.mana)
+    .fill('<span class="gem-dot gem-dot--xs" style="--gem-color:#4a9eff"></span>')
+    .join('');
+
+  const log       = getTodayLog(sq.id);
+  const actionHtml = sq.done
+    ? `<div class="quest-done-mark">
+        ${log
+          ? `<button class="log-view-btn" aria-label="Log ansehen" title="Quest-Log ansehen">📜</button>`
+          : '✓'}
+       </div>`
+    : `<div class="quest-actions">
+        <button class="quest-btn" aria-label="${sq.title} abschließen">✦</button>
+       </div>`;
+
+  card.innerHTML = `
+    <span class="sq-lightning-badge">⚡ Sidequest</span>
+    <span class="sq-cat-emoji">${sq.emoji}</span>
+    <div class="quest-info">
+      <div class="quest-name">${sq.title}</div>
+      <div class="quest-meta">
+        <span class="quest-cost">${costHtml}</span>
+        ${sq.description ? `<span class="quest-category">${sq.description}</span>` : ''}
+      </div>
+    </div>
+    ${actionHtml}`;
+
+  if (!sq.done) {
+    card.querySelector('.quest-btn').addEventListener('click', () => completeSidequest(sq.id));
+  } else if (log) {
+    card.querySelector('.log-view-btn')?.addEventListener('click', () => showLogView(log));
+  }
+  return card;
+}
+
+function showSqCreateModal() {
+  $('sq-title-input').value  = '';
+  $('sq-desc-input').value   = '';
+  document.querySelectorAll('.sq-cat-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.sq-ap-btn').forEach(b => b.classList.remove('selected'));
+  $('btn-sq-save').disabled  = true;
+  $('popup-sq-create').classList.remove('hidden');
+}
+
+function _updateSqSaveState() {
+  const hasCategory = !!document.querySelector('.sq-cat-btn.selected');
+  const hasTitle    = $('sq-title-input').value.trim().length > 0;
+  const hasAp       = !!document.querySelector('.sq-ap-btn.selected');
+  $('btn-sq-save').disabled = !(hasCategory && hasTitle && hasAp);
+}
+
+function initSqCreateModal() {
+  document.querySelectorAll('.sq-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sq-cat-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      _updateSqSaveState();
+    });
+  });
+
+  document.querySelectorAll('.sq-ap-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sq-ap-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      _updateSqSaveState();
+    });
+  });
+
+  $('sq-title-input').addEventListener('input', _updateSqSaveState);
+
+  $('btn-sq-save').addEventListener('click', () => {
+    const catBtn = document.querySelector('.sq-cat-btn.selected');
+    const apBtn  = document.querySelector('.sq-ap-btn.selected');
+    const title  = $('sq-title-input').value.trim();
+    if (!catBtn || !apBtn || !title) return;
+
+    const sq = {
+      id:          `sq_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+      date:        todayStr(),
+      category:    catBtn.dataset.cat,
+      emoji:       catBtn.dataset.emoji,
+      title,
+      mana:        parseInt(apBtn.dataset.ap, 10),
+      description: $('sq-desc-input').value.trim() || null,
+      done:        false,
+      treasure:    null,
+    };
+    saveSidequest(sq);
+    $('popup-sq-create').classList.add('hidden');
+    renderSidequests();
+  });
+
+  $('btn-sq-cancel').addEventListener('click', () => $('popup-sq-create').classList.add('hidden'));
+}
+
+function completeSidequest(sqId) {
+  const sqs = loadTodaySidequests();
+  const sq  = sqs.find(s => s.id === sqId && !s.done);
+  if (!sq) return;
+  _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title };
+  openLogPopup(sqId, sq.title);
+}
+
+function _finalizeSidequestCompletion(sqId) {
+  const sqs = loadTodaySidequests();
+  const sq  = sqs.find(s => s.id === sqId && !s.done);
+  if (!sq || !appState) return;
+
+  sq.done     = true;
+  sq.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  appState.mana = Math.max(0, appState.mana - sq.mana);
+
+  saveSidequest(sq);
+  saveDayState(appState);
+  renderBoard();
+  showRewardPopup(sq);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// === FEATURE 3: Quest-Log als Schriftrolle =========================
+// ═══════════════════════════════════════════════════════════════════
+
+const STORE_LOGS       = 'questboard_logs';
+let   _pendingCompletion = null;
+
+const LOG_RATING_LABEL = { good: '😄 Sehr gut', ok: '😐 Ok', bad: '😞 Schlecht' };
+
+function loadLogs() {
+  try { return JSON.parse(localStorage.getItem(STORE_LOGS)) || []; }
+  catch { return []; }
+}
+
+function saveLog(entry) {
+  const logs = loadLogs();
+  const idx  = logs.findIndex(l => l.questId === entry.questId && l.date === entry.date);
+  if (idx >= 0) logs[idx] = entry; else logs.push(entry);
+  localStorage.setItem(STORE_LOGS, JSON.stringify(logs));
+}
+
+function getTodayLog(questId) {
+  return loadLogs().find(l => l.questId === questId && l.date === todayStr()) || null;
+}
+
+function openLogPopup(questId, questTitle) {
+  $('log-quest-title').textContent = questTitle;
+  $('log-note-input').value        = '';
+  document.querySelectorAll('.log-rating-btn').forEach(b => b.classList.remove('selected'));
+  $('btn-log-save').disabled       = true;
+  $('popup-quest-log').classList.remove('hidden');
+}
+
+function initLogPopup() {
+  document.querySelectorAll('.log-rating-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.log-rating-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      $('btn-log-save').disabled = false;
+    });
+  });
+
+  $('btn-log-save').addEventListener('click', () => {
+    const selected = document.querySelector('.log-rating-btn.selected');
+    if (!selected || !_pendingCompletion) return;
+
+    saveLog({
+      questId:    _pendingCompletion.id,
+      questTitle: _pendingCompletion.questTitle,
+      date:       todayStr(),
+      rating:     selected.dataset.rating,
+      note:       $('log-note-input').value.trim() || null,
+    });
+
+    $('popup-quest-log').classList.add('hidden');
+
+    const pending = _pendingCompletion;
+    _pendingCompletion = null;
+
+    if (pending.type === 'quest') {
+      _finalizeQuestCompletion(pending.id);
+    } else {
+      _finalizeSidequestCompletion(pending.id);
+    }
+  });
+}
+
+function showLogView(log) {
+  $('log-view-title').textContent  = log.questTitle;
+  $('log-view-rating').textContent = LOG_RATING_LABEL[log.rating] || log.rating;
+  $('log-view-note').textContent   = log.note || '(Keine Notiz)';
+  $('popup-log-view').classList.remove('hidden');
+}

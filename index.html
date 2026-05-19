@@ -89,6 +89,8 @@
       <div class="board-top">
         <div class="board-title"><div id="crystal-lottie" style="width:40px;height:40px;"></div><span>Questboard</span></div>
         <div class="board-top-actions">
+          <button id="btn-day-rating" class="reset-btn" title="Tag bewerten" aria-label="Tag bewerten">🌙</button>
+          <button id="btn-sq-add-hdr" class="reset-btn" title="Spontane Quest hinzufügen" aria-label="Sidequest hinzufügen">⚡</button>
           <button id="btn-reset" class="reset-btn" title="Neu starten">↺</button>
           <button id="btn-starmap" class="starmap-btn" aria-label="Sternenkarte öffnen">
             🗺️&thinsp;<span id="star-count">0</span>&thinsp;⭐
@@ -112,6 +114,15 @@
       <div id="treasure-section" class="treasure-section hidden">
         <div class="treasure-heading"><span>🎁</span><span>Schatzkammer</span></div>
         <div id="treasure-list" class="treasure-list"></div>
+      </div>
+
+      <!-- FEATURE 2: Sidequest Section -->
+      <div id="sidequest-section" class="sidequest-section">
+        <div class="sidequest-heading">
+          <span>⚡</span><span>Unerwartete Pfade</span>
+          <button id="btn-sq-add" class="sq-add-btn" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">+</button>
+        </div>
+        <div id="sidequest-list" class="sidequest-list"></div>
       </div>
     </div>
   </section>
@@ -181,6 +192,111 @@
       <h3 class="telescope-title">Nächstes Sternbild</h3>
       <canvas id="telescope-canvas" width="280" height="220"></canvas>
       <button id="btn-telescope-close" class="btn-action">Schließen ✦</button>
+    </div>
+  </div>
+
+  <!-- FEATURE 1: Day Rating Popup -->
+  <div id="popup-day-rating" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup day-rating-popup">
+      <div class="popup-sparkle">🌙 ✦ 🌙</div>
+      <h3 class="day-rating-title">Wie war dein Tag?</h3>
+      <p class="day-rating-sub">Deine ehrliche Einschätzung hilft dir, dich besser zu verstehen.</p>
+      <div id="day-rating-auto-hint" class="day-rating-auto-hint hidden"></div>
+      <div class="day-rating-options">
+        <button class="day-rating-opt-btn" data-rating="too_little">
+          <span class="dr-icon">🌱</span>
+          <span class="dr-label">Zu wenig</span>
+          <span class="dr-desc">Hätte mehr geschafft</span>
+        </button>
+        <button class="day-rating-opt-btn" data-rating="just_right">
+          <span class="dr-icon">⭐</span>
+          <span class="dr-label">Genau richtig</span>
+          <span class="dr-desc">Perfekte Balance</span>
+        </button>
+        <button class="day-rating-opt-btn" data-rating="much">
+          <span class="dr-icon">🔥</span>
+          <span class="dr-label">Viel</span>
+          <span class="dr-desc">Anstrengend aber machbar</span>
+        </button>
+        <button class="day-rating-opt-btn" data-rating="too_much">
+          <span class="dr-icon">💀</span>
+          <span class="dr-label">Zu viel</span>
+          <span class="dr-desc">War überwältigend</span>
+        </button>
+      </div>
+      <button id="btn-day-rating-save" class="btn-action" disabled>Speichern ✦</button>
+      <button id="btn-day-rating-skip" class="subtle-skip-btn">Später erinnern</button>
+    </div>
+  </div>
+
+  <!-- FEATURE 2: Sidequest Create Popup -->
+  <div id="popup-sq-create" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup sq-create-popup">
+      <div class="popup-sparkle">⚡ ✦ ⚡</div>
+      <h3 class="sq-create-title">Unerwarteter Pfad</h3>
+      <div class="sq-field">
+        <div class="sq-field-label">Kategorie <span class="sq-req">*</span></div>
+        <div class="sq-category-grid">
+          <button class="sq-cat-btn" data-cat="soziales" data-emoji="👨‍👩‍👧">👨‍👩‍👧<span>Soziales</span></button>
+          <button class="sq-cat-btn" data-cat="ausflug" data-emoji="🚗">🚗<span>Ausflug</span></button>
+          <button class="sq-cat-btn" data-cat="gesundheit" data-emoji="🏥">🏥<span>Gesundheit</span></button>
+          <button class="sq-cat-btn" data-cat="besorgung" data-emoji="🛒">🛒<span>Besorgung</span></button>
+          <button class="sq-cat-btn" data-cat="event" data-emoji="🎉">🎉<span>Event</span></button>
+          <button class="sq-cat-btn" data-cat="notfall" data-emoji="🆘">🆘<span>Notfall</span></button>
+          <button class="sq-cat-btn" data-cat="selbstfuersorge" data-emoji="🌿">🌿<span>Selbstfürsorge</span></button>
+          <button class="sq-cat-btn" data-cat="arbeit" data-emoji="💼">💼<span>Arbeit</span></button>
+        </div>
+      </div>
+      <div class="sq-field">
+        <div class="sq-field-label">Name der Quest <span class="sq-req">*</span></div>
+        <input id="sq-title-input" class="sq-input" type="text" placeholder="Was erwartet dich?" maxlength="60">
+      </div>
+      <div class="sq-field">
+        <div class="sq-field-label">AP-Kosten <span class="sq-req">*</span></div>
+        <div class="sq-ap-picker">
+          <button class="sq-ap-btn" data-ap="1">1</button>
+          <button class="sq-ap-btn" data-ap="2">2</button>
+          <button class="sq-ap-btn" data-ap="3">3</button>
+          <button class="sq-ap-btn" data-ap="4">4</button>
+          <button class="sq-ap-btn" data-ap="5">5</button>
+        </div>
+      </div>
+      <div class="sq-field">
+        <div class="sq-field-label">Beschreibung <span class="sq-opt">(optional)</span></div>
+        <textarea id="sq-desc-input" class="sq-input sq-textarea" placeholder="Details..." maxlength="200" rows="2"></textarea>
+      </div>
+      <button id="btn-sq-save" class="btn-action" disabled>Quest annehmen ⚡</button>
+      <button id="btn-sq-cancel" class="subtle-skip-btn">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- FEATURE 3: Quest Log Scroll (write) -->
+  <div id="popup-quest-log" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup quest-log-popup">
+      <div class="scroll-ornament">⊕ ✦ ⊕</div>
+      <h3 id="log-quest-title" class="log-quest-title"></h3>
+      <div class="log-section-label">Wie war diese Quest? <span class="sq-req">*</span></div>
+      <div class="log-rating-row">
+        <button class="log-rating-btn" data-rating="good"><span>😄</span><span>Sehr gut</span></button>
+        <button class="log-rating-btn" data-rating="ok"><span>😐</span><span>Ok</span></button>
+        <button class="log-rating-btn" data-rating="bad"><span>😞</span><span>Schlecht</span></button>
+      </div>
+      <div class="log-section-label">Gedanken <span class="sq-opt">(optional)</span></div>
+      <textarea id="log-note-input" class="log-note-input" placeholder="Schreibe deine Gedanken zu dieser Quest nieder..." maxlength="500" rows="3"></textarea>
+      <button id="btn-log-save" class="btn-action log-action-btn" disabled>Quest abschließen ✦</button>
+      <div class="scroll-ornament">⊕ ✦ ⊕</div>
+    </div>
+  </div>
+
+  <!-- FEATURE 3: Quest Log View (read-only) -->
+  <div id="popup-log-view" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup quest-log-popup quest-log-view">
+      <div class="scroll-ornament">⊕ ✦ ⊕</div>
+      <h3 id="log-view-title" class="log-quest-title"></h3>
+      <p id="log-view-rating" class="log-view-rating-line"></p>
+      <p id="log-view-note" class="log-view-note-text"></p>
+      <button id="btn-log-view-close" class="btn-action log-action-btn">Schließen ✦</button>
+      <div class="scroll-ornament">⊕ ✦ ⊕</div>
     </div>
   </div>
 
