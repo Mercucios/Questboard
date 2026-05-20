@@ -380,19 +380,12 @@ let starMapAnimFrame = null;
 function renderBoard() {
   const { quests, mana } = appState;
   const active = quests.filter(q => !q.done);
-  const done   = quests.filter(q => q.done);
 
-  $('quest-list').innerHTML    = '';
-  $('treasure-list').innerHTML = '';
-
+  $('quest-list').innerHTML = '';
   active.forEach(q => $('quest-list').appendChild(makeQuestCard(q, mana)));
 
-  if (done.length > 0) {
-    $('treasure-section').classList.remove('hidden');
-    done.forEach(q => $('treasure-list').appendChild(makeDoneCard(q)));
-  } else {
-    $('treasure-section').classList.add('hidden');
-  }
+  // Done quests hidden from board — accessible via Rucksack Questlog/Schatztruhe
+  $('treasure-section').classList.add('hidden');
 
   $('mana-text').textContent   = `${mana} / ${MAX_MANA}`;
   $('mana-fill').style.width   = `${(mana / MAX_MANA) * 100}%`;
@@ -504,6 +497,7 @@ function _finalizeQuestCompletion(name) {
     saveRhythm(rhythm);
   }
 
+  rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
   saveDayState(appState);
   renderBoard();
   showRewardPopup(quest);
@@ -1031,7 +1025,6 @@ function init() {
   $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
   $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
   $('btn-rest-close').addEventListener('click',   () => $('popup-rest').classList.add('hidden'));
-  $('btn-starmap').addEventListener('click',      openStarMap);
   $('btn-starmap-close').addEventListener('click', () => {
     if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
     $('popup-starmap').classList.add('hidden');
@@ -1075,6 +1068,9 @@ function init() {
   // Feature 3 – Quest Log
   initLogPopup();
   $('btn-log-view-close').addEventListener('click', () => $('popup-log-view').classList.add('hidden'));
+
+  // === RUCKSACK ===
+  initRucksack();
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -1601,6 +1597,7 @@ function _finalizeSidequestCompletion(sqId) {
   sq.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
   appState.mana = Math.max(0, appState.mana - sq.mana);
 
+  rucksackRecordTreasure(sq.title, sq.treasure, 'sidequest');
   saveSidequest(sq);
   saveDayState(appState);
   renderBoard();
@@ -1679,4 +1676,376 @@ function showLogView(log) {
   $('log-view-rating').textContent = LOG_RATING_LABEL[log.rating] || log.rating;
   $('log-view-note').textContent   = log.note || '(Keine Notiz)';
   $('popup-log-view').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// === RUCKSACK ======================================================
+// ═══════════════════════════════════════════════════════════════════
+
+const STORE_TREASURES = 'questboard_treasures';
+
+function rucksackLoadTreasures() {
+  try { return JSON.parse(localStorage.getItem(STORE_TREASURES)) || []; }
+  catch { return []; }
+}
+
+function rucksackRecordTreasure(questTitle, treasure, type) {
+  const all = rucksackLoadTreasures();
+  all.push({
+    date:    todayStr(),
+    questTitle,
+    name:    treasure.name,
+    color:   treasure.color,
+    special: treasure.special || null,
+    type,
+  });
+  localStorage.setItem(STORE_TREASURES, JSON.stringify(all));
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let _ruckOpen      = false;
+let _ruckView      = 'cards';
+let _ruckChestDone = false;
+let _ruckCountRaf  = null;
+let _ruckDragY     = 0;
+let _ruckDragging  = false;
+
+// ── Open / Close ──────────────────────────────────────────────────
+function openRucksack() {
+  if (_ruckOpen) return;
+  _ruckOpen = true;
+  const overlay = $('rucksack-overlay');
+  const drawer  = $('rucksack-drawer');
+  overlay.classList.remove('hidden');
+  drawer.classList.remove('hidden');
+  // Reset to cards view without animation
+  _ruckSetView('cards', false);
+  requestAnimationFrame(() => {
+    overlay.classList.add('rucksack-overlay-visible');
+    drawer.classList.add('rucksack-drawer-open');
+  });
+}
+
+function closeRucksack() {
+  if (!_ruckOpen) return;
+  _ruckOpen = false;
+  const overlay = $('rucksack-overlay');
+  const drawer  = $('rucksack-drawer');
+  drawer.classList.remove('rucksack-drawer-open');
+  overlay.classList.remove('rucksack-overlay-visible');
+  drawer.style.transform = '';
+  setTimeout(() => {
+    drawer.classList.add('hidden');
+    overlay.classList.add('hidden');
+  }, 360);
+}
+
+// ── View Switching ────────────────────────────────────────────────
+const RUCK_VIEWS = ['cards', 'telescope', 'questlog', 'treasure'];
+
+function _ruckViewEl(name) {
+  return document.getElementById('rucksack-view-' + name);
+}
+
+function _ruckSetView(name, animate) {
+  const prev = _ruckView;
+  _ruckView  = name;
+
+  if (!animate || prev === name) {
+    RUCK_VIEWS.forEach(v => {
+      const el = _ruckViewEl(v);
+      el.style.transition = 'none';
+      el.className = 'rucksack-view ' + (v === name ? 'rucksack-view-active' : 'rucksack-view-right');
+    });
+    _ruckPopulate(name);
+    return;
+  }
+
+  _ruckPopulate(name);
+
+  const goBack   = (name === 'cards');
+  const prevEl   = _ruckViewEl(prev);
+  const targetEl = _ruckViewEl(name);
+
+  // Place target off-screen instantly
+  targetEl.style.transition = 'none';
+  targetEl.className = 'rucksack-view ' + (goBack ? 'rucksack-view-left' : 'rucksack-view-right');
+
+  requestAnimationFrame(() => {
+    targetEl.style.transition = '';
+    requestAnimationFrame(() => {
+      prevEl.className   = 'rucksack-view ' + (goBack ? 'rucksack-view-right' : 'rucksack-view-left');
+      targetEl.className = 'rucksack-view rucksack-view-active';
+    });
+  });
+}
+
+function _ruckPopulate(name) {
+  if (name === 'telescope') _ruckPopTelescope();
+  if (name === 'questlog')  _ruckPopQuestlog();
+  if (name === 'treasure')  _ruckPopTreasure();
+}
+
+// ── Telescope ─────────────────────────────────────────────────────
+function _ruckPopTelescope() {
+  const starCount = loadStars().length;
+  const numEl     = $('ruck-star-num');
+
+  // CountUp animation
+  if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
+  const t0 = performance.now();
+  const dur = 900;
+  function countStep(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    numEl.textContent = Math.round(e * starCount);
+    if (p < 1) _ruckCountRaf = requestAnimationFrame(countStep);
+  }
+  _ruckCountRaf = requestAnimationFrame(countStep);
+
+  // Constellations
+  const list = $('ruck-const-list');
+  list.innerHTML = '';
+  const info     = getConstellationInfo(starCount);
+  const compN    = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+
+  let cumul = 0;
+  CONSTELLATIONS.forEach((c, i) => {
+    cumul += c.starsNeeded;
+    const isComplete = i < compN;
+    const isCurrent  = !info.allComplete && i === compN;
+    const isNearLock = !isComplete && !isCurrent && i <= compN + 2;
+    const isHidden   = !isComplete && !isCurrent && i > compN + 2;
+
+    const el = document.createElement('div');
+    let cls = 'ruck-const-item ';
+    if (isComplete)  cls += 'ci-done';
+    else if (isCurrent) cls += 'ci-active';
+    else if (isNearLock) cls += 'ci-locked';
+    else cls += 'ci-hidden';
+    el.className = cls;
+
+    let icon, name, badgeCls, badgeTxt;
+    if (isComplete) {
+      icon = '⭐'; name = c.name;
+      badgeCls = 'badge-done'; badgeTxt = 'Entdeckt ✦';
+    } else if (isCurrent) {
+      icon = '🔭'; name = c.name;
+      badgeCls = 'badge-active'; badgeTxt = `${info.earned}/${c.starsNeeded}`;
+    } else if (isNearLock) {
+      icon = '🔒'; name = c.name;
+      badgeCls = 'badge-locked'; badgeTxt = `${c.starsNeeded} ⭐`;
+    } else {
+      icon = '🔒'; name = '? ? ?';
+      badgeCls = 'badge-locked'; badgeTxt = '?';
+    }
+
+    el.innerHTML = `
+      <span class="ruck-const-icon">${icon}</span>
+      <span class="ruck-const-name">${name}</span>
+      <span class="ruck-const-badge ${badgeCls}">${badgeTxt}</span>`;
+    list.appendChild(el);
+  });
+}
+
+// ── Questlog ──────────────────────────────────────────────────────
+function _ruckFmtDate(d) {
+  try {
+    return new Intl.DateTimeFormat('de-AT', {
+      timeZone: 'Europe/Vienna', day: 'numeric', month: 'numeric', year: '2-digit',
+    }).format(new Date(d + 'T12:00:00'));
+  } catch { return d; }
+}
+
+function _ruckRatingLabel(type, rating) {
+  if (type === 'quest') {
+    return { good: '😄 Sehr gut', ok: '😐 Ok', bad: '😞 Schlecht' }[rating] || rating;
+  }
+  return {
+    too_little: '🌱 Zu wenig', just_right: '⭐ Genau richtig',
+    much: '🔥 Viel', too_much: '💀 Zu viel',
+  }[rating] || rating;
+}
+
+function _ruckPopQuestlog() {
+  const container = $('ruck-log-entries');
+  const logs      = loadLogs();
+  const ratings   = loadDayRatings();
+
+  const entries = [
+    ...logs.map(l => ({ type: 'quest', date: l.date, title: l.questTitle, rating: l.rating, note: l.note })),
+    ...ratings.map(r => ({ type: 'day', date: r.date, title: 'Tagesbewertung', rating: r.rating, note: null })),
+  ].sort((a, b) => b.date.localeCompare(a.date) || (a.type === 'quest' ? -1 : 1));
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="ruck-empty">Noch keine Abenteuer verzeichnet...</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  entries.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'ruck-log-entry';
+    div.innerHTML = `
+      <div class="ruck-log-hdr">
+        <span class="ruck-log-title">${e.title}</span>
+        <span class="ruck-log-date">${_ruckFmtDate(e.date)}</span>
+      </div>
+      <div class="ruck-log-rating">${_ruckRatingLabel(e.type, e.rating)}</div>
+      ${e.note ? `<div class="ruck-log-note">${e.note}</div>` : ''}`;
+    container.appendChild(div);
+  });
+}
+
+// ── Schatztruhe ───────────────────────────────────────────────────
+function _ruckSpawnParticles() {
+  const wrap = $('ruck-chest-particles');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const glyphs = ['✦', '✧', '★', '✦', '✧', '⭐', '✦'];
+  for (let i = 0; i < 7; i++) {
+    const p = document.createElement('span');
+    p.className   = 'ruck-gold-particle';
+    p.textContent = glyphs[i];
+    p.style.left  = `${15 + Math.random() * 70}%`;
+    p.style.top   = '0';
+    p.style.animationDelay = `${i * 0.11}s`;
+    wrap.appendChild(p);
+  }
+  setTimeout(() => { wrap.innerHTML = ''; }, 2200);
+}
+
+function _ruckPopTreasure() {
+  const container = $('ruck-treasure-entries');
+
+  if (!_ruckChestDone) {
+    _ruckChestDone = true;
+    _ruckSpawnParticles();
+  }
+
+  const stored = rucksackLoadTreasures();
+
+  // Also include today's quest treasures not yet in store (e.g. before first save)
+  const today   = todayStr();
+  const extra   = [];
+  if (appState) {
+    appState.quests.filter(q => q.done && q.treasure).forEach(q => {
+      const already = stored.some(t => t.date === today && t.questTitle === q.name && t.type === 'quest');
+      if (!already) extra.push({ date: today, questTitle: q.name, name: q.treasure.name, color: q.treasure.color, special: q.treasure.special || null, type: 'quest' });
+    });
+  }
+
+  const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
+
+  if (all.length === 0) {
+    container.innerHTML = '<div class="ruck-empty">Die Truhe wartet auf deine Heldentaten...</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  all.forEach(t => {
+    const item = TREASURE_ITEMS.find(i => i.name === t.name) || { color: t.color || '#888', special: t.special };
+    const card = document.createElement('div');
+    card.className = 'ruck-reward-card';
+    card.innerHTML = `
+      ${gemDotHtml(item, 'sm')}
+      <div class="ruck-reward-info">
+        <div class="ruck-reward-name">${t.name}</div>
+        <div class="ruck-reward-quest">${t.questTitle}</div>
+      </div>
+      <span class="ruck-reward-date">${_ruckFmtDate(t.date)}</span>`;
+    container.appendChild(card);
+  });
+}
+
+// ── Drag to close ─────────────────────────────────────────────────
+function _ruckInitDrag() {
+  const handle = $('rucksack-handle');
+  const drawer = $('rucksack-drawer');
+  let   startY = 0, startT = 0;
+
+  handle.addEventListener('touchstart', e => {
+    startY        = e.touches[0].clientY;
+    startT        = Date.now();
+    _ruckDragging = true;
+    drawer.style.transition = 'none';
+  }, { passive: true });
+
+  window.addEventListener('touchmove', e => {
+    if (!_ruckDragging) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0) drawer.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+
+  window.addEventListener('touchend', e => {
+    if (!_ruckDragging) return;
+    _ruckDragging = false;
+    const dy  = e.changedTouches[0].clientY - startY;
+    const vel = dy / Math.max(1, Date.now() - startT);
+    drawer.style.transition = '';
+    if (dy > 110 || vel > 0.55) {
+      drawer.style.transform = '';
+      closeRucksack();
+    } else if (Math.abs(dy) < 10) {
+      // Tap on handle → close
+      drawer.style.transform = '';
+      closeRucksack();
+    } else {
+      drawer.style.transform = '';
+    }
+  }, { passive: true });
+}
+
+// ── Card animations ───────────────────────────────────────────────
+function _ruckCardPulse(id) {
+  const el = $(id);
+  el.classList.remove('inv-card-pulse');
+  void el.offsetWidth;
+  el.classList.add('inv-card-pulse');
+  setTimeout(() => el.classList.remove('inv-card-pulse'), 420);
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+function initRucksack() {
+  $('btn-rucksack').addEventListener('click', openRucksack);
+  $('rucksack-overlay').addEventListener('click', closeRucksack);
+
+  // Back buttons
+  document.querySelectorAll('.rucksack-back-btn').forEach(btn => {
+    btn.addEventListener('click', () => _ruckSetView('cards', true));
+  });
+
+  // Telescope card
+  $('inv-card-telescope').addEventListener('click', () => {
+    _ruckCardPulse('inv-card-telescope');
+    setTimeout(() => _ruckSetView('telescope', true), 80);
+  });
+
+  // Questlog card — scroll-unroll animation on icon
+  $('inv-card-questlog').addEventListener('click', () => {
+    const icon = document.querySelector('#inv-card-questlog .inv-card-icon');
+    icon.style.animation = 'none';
+    void icon.offsetWidth;
+    icon.style.animation = 'scroll-unroll 0.3s ease';
+    setTimeout(() => { icon.style.animation = ''; }, 320);
+    setTimeout(() => _ruckSetView('questlog', true), 80);
+  });
+
+  // Treasure card — chest open animation on icon
+  $('inv-card-treasure').addEventListener('click', () => {
+    const icon = document.querySelector('#inv-card-treasure .inv-card-icon-svg');
+    icon.style.animation = 'none';
+    void icon.offsetWidth;
+    icon.style.animation = 'chest-open 0.4s ease';
+    setTimeout(() => { icon.style.animation = ''; }, 420);
+    setTimeout(() => _ruckSetView('treasure', true), 80);
+  });
+
+  // Starmap button within telescope area
+  $('ruck-open-starmap').addEventListener('click', () => {
+    closeRucksack();
+    setTimeout(openStarMap, 400);
+  });
+
+  _ruckInitDrag();
 }

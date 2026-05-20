@@ -1524,3 +1524,506 @@ h1 {
   line-height: 1;
 }
 .log-view-btn:hover { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   === RUCKSACK =============================================
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Bag Button ──────────────────────────────────────────── */
+.rucksack-btn {
+  background: rgba(155,77,202,0.12);
+  border: 1px solid rgba(155,77,202,0.32);
+  border-radius: 10px;
+  padding: 0.22rem 0.45rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.rucksack-btn:hover {
+  background: rgba(155,77,202,0.25);
+  border-color: rgba(155,77,202,0.55);
+}
+
+.rucksack-btn svg {
+  display: block;
+  transform-origin: top center;
+  animation: bag-swing 3s ease-in-out infinite;
+}
+
+@keyframes bag-swing {
+  0%,  100% { transform: rotate(0deg); }
+  25%        { transform: rotate(-5deg); }
+  75%        { transform: rotate(5deg); }
+}
+
+/* ── Overlay ─────────────────────────────────────────────── */
+.rucksack-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.rucksack-overlay.rucksack-overlay-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Drawer ──────────────────────────────────────────────── */
+.rucksack-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 85dvh;
+  z-index: 21;
+  background: rgba(8,4,28,0.97);
+  backdrop-filter: blur(16px);
+  border-top: 2px solid rgba(201,162,39,0.6);
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.35s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rucksack-drawer.rucksack-drawer-open {
+  transform: translateY(0);
+}
+
+/* ── Drag Handle ─────────────────────────────────────────── */
+.rucksack-handle-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0.65rem 0 0.45rem;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.rucksack-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: rgba(201,162,39,0.38);
+  border-radius: 2px;
+}
+
+/* ── Title ───────────────────────────────────────────────── */
+.rucksack-title {
+  font-family: 'Star2', serif;
+  font-size: 1.3rem;
+  color: #f0c040;
+  text-align: center;
+  padding: 0.5rem 1rem 0.4rem;
+  text-shadow: 0 0 16px rgba(240,192,64,0.6), 0 2px 4px rgba(0,0,0,1);
+  flex-shrink: 0;
+}
+
+/* ── Slide Container ─────────────────────────────────────── */
+.rucksack-slide-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.rucksack-view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.rucksack-view-active { transform: translateX(0); }
+.rucksack-view-right  { transform: translateX(100%); }
+.rucksack-view-left   { transform: translateX(-100%); }
+
+/* ── Cards Grid ──────────────────────────────────────────── */
+.rucksack-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem 1.2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.rucksack-inv-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1.1rem 0.6rem;
+  border-radius: 18px;
+  border: 1px solid rgba(201,162,39,0.22);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+  background: rgba(8,4,28,0.72);
+  color: inherit;
+  min-height: 125px;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rucksack-inv-card:active { transform: scale(0.96); }
+
+.inv-card-wide {
+  grid-column: 1 / -1;
+  max-width: 230px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 108px;
+}
+
+#inv-card-telescope {
+  background: radial-gradient(ellipse at 28% 28%, rgba(80,30,160,0.72), rgba(10,3,42,0.97));
+}
+
+#inv-card-questlog {
+  background: radial-gradient(ellipse at 28% 28%, rgba(100,58,18,0.72), rgba(38,18,4,0.97));
+}
+
+#inv-card-treasure {
+  background: radial-gradient(ellipse at 50% 28%, rgba(120,78,8,0.55), rgba(18,8,2,0.97));
+}
+
+.inv-card-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  display: block;
+}
+
+.inv-card-icon-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inv-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f0c040;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9), 0 0 12px rgba(240,192,64,0.35);
+}
+
+.inv-card-sub {
+  font-family: system-ui, sans-serif;
+  font-size: 0.72rem;
+  color: #7860a8;
+}
+
+/* Card tap animations */
+@keyframes inv-card-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(240,192,64,0.55); }
+  70%  { box-shadow: 0 0 0 14px rgba(240,192,64,0); }
+  100% { box-shadow: 0 0 0 0 rgba(240,192,64,0); }
+}
+
+.inv-card-pulse { animation: inv-card-pulse 0.4s ease-out; }
+
+@keyframes scroll-unroll {
+  0%   { transform: scaleY(0.93); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes chest-open {
+  0%   { transform: scale(1) rotate(0deg); }
+  30%  { transform: scale(1.08) rotate(-5deg); }
+  65%  { transform: scale(1.04) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ── Area Header ─────────────────────────────────────────── */
+.rucksack-area-hdr {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1rem 0.45rem;
+  border-bottom: 1px solid rgba(201,162,39,0.14);
+  flex-shrink: 0;
+}
+
+.rucksack-back-btn {
+  background: none;
+  border: none;
+  color: rgba(201,162,39,0.65);
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  transition: color 0.18s, background 0.18s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.rucksack-back-btn:hover {
+  color: #f0c040;
+  background: rgba(201,162,39,0.1);
+}
+
+.rucksack-area-hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f0c040;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
+
+/* ── Scroll Area ─────────────────────────────────────────── */
+.rucksack-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.9rem 1rem 2rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rucksack-scroll-area::-webkit-scrollbar { width: 3px; }
+.rucksack-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(201,162,39,0.18);
+  border-radius: 2px;
+}
+
+/* ── Telescope Area ──────────────────────────────────────── */
+.ruck-stars-hero {
+  text-align: center;
+  padding: 0.8rem 0 1rem;
+}
+
+.ruck-star-num {
+  font-family: 'Cinzel', serif;
+  font-size: 3.8rem;
+  font-weight: 700;
+  color: #f0c040;
+  text-shadow: 0 0 32px rgba(240,192,64,0.85), 0 2px 6px rgba(0,0,0,1);
+  display: block;
+  line-height: 1;
+}
+
+.ruck-star-glyph {
+  font-size: 2rem;
+  display: inline-block;
+  animation: ruck-star-twinkle 2s ease-in-out infinite;
+  margin-top: 0.25rem;
+}
+
+@keyframes ruck-star-twinkle {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(240,192,64,0.8)); transform: scale(1); }
+  50%       { filter: brightness(1.5) drop-shadow(0 0 10px rgba(240,192,64,1)); transform: scale(1.18); }
+}
+
+.ruck-star-sub {
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: #9080a8;
+  margin-top: 0.3rem;
+}
+
+.ruck-open-map-btn {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto 1.2rem;
+  padding: 0.58rem 1rem;
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.32);
+  border-radius: 20px;
+  color: #f0c040;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.ruck-open-map-btn:hover {
+  background: rgba(201,162,39,0.2);
+  border-color: rgba(201,162,39,0.58);
+}
+
+.ruck-section-lbl {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  color: #9080a8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.55rem;
+}
+
+.ruck-const-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ruck-const-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.72rem;
+  background: rgba(8,4,28,0.5);
+  border: 1px solid rgba(201,162,39,0.12);
+  border-radius: 12px;
+  transition: border-color 0.18s;
+}
+
+.ruck-const-item.ci-done   { border-color: rgba(201,162,39,0.28); }
+.ruck-const-item.ci-active { border-color: rgba(160,100,255,0.3); }
+.ruck-const-item.ci-locked { opacity: 0.45; }
+.ruck-const-item.ci-hidden { opacity: 0.25; }
+
+.ruck-const-icon { font-size: 0.9rem; flex-shrink: 0; }
+
+.ruck-const-name {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.92rem;
+  color: #f0e4c0;
+  flex: 1;
+  min-width: 0;
+}
+
+.ruck-const-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.14rem 0.42rem;
+  border-radius: 8px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-done   { background: rgba(240,192,64,0.14); border: 1px solid rgba(240,192,64,0.28); color: #f0c040; }
+.badge-active { background: rgba(120,60,220,0.18); border: 1px solid rgba(160,100,255,0.35); color: #c084fc; }
+.badge-locked { background: rgba(60,50,80,0.2);   border: 1px solid rgba(80,70,100,0.2);   color: #706080; }
+
+/* ── Questlog Area ───────────────────────────────────────── */
+.ruck-log-entry {
+  padding: 0.82rem 0.9rem;
+  background: rgba(8,4,28,0.5);
+  border: 1px solid rgba(201,162,39,0.1);
+  border-radius: 12px;
+  margin-bottom: 0.55rem;
+}
+
+.ruck-log-entry:last-child { margin-bottom: 0; }
+
+.ruck-log-hdr {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.28rem;
+}
+
+.ruck-log-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: #f0c040;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.ruck-log-date {
+  font-family: system-ui, sans-serif;
+  font-size: 0.68rem;
+  color: #5a4a72;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ruck-log-rating {
+  font-size: 0.92rem;
+  color: #c8b89a;
+  margin-bottom: 0.2rem;
+}
+
+.ruck-log-note {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: #8878a8;
+  line-height: 1.5;
+}
+
+.ruck-empty {
+  text-align: center;
+  font-family: 'Star2', serif;
+  color: #4a3a62;
+  font-size: 0.9rem;
+  padding: 2.5rem 1rem;
+  line-height: 1.8;
+}
+
+/* ── Schatztruhe Area ────────────────────────────────────── */
+.ruck-chest-particles {
+  position: relative;
+  height: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.ruck-gold-particle {
+  position: absolute;
+  color: #f0c040;
+  font-size: 0.85rem;
+  opacity: 0;
+  animation: gold-float-up 1.4s ease-out forwards;
+}
+
+@keyframes gold-float-up {
+  0%   { opacity: 1;   transform: translateY(0)     scale(1); }
+  80%  { opacity: 0.6; transform: translateY(-55px) scale(0.8); }
+  100% { opacity: 0;   transform: translateY(-70px) scale(0.4); }
+}
+
+.ruck-reward-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.62rem 0.8rem;
+  background: rgba(8,4,28,0.5);
+  border: 1px solid rgba(201,162,39,0.22);
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.ruck-reward-card:last-child { margin-bottom: 0; }
+
+.ruck-reward-info { flex: 1; min-width: 0; }
+
+.ruck-reward-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: #f0c040;
+}
+
+.ruck-reward-quest {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.78rem;
+  color: #6858a0;
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ruck-reward-date {
+  font-family: system-ui, sans-serif;
+  font-size: 0.66rem;
+  color: #4a3a62;
+  flex-shrink: 0;
+}

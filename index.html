@@ -92,9 +92,43 @@
           <button id="btn-day-rating" class="reset-btn" title="Tag bewerten" aria-label="Tag bewerten">🌙</button>
           <button id="btn-sq-add-hdr" class="reset-btn" title="Spontane Quest hinzufügen" aria-label="Sidequest hinzufügen">⚡</button>
           <button id="btn-reset" class="reset-btn" title="Neu starten">↺</button>
-          <button id="btn-starmap" class="starmap-btn" aria-label="Sternenkarte öffnen">
-            🗺️&thinsp;<span id="star-count">0</span>&thinsp;⭐
+          <button id="btn-rucksack" class="rucksack-btn" aria-label="Rucksack öffnen">
+            <svg width="32" height="36" viewBox="0 0 110 150">
+              <defs>
+                <linearGradient id="sackBody" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#9b4dca"/>
+                  <stop offset="45%" stop-color="#6b2fa0"/>
+                  <stop offset="100%" stop-color="#3a1560"/>
+                </linearGradient>
+                <linearGradient id="sackSheen" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#c080f0" stop-opacity="0.35"/>
+                  <stop offset="50%" stop-color="#c080f0" stop-opacity="0"/>
+                  <stop offset="100%" stop-color="#3a1560" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="neckSack" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#8b3db8"/>
+                  <stop offset="100%" stop-color="#4a1880"/>
+                </linearGradient>
+              </defs>
+              <path d="M18 130 Q18 145 55 145 Q92 145 92 130 L88 75 Q80 62 68 58 L55 55 L42 58 Q30 62 22 75 Z"
+                    fill="url(#sackBody)" stroke="#f0c040" stroke-width="1.6"/>
+              <path d="M18 130 Q18 145 55 145 Q92 145 92 130 L88 75 Q80 62 68 58 L55 55 L42 58 Q30 62 22 75 Z"
+                    fill="url(#sackSheen)"/>
+              <line x1="35" y1="62" x2="28" y2="140" stroke="#f0c040" stroke-width="0.5" opacity="0.2"/>
+              <line x1="55" y1="56" x2="55" y2="144" stroke="#f0c040" stroke-width="0.5" opacity="0.2"/>
+              <line x1="75" y1="62" x2="82" y2="140" stroke="#f0c040" stroke-width="0.5" opacity="0.2"/>
+              <ellipse cx="55" cy="103" rx="18" ry="18" fill="none" stroke="#f0c040" stroke-width="1.3" opacity="0.7"/>
+              <text x="55" y="109" text-anchor="middle" font-size="17" fill="#f0c040">✦</text>
+              <path d="M42 58 Q46 50 55 48 Q64 50 68 58" fill="url(#neckSack)" stroke="#f0c040" stroke-width="1.4"/>
+              <path d="M44 50 Q50 44 55 43 Q60 44 66 50" fill="none" stroke="#f0c040" stroke-width="2.2" stroke-linecap="round"/>
+              <ellipse cx="55" cy="41" rx="9" ry="6" fill="#c49030" stroke="#f0c040" stroke-width="1.3"/>
+              <path d="M47 42 C44 36 41 30 43 24" fill="none" stroke="#f0c040" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M63 42 C66 36 69 30 67 24" fill="none" stroke="#f0c040" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="43" cy="23" r="3" fill="#f0c040"/>
+              <circle cx="67" cy="23" r="3" fill="#f0c040"/>
+            </svg>
           </button>
+          <span id="star-count" class="hidden">0</span>
         </div>
       </div>
       <div class="mana-area">
@@ -297,6 +331,134 @@
       <p id="log-view-note" class="log-view-note-text"></p>
       <button id="btn-log-view-close" class="btn-action log-action-btn">Schließen ✦</button>
       <div class="scroll-ornament">⊕ ✦ ⊕</div>
+    </div>
+  </div>
+
+  <!-- === RUCKSACK === -->
+  <div id="rucksack-overlay" class="rucksack-overlay hidden"></div>
+
+  <div id="rucksack-drawer" class="rucksack-drawer hidden" role="dialog" aria-modal="true" aria-label="Rucksack-Inventar">
+
+    <div id="rucksack-handle" class="rucksack-handle-wrap">
+      <div class="rucksack-handle-bar"></div>
+    </div>
+
+    <div class="rucksack-slide-wrap">
+
+      <!-- Karten-Übersicht -->
+      <div id="rucksack-view-cards" class="rucksack-view rucksack-view-active">
+        <h2 class="rucksack-title">🎒 Dein Inventar</h2>
+        <div class="rucksack-cards-grid">
+
+          <button class="rucksack-inv-card" id="inv-card-telescope">
+            <span class="inv-card-icon">🔭</span>
+            <span class="inv-card-name">Teleskop</span>
+            <span class="inv-card-sub">Sterne &amp; Sternbilder</span>
+          </button>
+
+          <button class="rucksack-inv-card" id="inv-card-questlog">
+            <span class="inv-card-icon">📜</span>
+            <span class="inv-card-name">Questlog</span>
+            <span class="inv-card-sub">Deine Abenteuer</span>
+          </button>
+
+          <button class="rucksack-inv-card inv-card-wide" id="inv-card-treasure">
+            <span class="inv-card-icon inv-card-icon-svg">
+              <svg width="60" height="60" viewBox="0 0 140 140">
+                <defs>
+                  <linearGradient id="tw1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#a83020"/>
+                    <stop offset="100%" stop-color="#5a1008"/>
+                  </linearGradient>
+                  <linearGradient id="tw2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#7a2010"/>
+                    <stop offset="100%" stop-color="#3a0a04"/>
+                  </linearGradient>
+                  <linearGradient id="tlid" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#c03820"/>
+                    <stop offset="100%" stop-color="#6a1808"/>
+                  </linearGradient>
+                  <linearGradient id="tgold" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffe080"/>
+                    <stop offset="50%" stop-color="#c49030"/>
+                    <stop offset="100%" stop-color="#8a6010"/>
+                  </linearGradient>
+                  <radialGradient id="tglow" cx="50%" cy="100%" r="70%">
+                    <stop offset="0%" stop-color="#ffe080" stop-opacity="0.95"/>
+                    <stop offset="55%" stop-color="#f0a020" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#f0a020" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <ellipse cx="70" cy="72" rx="34" ry="12" fill="url(#tglow)" opacity="0.9"/>
+                <rect x="10" y="72" width="120" height="56" rx="4" fill="url(#tw1)" stroke="#c49030" stroke-width="2"/>
+                <line x1="10" y1="89" x2="130" y2="89" stroke="#7a1808" stroke-width="1.2" opacity="0.5"/>
+                <line x1="10" y1="106" x2="130" y2="106" stroke="#7a1808" stroke-width="1.2" opacity="0.5"/>
+                <rect x="38" y="72" width="9" height="56" rx="1" fill="url(#tgold)" opacity="0.75"/>
+                <rect x="93" y="72" width="9" height="56" rx="1" fill="url(#tgold)" opacity="0.75"/>
+                <rect x="10" y="122" width="120" height="6" rx="2" fill="url(#tgold)"/>
+                <path id="chest-lid" d="M10 72 L10 42 Q10 34 70 30 Q130 34 130 42 L130 72 Z"
+                      fill="url(#tlid)" stroke="#c49030" stroke-width="2"/>
+                <line x1="10" y1="58" x2="130" y2="54" stroke="#7a1808" stroke-width="1" opacity="0.4"/>
+                <rect x="38" y="32" width="9" height="40" rx="1" fill="url(#tgold)" opacity="0.65"/>
+                <rect x="93" y="32" width="9" height="40" rx="1" fill="url(#tgold)" opacity="0.65"/>
+                <rect x="14" y="67" width="14" height="9" rx="3" fill="url(#tgold)" stroke="#ffe080" stroke-width="0.8"/>
+                <rect x="112" y="67" width="14" height="9" rx="3" fill="url(#tgold)" stroke="#ffe080" stroke-width="0.8"/>
+                <rect x="56" y="76" width="28" height="20" rx="4" fill="url(#tgold)" stroke="#ffe080" stroke-width="1"/>
+                <path d="M63 76 Q63 68 70 68 Q77 68 77 76" fill="none" stroke="#c49030" stroke-width="3.5"/>
+                <circle cx="70" cy="84" r="3.5" fill="#5a1008"/>
+                <rect x="14" y="126" width="14" height="8" rx="3" fill="url(#tw2)" stroke="#c49030" stroke-width="1.5"/>
+                <rect x="112" y="126" width="14" height="8" rx="3" fill="url(#tw2)" stroke="#c49030" stroke-width="1.5"/>
+                <text x="70" y="52" text-anchor="middle" font-size="11" fill="#ffe080" opacity="0.9">✦</text>
+              </svg>
+            </span>
+            <span class="inv-card-name">Schatztruhe</span>
+            <span class="inv-card-sub">Deine Belohnungen</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Bereich: Teleskop -->
+      <div id="rucksack-view-telescope" class="rucksack-view rucksack-view-right">
+        <div class="rucksack-area-hdr">
+          <button class="rucksack-back-btn" data-back="cards">←</button>
+          <span class="rucksack-area-hdr-title">🔭 Teleskop</span>
+        </div>
+        <div class="rucksack-scroll-area">
+          <div class="ruck-stars-hero">
+            <span class="ruck-star-num" id="ruck-star-num">0</span>
+            <span class="ruck-star-glyph">⭐</span>
+            <div class="ruck-star-sub">Gesammelte Sterne</div>
+          </div>
+          <button class="ruck-open-map-btn" id="ruck-open-starmap">🗺️ Sternenkarte öffnen</button>
+          <div class="ruck-section-lbl">Sternbilder</div>
+          <div id="ruck-const-list" class="ruck-const-list"></div>
+        </div>
+      </div>
+
+      <!-- Bereich: Questlog -->
+      <div id="rucksack-view-questlog" class="rucksack-view rucksack-view-right">
+        <div class="rucksack-area-hdr">
+          <button class="rucksack-back-btn" data-back="cards">←</button>
+          <span class="rucksack-area-hdr-title">📜 Questlog</span>
+        </div>
+        <div class="rucksack-scroll-area" id="ruck-log-scroll">
+          <div id="ruck-log-entries"></div>
+        </div>
+      </div>
+
+      <!-- Bereich: Schatztruhe -->
+      <div id="rucksack-view-treasure" class="rucksack-view rucksack-view-right">
+        <div class="rucksack-area-hdr">
+          <button class="rucksack-back-btn" data-back="cards">←</button>
+          <span class="rucksack-area-hdr-title">⚜️ Schatztruhe</span>
+        </div>
+        <div class="rucksack-scroll-area">
+          <div id="ruck-chest-particles" class="ruck-chest-particles"></div>
+          <div id="ruck-treasure-entries"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
