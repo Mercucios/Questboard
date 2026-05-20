@@ -75,26 +75,30 @@ const RHYTHM_RULES = {
 };
 
 const TREASURE_ITEMS = [
-  { name: 'Rubin',           color: '#c0392b' },
-  { name: 'Saphir',          color: '#2471a3' },
-  { name: 'Smaragd',         color: '#1e8449' },
-  { name: 'Amethyst',        color: '#7d3c98' },
-  { name: 'Opal',            color: '#d5d8dc', special: 'opal' },
-  { name: 'Topas',           color: '#f39c12' },
-  { name: 'Aquamarin',       color: '#48c9b0' },
-  { name: 'Mondstein',       color: '#eaf0f6', special: 'moonstone' },
-  { name: 'Obsidian',        color: '#1a1a2e' },
-  { name: 'Rosenquarz',      color: '#f1948a' },
-  { name: 'Tigerauge',       color: '#ca6f1e' },
-  { name: 'Lapislazuli',     color: '#1a5276' },
-  { name: 'Citrin',          color: '#f9ca24' },
-  { name: 'Malachit',        color: '#1d8348' },
-  { name: 'Turmalin',        color: '#e91e8c' },
-  { name: 'Bergkristall',    color: '#d6eaf8' },
-  { name: 'Granat',          color: '#8b0000' },
-  { name: 'Feueropal',       color: '#e55a00', special: 'fireopal' },
-  { name: 'Geodenkristall',  color: '#9b59b6' },
-  { name: 'Diamantsplitter', color: '#eaf4fc', special: 'diamond' },
+  { name: 'Rubin' },
+  { name: 'Smaragd' },
+  { name: 'Saphir' },
+  { name: 'Amethyst' },
+  { name: 'Geode' },
+  { name: 'Goldnugget' },
+  { name: 'Zaubertrank' },
+  { name: 'Zauberstab' },
+  { name: 'Hexenkessel' },
+  { name: 'Kristallkugel' },
+  { name: 'Zauberbuch' },
+  { name: 'Amulett' },
+  { name: 'Drachenschuppe' },
+  { name: 'Ritterschild' },
+  { name: 'Königskrone' },
+  { name: 'Pergament' },
+  { name: 'Schlüssel' },
+  { name: 'Drachenzahn' },
+  { name: 'Goldmünze' },
+  { name: 'Feenstaub' },
+  { name: 'Phönixfeder' },
+  { name: 'Mondstein' },
+  { name: 'Drachenkristall' },
+  { name: 'Mystische Essenz' },
 ];
 
 const REST_MSGS = [
@@ -261,6 +265,233 @@ function gemDotHtml(t, size) {
   const color = t.color || '#888';
   const cls = t.special ? ` gem-${t.special}` : '';
   return `<span class="gem-dot gem-dot--${size}${cls}" style="--gem-color:${color}"></span>`;
+}
+
+// === RUCKSACK: 24 Belohnungs-Icons als inline SVG ===
+let _ruckIconSeq = 0;
+function _ruckTreasureIcon(name, size) {
+  const u = 'ri' + (++_ruckIconSeq);
+  const s = size || 52;
+  const icons = {
+    'Rubin': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#ff6080"/><stop offset="45%" stop-color="#d01830"/><stop offset="100%" stop-color="#600010"/></radialGradient>
+      </defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}a)"/>
+      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.7"/>
+      <line x1="22" y1="4" x2="30" y2="14" stroke="#ffb0c0" stroke-width="0.8" opacity="0.7"/>
+      <ellipse cx="16" cy="13" rx="5" ry="3" fill="white" opacity="0.25" transform="rotate(-20 16 13)"/></svg>`,
+
+    'Smaragd': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#60ff90"/><stop offset="45%" stop-color="#0a9048"/><stop offset="100%" stop-color="#024020"/></radialGradient>
+      </defs><polygon points="22,4 36,12 36,32 22,40 8,32 8,12" fill="url(#${u}a)"/>
+      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.6"/>
+      <line x1="22" y1="4" x2="29" y2="12" stroke="#90ffb0" stroke-width="0.8" opacity="0.7"/>
+      <ellipse cx="16" cy="12" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-15 16 12)"/></svg>`,
+
+    'Saphir': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#80c0ff"/><stop offset="45%" stop-color="#1848d0"/><stop offset="100%" stop-color="#041060"/></radialGradient>
+      </defs><polygon points="22,3 40,16 34,38 10,38 4,16" fill="url(#${u}a)"/>
+      <polygon points="22,3 31,9 25,7" fill="white" opacity="0.65"/>
+      <line x1="22" y1="3" x2="32" y2="13" stroke="#b0d8ff" stroke-width="0.8" opacity="0.7"/>
+      <ellipse cx="15" cy="14" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-20 15 14)"/></svg>`,
+
+    'Amethyst': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#e090ff"/><stop offset="45%" stop-color="#7020c0"/><stop offset="100%" stop-color="#2a0860"/></radialGradient>
+      </defs><polygon points="22,4 37,13 37,31 22,40 7,31 7,13" fill="url(#${u}a)"/>
+      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.65"/>
+      <line x1="22" y1="4" x2="30" y2="12" stroke="#d090ff" stroke-width="0.8" opacity="0.7"/>
+      <ellipse cx="16" cy="12" rx="5" ry="3" fill="white" opacity="0.22" transform="rotate(-20 16 12)"/></svg>`,
+
+    'Geode': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c0a0ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#4a2090"/><stop offset="100%" stop-color="#0a0420"/></radialGradient>
+      <radialGradient id="${u}b" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#e0c0ff"/><stop offset="100%" stop-color="#6030a0" stop-opacity="0"/></radialGradient>
+      </defs><ellipse cx="22" cy="22" rx="20" ry="20" fill="#0a0420" stroke="#4a2090" stroke-width="1"/>
+      <ellipse cx="22" cy="22" rx="15" ry="15" fill="#2a1060" stroke="#8060c0" stroke-width="0.7"/>
+      <ellipse cx="22" cy="22" rx="10" ry="10" fill="url(#${u}a)"/>
+      <polygon points="22,14 25,20 22,26 19,20" fill="url(#${u}b)" stroke="#e0c0ff" stroke-width="0.5"/>
+      <ellipse cx="17" cy="16" rx="4" ry="2.5" fill="white" opacity="0.2" transform="rotate(-30 17 16)"/></svg>`,
+
+    'Goldnugget': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe080"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#7a5008"/></radialGradient>
+      </defs><ellipse cx="18" cy="20" rx="12" ry="10" fill="url(#${u}a)"/>
+      <ellipse cx="28" cy="26" rx="11" ry="9" fill="url(#${u}a)"/>
+      <ellipse cx="22" cy="15" rx="9" ry="8" fill="url(#${u}a)"/>
+      <ellipse cx="15" cy="17" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-25 15 17)"/></svg>`,
+
+    'Zaubertrank': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#80d0ff"/><stop offset="55%" stop-color="#1870c0"/><stop offset="100%" stop-color="#041848"/></radialGradient>
+      </defs><rect x="18" y="6" width="8" height="6" rx="2" fill="#6a4010"/>
+      <path d="M16 12 Q12 20 12 28 Q12 38 22 38 Q32 38 32 28 Q32 20 28 12Z" fill="url(#${u}a)"/>
+      <ellipse cx="20" cy="26" rx="4" ry="3" fill="white" opacity="0.55"/>
+      <circle cx="27" cy="30" r="2.5" fill="white" opacity="0.45"/>
+      <path d="M16 12 Q10 22 12 30" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/></svg>`,
+
+    'Zauberstab': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c080ff"/><stop offset="100%" stop-color="#4010a0"/></linearGradient>
+      <radialGradient id="${u}b" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#f0c040"/><stop offset="100%" stop-color="#c08000"/></radialGradient>
+      </defs><line x1="8" y1="36" x2="32" y2="12" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="32,12 29,5 33,10 40,8 35,14 39,19 33,15 32,22 30,14 24,18" fill="url(#${u}b)"/>
+      <line x1="29" y1="6" x2="39" y2="7" stroke="#f0c040" stroke-width="0.7" opacity="0.7"/>
+      <line x1="37" y1="16" x2="38" y2="22" stroke="#f0c040" stroke-width="0.7" opacity="0.7"/></svg>`,
+
+    'Hexenkessel': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="50%" cy="60%" r="55%"><stop offset="0%" stop-color="#3a1868"/><stop offset="100%" stop-color="#0a0418"/></radialGradient>
+      </defs><path d="M8 20 Q8 38 22 38 Q36 38 36 20 Q36 14 22 14 Q8 14 8 20Z" fill="url(#${u}a)" stroke="#8040c0" stroke-width="1.2"/>
+      <ellipse cx="22" cy="20" rx="14" ry="6" fill="#2a1050"/>
+      <path d="M14 20 Q17 17 22 21 Q26 17 30 20" fill="none" stroke="#60ff80" stroke-width="1.2" opacity="0.8"/>
+      <path d="M17 20 Q19 15 22 18" fill="none" stroke="#80ffaa" stroke-width="0.8" opacity="0.6"/>
+      <line x1="8" y1="18" x2="2" y2="12" stroke="#8040c0" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="36" y1="18" x2="42" y2="12" stroke="#8040c0" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="6" y="36" width="32" height="4" rx="2" fill="#2a0840"/></svg>`,
+
+    'Kristallkugel': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#9060e0"/><stop offset="55%" stop-color="#2a0868"/><stop offset="100%" stop-color="#080214"/></radialGradient>
+      <radialGradient id="${u}b" cx="30%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(220,200,255,0.5)"/><stop offset="100%" stop-color="rgba(220,200,255,0)"/></radialGradient>
+      </defs><circle cx="22" cy="20" r="18" fill="url(#${u}a)"/>
+      <circle cx="22" cy="20" r="18" fill="url(#${u}b)"/>
+      <ellipse cx="22" cy="20" rx="14" ry="6" fill="none" stroke="#c080ff" stroke-width="0.6" opacity="0.4"/>
+      <ellipse cx="22" cy="20" rx="6" ry="14" fill="none" stroke="#c080ff" stroke-width="0.6" opacity="0.4"/>
+      <rect x="14" y="37" width="16" height="5" rx="2" fill="#3a2060"/></svg>`,
+
+    'Zauberbuch': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#5a1880"/><stop offset="100%" stop-color="#1a0430"/></linearGradient>
+      </defs><rect x="8" y="6" width="28" height="34" rx="2" fill="url(#${u}a)" stroke="#8040c0" stroke-width="0.8"/>
+      <rect x="8" y="6" width="5" height="34" rx="2" fill="#2a0848"/>
+      <ellipse cx="14" cy="20" rx="2" ry="5" fill="rgba(200,160,255,0.18)"/>
+      <polygon points="26,14 28,20 26,26 24,20" fill="#f0c040" opacity="0.85" stroke="#f0c040" stroke-width="0.3"/>
+      <circle cx="26" cy="20" r="2" fill="#f0c040" opacity="0.5"/>
+      <ellipse cx="30" cy="26" rx="4" ry="2" fill="white" opacity="0.12" transform="rotate(-15 30 26)"/></svg>`,
+
+    'Amulett': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffe090"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#704000"/></radialGradient>
+      <radialGradient id="${u}b" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#e090ff"/><stop offset="100%" stop-color="#4010a0"/></radialGradient>
+      </defs><polygon points="22,4 25,14 35,14 27,20 30,30 22,24 14,30 17,20 9,14 19,14" fill="url(#${u}a)"/>
+      <circle cx="22" cy="19" r="6" fill="url(#${u}b)" stroke="#e090ff" stroke-width="0.5"/>
+      <ellipse cx="20" cy="17" rx="2.5" ry="1.5" fill="white" opacity="0.4"/></svg>`,
+
+    'Drachenschuppe': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#60e090"/><stop offset="55%" stop-color="#0a7030"/><stop offset="100%" stop-color="#022010"/></radialGradient>
+      </defs><ellipse cx="22" cy="24" rx="16" ry="18" fill="url(#${u}a)" stroke="#20a050" stroke-width="0.8"/>
+      <path d="M22 6 L18 16 L22 14 L26 16 Z" fill="#10a040"/>
+      <ellipse cx="16" cy="18" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-10 16 18)"/>
+      <line x1="22" y1="8" x2="22" y2="40" stroke="rgba(0,255,80,0.15)" stroke-width="1.5"/></svg>`,
+
+    'Ritterschild': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a3090"/><stop offset="100%" stop-color="#0a0e3a"/></linearGradient>
+      </defs><path d="M6 6 L38 6 L38 26 Q38 40 22 42 Q6 40 6 26 Z" fill="url(#${u}a)" stroke="#c4a030" stroke-width="1.5"/>
+      <line x1="22" y1="6" x2="22" y2="42" stroke="#c4a030" stroke-width="1.2"/>
+      <line x1="6" y1="20" x2="38" y2="20" stroke="#c4a030" stroke-width="1.2"/>
+      <polygon points="22,14 25,18 22,22 19,18" fill="#c4a030" opacity="0.9"/>
+      <ellipse cx="14" cy="10" rx="5" ry="3" fill="white" opacity="0.12" transform="rotate(-20 14 10)"/></svg>`,
+
+    'Königskrone': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe080"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#7a5008"/></linearGradient>
+      </defs><path d="M4 30 L4 14 L14 22 L22 8 L30 22 L40 14 L40 30 Z" fill="url(#${u}a)" stroke="#f0d040" stroke-width="0.8"/>
+      <rect x="4" y="30" width="36" height="8" rx="2" fill="url(#${u}a)"/>
+      <circle cx="14" cy="26" r="3" fill="#e03040"/>
+      <circle cx="22" cy="26" r="3" fill="#2060ff"/>
+      <circle cx="30" cy="26" r="3" fill="#10a040"/>
+      <ellipse cx="10" cy="16" rx="4" ry="2" fill="white" opacity="0.25" transform="rotate(-20 10 16)"/></svg>`,
+
+    'Pergament': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e0c890"/><stop offset="100%" stop-color="#a88040"/></linearGradient>
+      </defs><rect x="6" y="10" width="32" height="28" rx="1" fill="url(#${u}a)"/>
+      <ellipse cx="22" cy="10" rx="16" ry="4" fill="#b89050"/>
+      <ellipse cx="22" cy="38" rx="16" ry="4" fill="#b89050"/>
+      <line x1="10" y1="16" x2="34" y2="16" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
+      <line x1="10" y1="21" x2="34" y2="21" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
+      <line x1="10" y1="26" x2="34" y2="26" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
+      <line x1="10" y1="31" x2="28" y2="31" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/></svg>`,
+
+    'Schlüssel': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#8a6010"/></linearGradient>
+      </defs><circle cx="14" cy="14" r="9" fill="none" stroke="url(#${u}a)" stroke-width="3.5"/>
+      <circle cx="14" cy="14" r="5" fill="none" stroke="url(#${u}a)" stroke-width="1.8"/>
+      <line x1="21" y1="20" x2="38" y2="36" stroke="url(#${u}a)" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="30" y1="30" x2="34" y2="26" stroke="url(#${u}a)" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="34" y1="34" x2="38" y2="30" stroke="url(#${u}a)" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="10" cy="10" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-30 10 10)"/></svg>`,
+
+    'Drachenzahn': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="55%" stop-color="#c8b890"/><stop offset="100%" stop-color="#8a7850"/></linearGradient>
+      </defs><path d="M22 4 Q28 10 30 22 Q32 34 22 40 Q12 34 14 22 Q16 10 22 4Z" fill="url(#${u}a)" stroke="#a08860" stroke-width="0.8"/>
+      <line x1="22" y1="6" x2="22" y2="38" stroke="rgba(255,255,220,0.3)" stroke-width="1"/>
+      <ellipse cx="17" cy="14" rx="4" ry="2.5" fill="white" opacity="0.35" transform="rotate(-20 17 14)"/></svg>`,
+
+    'Goldmünze': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#fff0a0"/><stop offset="55%" stop-color="#d4a030"/><stop offset="100%" stop-color="#7a5008"/></radialGradient>
+      </defs><circle cx="22" cy="22" r="18" fill="url(#${u}a)" stroke="#c49030" stroke-width="1"/>
+      <circle cx="22" cy="22" r="13" fill="none" stroke="#c49030" stroke-width="0.6" opacity="0.5"/>
+      <text x="22" y="27" text-anchor="middle" font-size="14" fill="#8a5800" opacity="0.85">✦</text>
+      <ellipse cx="16" cy="15" rx="5" ry="3" fill="white" opacity="0.3" transform="rotate(-30 16 15)"/></svg>`,
+
+    'Feenstaub': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.9)"/><stop offset="40%" stop-color="rgba(240,192,64,0.4)"/><stop offset="100%" stop-color="rgba(240,192,64,0)"/></radialGradient>
+      </defs><circle cx="22" cy="22" r="12" fill="url(#${u}a)"/>
+      <text x="10" y="15" font-size="8" fill="#f0c040">✦</text>
+      <text x="30" y="13" font-size="6" fill="#c080ff">✧</text>
+      <text x="35" y="27" font-size="7" fill="#80c0ff">✦</text>
+      <text x="27" y="37" font-size="7" fill="#f0c040">✧</text>
+      <text x="10" y="36" font-size="6" fill="#c080ff">✦</text>
+      <text x="4" y="24" font-size="7" fill="#80c0ff">✧</text>
+      <text x="18" y="10" font-size="5" fill="#f0e4c0">✦</text>
+      <circle cx="22" cy="22" r="3" fill="white" opacity="0.9"/></svg>`,
+
+    'Phönixfeder': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe060"/><stop offset="55%" stop-color="#f06010"/><stop offset="100%" stop-color="#800010"/></linearGradient>
+      </defs><path d="M22 4 Q30 10 34 18 Q38 26 32 32 Q28 36 22 38 Q18 36 16 32 Q12 26 14 18 Q16 10 22 4Z" fill="url(#${u}a)"/>
+      <line x1="22" y1="6" x2="22" y2="36" stroke="#ffe080" stroke-width="1" opacity="0.5"/>
+      <ellipse cx="17" cy="12" rx="4" ry="2.5" fill="white" opacity="0.35" transform="rotate(-30 17 12)"/></svg>`,
+
+    'Mondstein': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#f0f0ff"/><stop offset="55%" stop-color="#b0b8d8"/><stop offset="100%" stop-color="#6068a0"/></radialGradient>
+      </defs><ellipse cx="22" cy="22" rx="17" ry="20" fill="url(#${u}a)" stroke="#9090c0" stroke-width="0.8"/>
+      <ellipse cx="16" cy="16" rx="6" ry="3" fill="white" opacity="0.3"/>
+      <ellipse cx="20" cy="28" rx="5" ry="2.5" fill="white" opacity="0.2"/>
+      <ellipse cx="27" cy="20" rx="4" ry="2" fill="rgba(80,80,140,0.3)"/></svg>`,
+
+    'Drachenkristall': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="#ff8090"/><stop offset="55%" stop-color="#c01020"/><stop offset="100%" stop-color="#400008"/></radialGradient>
+      </defs><polygon points="22,2 26,8 34,6 30,14 38,18 30,20 34,28 26,26 22,34 18,26 10,28 14,20 6,18 14,14 10,6 18,8" fill="url(#${u}a)"/>
+      <circle cx="22" cy="18" r="5" fill="#ff2040" opacity="0.7"/>
+      <ellipse cx="16" cy="10" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-10 16 10)"/></svg>`,
+
+    'Mystische Essenz': () =>
+      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#80b0ff"/><stop offset="55%" stop-color="#1828b0"/><stop offset="100%" stop-color="#040828"/></radialGradient>
+      <radialGradient id="${u}b" cx="35%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(180,210,255,0.55)"/><stop offset="100%" stop-color="rgba(180,210,255,0)"/></radialGradient>
+      </defs><ellipse cx="22" cy="26" rx="12" ry="14" fill="url(#${u}a)" stroke="#4060d0" stroke-width="0.8"/>
+      <ellipse cx="22" cy="26" rx="12" ry="14" fill="url(#${u}b)"/>
+      <path d="M18 12 Q18 8 22 6 Q26 8 26 12" fill="none" stroke="#4060d0" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="22" y1="6" x2="22" y2="12" stroke="#4060d0" stroke-width="1.2"/></svg>`,
+  };
+  const fn = icons[name];
+  if (!fn) {
+    return `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs><radialGradient id="${u}x" cx="35%" cy="25%" r="70%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="100%" stop-color="#400080"/></radialGradient></defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}x)"/></svg>`;
+  }
+  return fn();
 }
 const todayStr = () =>
   new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Vienna' }).format(new Date());
@@ -512,7 +743,9 @@ function _finalizeQuestCompletion(name) {
 
 function showRewardPopup(quest) {
   const t = quest.treasure;
-  $('reward-glyph').innerHTML       = gemDotHtml(t, 'lg');
+  const glyph = $('reward-glyph');
+  glyph.className = 'reward-icon-wrap';
+  glyph.innerHTML = _ruckTreasureIcon(t.name, 72);
   $('reward-loot-name').textContent = t.name;
   $('reward-msg').textContent       = REWARD_MSGS[Math.floor(Math.random() * REWARD_MSGS.length)];
   $('popup-reward').classList.remove('hidden');
@@ -1809,20 +2042,17 @@ function _ruckPopTelescope() {
   const info     = getConstellationInfo(starCount);
   const compN    = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
 
-  let cumul = 0;
   CONSTELLATIONS.forEach((c, i) => {
-    cumul += c.starsNeeded;
     const isComplete = i < compN;
     const isCurrent  = !info.allComplete && i === compN;
-    const isNearLock = !isComplete && !isCurrent && i <= compN + 2;
-    const isHidden   = !isComplete && !isCurrent && i > compN + 2;
+    const isNext2    = !isComplete && !isCurrent && (i === compN + 1 || i === compN + 2);
+    if (!isComplete && !isCurrent && !isNext2) return; // hide all beyond next 2
 
     const el = document.createElement('div');
     let cls = 'ruck-const-item ';
     if (isComplete)  cls += 'ci-done';
     else if (isCurrent) cls += 'ci-active';
-    else if (isNearLock) cls += 'ci-locked';
-    else cls += 'ci-hidden';
+    else cls += 'ci-locked';
     el.className = cls;
 
     let icon, name, badgeCls, badgeTxt;
@@ -1832,12 +2062,9 @@ function _ruckPopTelescope() {
     } else if (isCurrent) {
       icon = '🔭'; name = c.name;
       badgeCls = 'badge-active'; badgeTxt = `${info.earned}/${c.starsNeeded}`;
-    } else if (isNearLock) {
-      icon = '🔒'; name = c.name;
-      badgeCls = 'badge-locked'; badgeTxt = `${c.starsNeeded} ⭐`;
     } else {
-      icon = '🔒'; name = '? ? ?';
-      badgeCls = 'badge-locked'; badgeTxt = '?';
+      icon = '🔒'; name = '???';
+      badgeCls = 'badge-locked'; badgeTxt = `✦ ${c.starsNeeded} Sterne`;
     }
 
     el.innerHTML = `
@@ -1845,6 +2072,24 @@ function _ruckPopTelescope() {
       <span class="ruck-const-name">${name}</span>
       <span class="ruck-const-badge ${badgeCls}">${badgeTxt}</span>`;
     list.appendChild(el);
+  });
+
+  // Fly-in animation for hero and list items
+  const hero = document.querySelector('.ruck-stars-hero');
+  if (hero) {
+    hero.classList.remove('fly-in');
+    void hero.offsetWidth;
+    hero.classList.add('fly-in');
+  }
+  const items = list.querySelectorAll('.ruck-const-item');
+  items.forEach((el, i) => {
+    el.classList.remove('fly-in');
+    const fx = (Math.random() * 300 - 150).toFixed(0);
+    const fy = (Math.random() * 300 - 150).toFixed(0);
+    el.style.setProperty('--fx', `${fx}px`);
+    el.style.setProperty('--fy', `${fy}px`);
+    el.style.animationDelay = `${(i * 0.08 + 0.1).toFixed(2)}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('fly-in')));
   });
 }
 
@@ -1868,9 +2113,9 @@ function _ruckRatingLabel(type, rating) {
 }
 
 function _ruckPopQuestlog() {
-  const container = $('ruck-log-entries');
-  const logs      = loadLogs();
-  const ratings   = loadDayRatings();
+  const scrollArea = $('ruck-log-scroll');
+  const logs       = loadLogs();
+  const ratings    = loadDayRatings();
 
   const entries = [
     ...logs.map(l => ({ type: 'quest', date: l.date, title: l.questTitle, rating: l.rating, note: l.note })),
@@ -1878,22 +2123,32 @@ function _ruckPopQuestlog() {
   ].sort((a, b) => b.date.localeCompare(a.date) || (a.type === 'quest' ? -1 : 1));
 
   if (entries.length === 0) {
-    container.innerHTML = '<div class="ruck-empty">Noch keine Abenteuer verzeichnet...</div>';
+    scrollArea.innerHTML = '<div class="ruck-empty">Noch keine Abenteuer verzeichnet...</div>';
     return;
   }
 
-  container.innerHTML = '';
-  entries.forEach(e => {
-    const div = document.createElement('div');
-    div.className = 'ruck-log-entry';
-    div.innerHTML = `
-      <div class="ruck-log-hdr">
-        <span class="ruck-log-title">${e.title}</span>
-        <span class="ruck-log-date">${_ruckFmtDate(e.date)}</span>
-      </div>
-      <div class="ruck-log-rating">${_ruckRatingLabel(e.type, e.rating)}</div>
-      ${e.note ? `<div class="ruck-log-note">${e.note}</div>` : ''}`;
-    container.appendChild(div);
+  const entryHtml = entries.map((e, i) => `
+    <div class="ruck-perg-entry" style="animation-delay:${(i * 0.08 + 0.22).toFixed(2)}s">
+      <div class="ruck-perg-date">${_ruckFmtDate(e.date)}</div>
+      <div class="ruck-perg-title">${e.title}</div>
+      <div class="ruck-perg-rating">${_ruckRatingLabel(e.type, e.rating)}</div>
+      ${e.note ? `<div class="ruck-perg-note">${e.note}</div>` : ''}
+    </div>`).join('');
+
+  scrollArea.innerHTML = `
+    <div class="ruck-scroll-outer">
+      <div class="ruck-scroll-roll"></div>
+      <div class="ruck-scroll-body">${entryHtml}</div>
+      <div class="ruck-scroll-roll-bot"></div>
+    </div>`;
+
+  // Trigger animations after paint
+  requestAnimationFrame(() => {
+    const body = scrollArea.querySelector('.ruck-scroll-body');
+    if (body) body.classList.add('unrolling');
+    scrollArea.querySelectorAll('.ruck-perg-entry').forEach(el => {
+      requestAnimationFrame(() => el.classList.add('perg-in'));
+    });
   });
 }
 
@@ -1925,37 +2180,52 @@ function _ruckPopTreasure() {
 
   const stored = rucksackLoadTreasures();
 
-  // Also include today's quest treasures not yet in store (e.g. before first save)
-  const today   = todayStr();
-  const extra   = [];
+  const today = todayStr();
+  const extra = [];
   if (appState) {
     appState.quests.filter(q => q.done && q.treasure).forEach(q => {
       const already = stored.some(t => t.date === today && t.questTitle === q.name && t.type === 'quest');
-      if (!already) extra.push({ date: today, questTitle: q.name, name: q.treasure.name, color: q.treasure.color, special: q.treasure.special || null, type: 'quest' });
+      if (!already) extra.push({ date: today, questTitle: q.name, name: q.treasure.name, type: 'quest' });
     });
   }
 
   const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
 
   if (all.length === 0) {
-    container.innerHTML = '<div class="ruck-empty">Die Truhe wartet auf deine Heldentaten...</div>';
+    container.innerHTML = '<div class="ruck-chest-empty">Die Truhe wartet auf deine Heldentaten...</div>';
     return;
   }
 
-  container.innerHTML = '';
-  all.forEach(t => {
-    const item = TREASURE_ITEMS.find(i => i.name === t.name) || { color: t.color || '#888', special: t.special };
-    const card = document.createElement('div');
-    card.className = 'ruck-reward-card';
-    card.innerHTML = `
-      ${gemDotHtml(item, 'sm')}
-      <div class="ruck-reward-info">
-        <div class="ruck-reward-name">${t.name}</div>
-        <div class="ruck-reward-quest">${t.questTitle}</div>
-      </div>
-      <span class="ruck-reward-date">${_ruckFmtDate(t.date)}</span>`;
-    container.appendChild(card);
+  // Scatter layout: deterministic positions based on index
+  const COLS = 3;
+  const ROW_H = 110; // px per row
+  const rows  = Math.ceil(all.length / COLS);
+  const minH  = rows * ROW_H + 40;
+
+  // Pre-defined scatter offsets per column slot to avoid overlap
+  const OFFSETS = [
+    { lPct: 4,  tBase: 8  },
+    { lPct: 36, tBase: 0  },
+    { lPct: 68, tBase: 12 },
+  ];
+  const ROT_CYCLE = [-12, 8, -6, 14, -10, 5, -14, 9, -7, 11, -4, 13];
+
+  let html = `<div class="ruck-chest-floor"><div class="ruck-scattered-wrap" style="min-height:${minH}px">`;
+  all.forEach((t, i) => {
+    const col  = i % COLS;
+    const row  = Math.floor(i / COLS);
+    const off  = OFFSETS[col];
+    const lPct = off.lPct;
+    const tPx  = row * ROW_H + off.tBase;
+    const rot  = ROT_CYCLE[i % ROT_CYCLE.length];
+    const delay = (i * 0.055).toFixed(2);
+    html += `<div class="ruck-scatter-item pop-in" style="left:${lPct}%;top:${tPx}px;--rot:${rot}deg;animation-delay:${delay}s">
+      ${_ruckTreasureIcon(t.name, 48)}
+      <div class="ruck-scatter-name">${t.name}</div>
+    </div>`;
   });
+  html += '</div></div>';
+  container.innerHTML = html;
 }
 
 // ── Drag to close ─────────────────────────────────────────────────
