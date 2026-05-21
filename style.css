@@ -2559,19 +2559,22 @@ h1 {
   margin: 0 !important;
 }
 
+/* === FIX: MOOD-SCREEN === */
 .logo-orb {
-  width: clamp(80px, 22vw, 120px) !important;
-  height: clamp(80px, 22vw, 120px) !important;
+  width: clamp(96px, 26vw, 136px) !important;
+  height: clamp(96px, 26vw, 136px) !important;
   margin: 0 auto !important;
 }
 
+/* === FIX: MOOD-SCREEN === */
 h1 {
-  font-size: clamp(28px, 7.5vw, 44px) !important;
+  font-size: clamp(34px, 9vw, 50px) !important;
   margin: 0 !important;
 }
 
+/* === FIX: MOOD-SCREEN === */
 .logo-sub {
-  font-size: clamp(13px, 3.5vw, 18px) !important;
+  font-size: clamp(26px, 7vw, 36px) !important;
   margin: 0 !important;
 }
 
@@ -2582,7 +2585,7 @@ h1 {
 
 /* === FIX: MOOD-SCREEN === */
 .mood-prompt {
-  font-size: clamp(18px, 4.5vw, 26px) !important;
+  font-size: clamp(24px, 6vw, 32px) !important;
   margin: clamp(2px, 0.5vh, 4px) 0 !important;
 }
 
@@ -2593,7 +2596,7 @@ h1 {
   align-items: center !important;
   gap: 8px !important;
   width: 80% !important;
-  margin: clamp(2px, 0.5vh, 4px) auto !important;
+  margin: clamp(1px, 0.25vh, 2px) auto !important;
 }
 
 /* PUNKT 4 – Mood-Grid: flex-wrap für 3+2 Layout */
@@ -2653,7 +2656,7 @@ h1 {
 /* PUNKT 5 – Schlussatz: immer sichtbar, gold, unten */
 /* === FIX: MOOD-SCREEN === */
 .mood-note {
-  font-size: clamp(28px, 7.6vw, 38px) !important;
+  font-size: clamp(20px, 5.6vw, 30px) !important;
   color: #f0c040 !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -2671,17 +2674,18 @@ h1 {
   opacity: 0.5;
 }
 
+/* === FIX: MOOD-SCREEN === */
 .rune-icon {
   font-size: 13px;
   color: #c4a030;
-  animation: runePulse 2s ease-in-out infinite;
+  animation: runePulse 4s ease-in-out infinite;
 }
 
 .rune-icon:nth-child(2) { animation-delay: 0s; }
-.rune-icon:nth-child(3) { animation-delay: 0.3s; }
-.rune-icon:nth-child(4) { animation-delay: 0.6s; color: #c080ff; font-size: 16px; }
-.rune-icon:nth-child(5) { animation-delay: 0.9s; }
-.rune-icon:nth-child(6) { animation-delay: 1.2s; }
+.rune-icon:nth-child(3) { animation-delay: 0.6s; }
+.rune-icon:nth-child(4) { animation-delay: 1.2s; color: #c080ff; font-size: 16px; }
+.rune-icon:nth-child(5) { animation-delay: 1.8s; }
+.rune-icon:nth-child(6) { animation-delay: 2.4s; }
 
 @keyframes runePulse {
   0%, 100% { opacity: 0.3; transform: scale(1); }
