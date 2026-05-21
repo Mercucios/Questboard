@@ -2145,6 +2145,7 @@ function _ruckPopQuestlog() {
       <div class="ruck-scroll-outer">
         <div class="ruck-scroll-roll"></div>
         <div class="ruck-scroll-body">
+          <div class="ruck-scroll-heading">Quest Log</div>
           <div class="ruck-perg-empty">Noch keine Abenteuer verzeichnet...</div>
         </div>
         <div class="ruck-scroll-roll-bot"></div>
@@ -2222,7 +2223,7 @@ function _ruckPopQuestlog() {
   scrollArea.innerHTML = `
     <div class="ruck-scroll-outer">
       <div class="ruck-scroll-roll"></div>
-      <div class="ruck-scroll-body">${bodyHtml}</div>
+      <div class="ruck-scroll-body"><div class="ruck-scroll-heading">Quest Log</div>${bodyHtml}</div>
       <div class="ruck-scroll-roll-bot"></div>
     </div>`;
 
@@ -2273,22 +2274,41 @@ function _ruckPopTreasure() {
 
   heroWrap.innerHTML = `
     <div class="ruck-chest-hero-perspective">
-      <svg class="ruck-chest-hero-svg" width="110" height="96" viewBox="0 0 140 120" aria-hidden="true">
-        <!-- Body -->
-        <rect x="10" y="68" width="120" height="46" rx="4" fill="#8a2010" stroke="#c49030" stroke-width="2"/>
-        <rect x="10" y="106" width="120" height="8" rx="2" fill="#c49030"/>
-        <rect x="38" y="72" width="9" height="40" rx="1" fill="#c49030" opacity="0.55"/>
-        <rect x="93" y="72" width="9" height="40" rx="1" fill="#c49030" opacity="0.55"/>
-        <rect x="56" y="72" width="28" height="20" rx="4" fill="#c49030" stroke="#ffe080" stroke-width="1"/>
-        <path d="M63 72 Q63 64 70 64 Q77 64 77 72" fill="none" stroke="#8a5808" stroke-width="3.5"/>
-        <circle cx="70" cy="80" r="3" fill="#6a1808"/>
-        <!-- Lid (animated) -->
+      <svg class="ruck-chest-hero-svg" width="140" height="88" viewBox="0 0 180 100" aria-hidden="true">
+        <defs>
+          <filter id="chest-glow" x="-15%" y="-15%" width="130%" height="130%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Körper -->
+        <rect x="8" y="54" width="164" height="40" rx="4" fill="#3a1a08" stroke="#e8b840" stroke-width="2.5" filter="url(#chest-glow)"/>
+        <!-- Unteres Band -->
+        <rect x="8" y="86" width="164" height="8" rx="3" fill="#e8b840"/>
+        <!-- Holzmaserung -->
+        <rect x="46" y="57" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.45"/>
+        <rect x="126" y="57" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.45"/>
+        <!-- 4 Eckbeschläge -->
+        <rect x="8"   y="54" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
+        <rect x="154" y="54" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
+        <rect x="8"   y="76" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
+        <rect x="154" y="76" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
+        <!-- Schlossplatte (Mitte, größer) -->
+        <rect x="72" y="58" width="36" height="26" rx="5" fill="#e8b840" stroke="#ffe090" stroke-width="2"/>
+        <!-- Schloss-Bügel -->
+        <path d="M80 58 Q80 46 90 46 Q100 46 100 58" fill="none" stroke="#c49030" stroke-width="4.5"/>
+        <!-- Schlüsselloch -->
+        <circle cx="90" cy="68" r="4.5" fill="#2a1008"/>
+        <rect x="88" y="70" width="4" height="7" rx="1.5" fill="#2a1008"/>
+        <!-- Deckel (animiert) -->
         <g class="ruck-chest-lid-g">
-          <path d="M10 68 L10 42 Q10 34 70 30 Q130 34 130 42 L130 68 Z" fill="#b03020" stroke="#c49030" stroke-width="2"/>
-          <rect x="38" y="32" width="9" height="36" rx="1" fill="#c49030" opacity="0.45"/>
-          <rect x="93" y="32" width="9" height="36" rx="1" fill="#c49030" opacity="0.45"/>
-          <line x1="10" y1="54" x2="130" y2="50" stroke="#7a1808" stroke-width="1" opacity="0.4"/>
-          <text x="70" y="52" text-anchor="middle" font-size="11" fill="#ffe080" opacity="0.8">✦</text>
+          <path d="M8 54 L8 28 Q8 16 90 12 Q172 16 172 28 L172 54 Z" fill="#4a2010" stroke="#e8b840" stroke-width="2.5"/>
+          <rect x="46" y="18" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.38"/>
+          <rect x="126" y="18" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.38"/>
+          <line x1="8" y1="42" x2="172" y2="38" stroke="#2a1008" stroke-width="1.5" opacity="0.4"/>
+          <text x="90" y="40" text-anchor="middle" font-size="15" fill="#ffe090" opacity="0.9">✦</text>
+          <rect x="8"   y="28" width="18" height="16" rx="2" fill="#e8b840" opacity="0.65"/>
+          <rect x="154" y="28" width="18" height="16" rx="2" fill="#e8b840" opacity="0.65"/>
         </g>
       </svg>
     </div>
@@ -2335,29 +2355,54 @@ function _ruckPopTreasure() {
     });
   }, 900));
 
-  // 3. Schätze erscheinen verstreut nach Glitzer (0.9s) + 0.5s = 1.4s
+  // 3. BG-Münzen/Edelsteine einblenden (1.0s) + Reward-Icons mit 0.4s Versatz (ab 1.4s)
   _ruckChestTimers.push(setTimeout(() => {
-    // === FIX: PUNKT 1 – chaotische Verteilung, kein Label ===
     const PER_ROW = 3;
     const rows    = Math.ceil(all.length / PER_ROW);
     const minH    = rows * 120 + 70;
-    // Spalten-Ankerpunkte; mit starkem Zufallsversatz überlappen Icons bewusst
     const COL_ANCHORS = [10, 40, 70];
 
-    let html = `<div class="ruck-chest-floor"><div class="ruck-scattered-wrap" style="min-height:${minH}px">`;
+    // Statische Münzen im Hintergrund
+    let bgHtml = '';
+    const coinData = [
+      {l:6,t:18,s:22},{l:18,t:52,s:18},{l:28,t:28,s:25},{l:42,t:62,s:20},
+      {l:55,t:15,s:24},{l:65,t:48,s:19},{l:78,t:32,s:22},{l:88,t:68,s:18},
+    ];
+    coinData.forEach((c, i) => {
+      const jl = Math.max(2, Math.min(88, c.l + (Math.random()-0.5)*8));
+      const jt = Math.max(4, c.t + (Math.random()-0.5)*10);
+      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl.toFixed(1)}%;top:${jt.toFixed(0)}px;width:${c.s}px;height:${c.s}px" viewBox="0 0 20 20" aria-hidden="true"><defs><radialGradient id="bcg${i}" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs><circle cx="10" cy="10" r="9" fill="url(#bcg${i})" stroke="#b08010" stroke-width="1"/></svg>`;
+    });
+    // Statische Edelsteine im Hintergrund
+    const gemData = [
+      {l:10,t:38,s:15,c:'#e83030',sc:'#ff9090'},{l:22,t:72,s:13,c:'#2060e8',sc:'#80b0ff'},
+      {l:38,t:44,s:17,c:'#20b840',sc:'#80ff90'},{l:52,t:76,s:14,c:'#a030d8',sc:'#d888ff'},
+      {l:70,t:22,s:16,c:'#e85030',sc:'#ff9868'},{l:84,t:55,s:13,c:'#1890e0',sc:'#70d8ff'},
+    ];
+    gemData.forEach((g, i) => {
+      const jl = Math.max(2, Math.min(88, g.l + (Math.random()-0.5)*8));
+      const jt = Math.max(4, g.t + (Math.random()-0.5)*10);
+      bgHtml += `<svg class="ruck-chest-bg-gem" style="left:${jl.toFixed(1)}%;top:${jt.toFixed(0)}px;width:${g.s}px;height:${g.s}px" viewBox="0 0 20 20" aria-hidden="true"><polygon points="10,1 18,7 15,19 5,19 2,7" fill="${g.c}" stroke="${g.sc}" stroke-width="1.2" opacity="0.9"/></svg>`;
+    });
+
+    let scatterHtml = '';
     all.forEach((t, i) => {
       const col     = i % PER_ROW;
       const row     = Math.floor(i / PER_ROW);
       const leftPct = Math.max(-12, Math.min(84, COL_ANCHORS[col] + (Math.random() - 0.5) * 44));
       const topPx   = Math.max(0, row * 118 + (Math.random() - 0.5) * 55);
       const rot     = -25 + Math.random() * 50;
-      const zIdx    = 1 + Math.floor(Math.random() * 8);
-      const delay   = (i * 0.08).toFixed(2);
-      html += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPx.toFixed(0)}px;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
+      const zIdx    = 2 + Math.floor(Math.random() * 7);
+      const delay   = (i * 0.08 + 0.4).toFixed(2);
+      scatterHtml += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPx.toFixed(0)}px;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
-    html += '</div></div>';
-    container.innerHTML = html;
-  }, 1400));
+
+    container.innerHTML = `<div class="ruck-chest-floor"><div class="ruck-chest-bg-layer" id="ruck-bg-layer">${bgHtml}</div><div class="ruck-scattered-wrap" style="min-height:${minH}px">${scatterHtml}</div></div>`;
+    requestAnimationFrame(() => {
+      const bgL = document.getElementById('ruck-bg-layer');
+      if (bgL) bgL.classList.add('bg-fade-in');
+    });
+  }, 1000));
 }
 
 // ── Drag to close ─────────────────────────────────────────────────
