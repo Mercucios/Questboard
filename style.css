@@ -2693,9 +2693,9 @@ h1 {
   50%       { opacity: 1;   transform: scale(1.2); }
 }
 
-/* === FIX: INVENTAR – PUNKT 1: Drawer Karten Schrift verdoppelt === */
-.inv-card-name { font-size: 2rem !important; }
-.inv-card-sub  { font-size: 1.44rem !important; }
+/* === FIX: SIDEQUEST & UNTERSEITEN – Drawer Karten Schrift (halbiert) === */
+.inv-card-name { font-size: 1rem !important; }
+.inv-card-sub  { font-size: 0.72rem !important; }
 
 /* === FIX: INVENTAR – PUNKT 2: Questlog Schriftrolle Redesign === */
 /* A+B) Outer container: dunkler Hintergrund, kein Scrollbar, zentriert mit Schatten */
@@ -2802,49 +2802,89 @@ h1 {
 .ruck-chest-bg-gem { position: absolute; }
 .ruck-scattered-wrap { position: relative; z-index: 2; }
 
-/* === FIX: SCHRIFT – Rucksack Inhalts-Bereiche: alle font-size verdoppelt === */
+/* === FIX: SIDEQUEST & UNTERSEITEN – Rucksack Schriftgrößen (halbiert) === */
 
 /* Bereichs-Kopfzeile (Teleskop / Questlog / Schatztruhe) */
-.rucksack-area-hdr-title { font-size: 4rem !important; }
-.rucksack-back-btn       { font-size: 4.2rem !important; }
+.rucksack-area-hdr-title { font-size: 2rem !important; }
+.rucksack-back-btn       { font-size: 2.1rem !important; }
 
 /* ── Teleskop ─────────────────────────────────────────────── */
-.ruck-star-num       { font-size: 15.2rem !important; }
-.ruck-star-glyph     { font-size: 8rem !important; }
-.ruck-star-sub       { font-size: 3.12rem !important; }
-.ruck-open-map-btn   { font-size: 3.2rem !important; }
-.ruck-section-lbl    { font-size: 2.64rem !important; }
-.ruck-const-icon     { font-size: 3.6rem !important; }
-.ruck-const-name     { font-size: 3.68rem !important; }
-.ruck-const-badge    { font-size: 2.32rem !important; }
+.ruck-star-num       { font-size: 7.6rem !important; }
+.ruck-star-glyph     { font-size: 4rem !important; }
+.ruck-star-sub       { font-size: 1.56rem !important; }
+.ruck-open-map-btn   { font-size: 1.6rem !important; }
+.ruck-section-lbl    { font-size: 1.32rem !important; }
+.ruck-const-icon     { font-size: 1.8rem !important; }
+.ruck-const-name     { font-size: 1.84rem !important; }
+.ruck-const-badge    { font-size: 1.16rem !important; }
 
 /* ── Questlog (Pergament) ─────────────────────────────────── */
-.ruck-scroll-heading        { font-size: clamp(96px, 24vw, 144px) !important; }
-.ruck-perg-date             { font-size: 2.64rem !important; }
-.ruck-perg-title            { font-size: 4rem !important; }
-.ruck-perg-rating           { font-size: 5.6rem !important; }
-.ruck-perg-note             { font-size: 3.28rem !important; }
-.ruck-perg-empty            { font-size: 3.6rem !important; }
-.ruck-perg-day-hdr          { font-size: 3.68rem !important; }
-.ruck-perg-day-ornament     { font-size: 2.6rem !important; }
-.ruck-perg-day-rating-icon  { font-size: 5rem !important; }
-.ruck-perg-day-rating-label { font-size: 3.04rem !important; }
-.ruck-perg-rating-icon      { font-size: 5.6rem !important; }
+.ruck-scroll-heading        { font-size: clamp(48px, 12vw, 72px) !important; }
+.ruck-perg-date             { font-size: 1.32rem !important; }
+.ruck-perg-title            { font-size: 2rem !important; }
+.ruck-perg-rating           { font-size: 2.8rem !important; }
+.ruck-perg-note             { font-size: 1.64rem !important; }
+.ruck-perg-empty            { font-size: 1.8rem !important; }
+.ruck-perg-day-hdr          { font-size: 1.84rem !important; }
+.ruck-perg-day-ornament     { font-size: 1.3rem !important; }
+.ruck-perg-day-rating-icon  { font-size: 2.5rem !important; }
+.ruck-perg-day-rating-label { font-size: 1.52rem !important; }
+.ruck-perg-rating-icon      { font-size: 2.8rem !important; }
 /* Alteinträge (nicht-Pergament-Fallback) */
-.ruck-log-title  { font-size: 3.28rem !important; }
-.ruck-log-date   { font-size: 2.72rem !important; }
-.ruck-log-rating { font-size: 3.68rem !important; }
-.ruck-log-note   { font-size: 3.52rem !important; }
-.ruck-empty      { font-size: 3.6rem !important; }
+.ruck-log-title  { font-size: 1.64rem !important; }
+.ruck-log-date   { font-size: 1.36rem !important; }
+.ruck-log-rating { font-size: 1.84rem !important; }
+.ruck-log-note   { font-size: 1.76rem !important; }
+.ruck-empty      { font-size: 1.8rem !important; }
 
 /* ── Schatztruhe ──────────────────────────────────────────── */
-.ruck-gold-particle      { font-size: 3.4rem !important; }
-.ruck-reward-name        { font-size: 3.4rem !important; }
-.ruck-reward-quest       { font-size: 3.12rem !important; }
-.ruck-reward-date        { font-size: 2.64rem !important; }
-.ruck-chest-empty        { font-size: 3.6rem !important; }
-.ruck-chest-glitter-item { font-size: 4.4rem !important; }
+.ruck-gold-particle      { font-size: 1.7rem !important; }
+.ruck-reward-name        { font-size: 1.7rem !important; }
+.ruck-reward-quest       { font-size: 1.56rem !important; }
+.ruck-reward-date        { font-size: 1.32rem !important; }
+.ruck-chest-empty        { font-size: 1.8rem !important; }
+.ruck-chest-glitter-item { font-size: 2.2rem !important; }
 
-/* === FIX: SCHRIFT – Sidequest "Unerwartete Pfade" === */
-.sidequest-heading { font-size: 2.88rem !important; font-weight: 700 !important; }
-.sq-add-btn        { color: #f0c040 !important; }
+/* === FIX: SIDEQUEST & UNTERSEITEN – Zahlen-Schrift (Cinzel) in Unterseiten === */
+.ruck-perg-date    { font-family: 'Cinzel', serif !important; }
+.ruck-perg-day-hdr { font-family: 'Cinzel', serif !important; }
+.ruck-log-date     { font-family: 'Cinzel', serif !important; }
+.ruck-reward-date  { font-family: 'Cinzel', serif !important; }
+
+/* === FIX: SIDEQUEST & UNTERSEITEN – "Unerwartete Pfade" silbern & glitzernd === */
+@keyframes silverGlitter {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 2px rgba(200,210,255,0.3)); }
+  50%       { filter: brightness(1.4) drop-shadow(0 0 6px rgba(200,210,255,0.8)); }
+}
+
+.sidequest-heading .sq-heading-text {
+  background: linear-gradient(135deg, #f0f0ff, #a0a8c0, #d0d8f0, #8090b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 1.56rem;
+  animation: silverGlitter 3s ease-in-out infinite;
+  letter-spacing: 0.08em;
+}
+
+/* === FIX: SIDEQUEST & UNTERSEITEN – 🌀 Strudel als einziger Add-Button === */
+@keyframes vortexSpin {
+  to { transform: rotate(360deg); }
+}
+
+.sq-vortex-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sq-vortex-btn:hover {
+  animation: vortexSpin 0.5s ease forwards;
+}

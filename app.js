@@ -1294,7 +1294,8 @@ function init() {
   setInterval(checkAndShowDayRating, 60000);
 
   // Feature 2 – Sidequests
-  $('btn-sq-add').addEventListener('click',     showSqCreateModal);
+  // === FIX: SIDEQUEST & UNTERSEITEN – Strudel als einziger Add-Button ===
+  $('sq-vortex-btn').addEventListener('click',  showSqCreateModal);
   $('btn-sq-add-hdr').addEventListener('click', showSqCreateModal);
   initSqCreateModal();
 
