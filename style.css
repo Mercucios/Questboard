@@ -2801,3 +2801,50 @@ h1 {
 .ruck-chest-bg-coin,
 .ruck-chest-bg-gem { position: absolute; }
 .ruck-scattered-wrap { position: relative; z-index: 2; }
+
+/* === FIX: SCHRIFT – Rucksack Inhalts-Bereiche: alle font-size verdoppelt === */
+
+/* Bereichs-Kopfzeile (Teleskop / Questlog / Schatztruhe) */
+.rucksack-area-hdr-title { font-size: 2rem !important; }
+.rucksack-back-btn       { font-size: 2.1rem !important; }
+
+/* ── Teleskop ─────────────────────────────────────────────── */
+.ruck-star-num       { font-size: 7.6rem !important; }
+.ruck-star-glyph     { font-size: 4rem !important; }
+.ruck-star-sub       { font-size: 1.56rem !important; }
+.ruck-open-map-btn   { font-size: 1.6rem !important; }
+.ruck-section-lbl    { font-size: 1.32rem !important; }
+.ruck-const-icon     { font-size: 1.8rem !important; }
+.ruck-const-name     { font-size: 1.84rem !important; }
+.ruck-const-badge    { font-size: 1.16rem !important; }
+
+/* ── Questlog (Pergament) ─────────────────────────────────── */
+.ruck-scroll-heading        { font-size: clamp(48px, 12vw, 72px) !important; }
+.ruck-perg-date             { font-size: 1.32rem !important; }
+.ruck-perg-title            { font-size: 2rem !important; }
+.ruck-perg-rating           { font-size: 2.8rem !important; }
+.ruck-perg-note             { font-size: 1.64rem !important; }
+.ruck-perg-empty            { font-size: 1.8rem !important; }
+.ruck-perg-day-hdr          { font-size: 1.84rem !important; }
+.ruck-perg-day-ornament     { font-size: 1.3rem !important; }
+.ruck-perg-day-rating-icon  { font-size: 2.5rem !important; }
+.ruck-perg-day-rating-label { font-size: 1.52rem !important; }
+.ruck-perg-rating-icon      { font-size: 2.8rem !important; }
+/* Alteinträge (nicht-Pergament-Fallback) */
+.ruck-log-title  { font-size: 1.64rem !important; }
+.ruck-log-date   { font-size: 1.36rem !important; }
+.ruck-log-rating { font-size: 1.84rem !important; }
+.ruck-log-note   { font-size: 1.76rem !important; }
+.ruck-empty      { font-size: 1.8rem !important; }
+
+/* ── Schatztruhe ──────────────────────────────────────────── */
+.ruck-gold-particle      { font-size: 1.7rem !important; }
+.ruck-reward-name        { font-size: 1.7rem !important; }
+.ruck-reward-quest       { font-size: 1.56rem !important; }
+.ruck-reward-date        { font-size: 1.32rem !important; }
+.ruck-chest-empty        { font-size: 1.8rem !important; }
+.ruck-chest-glitter-item { font-size: 2.2rem !important; }
+
+/* === FIX: SCHRIFT – Sidequest "Unerwartete Pfade" === */
+.sidequest-heading { font-size: 1.44rem !important; font-weight: 700 !important; }
+.sq-add-btn        { color: #f0c040 !important; }
