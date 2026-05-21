@@ -2580,18 +2580,20 @@ h1 {
   padding: 8px 20px !important;
 }
 
+/* === FIX: MOOD-SCREEN === */
 .mood-prompt {
   font-size: clamp(18px, 4.5vw, 26px) !important;
-  margin: 0 !important;
+  margin: clamp(2px, 0.5vh, 4px) 0 !important;
 }
 
 /* PUNKT 3 – Runen-Divider: einziges Element mit eigenem margin */
+/* === FIX: MOOD-SCREEN === */
 .rune-divider {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
   width: 80% !important;
-  margin: clamp(4px, 1vh, 8px) auto !important;
+  margin: clamp(2px, 0.5vh, 4px) auto !important;
 }
 
 /* PUNKT 4 – Mood-Grid: flex-wrap für 3+2 Layout */
@@ -2612,9 +2614,10 @@ h1 {
   flex: 0 0 calc(33.33% - 5px) !important;
 }
 
-/* Unteres Grid (2 Karten, ~76% zusammen) */
+/* === FIX: MOOD-SCREEN === */
+/* Unteres Grid (2 Karten, exakt gleiche Breite wie obere 3) */
 .mood-card:nth-child(n+4) {
-  flex: 0 0 calc(38% - 3px) !important;
+  flex: 0 0 calc(33.33% - 5px) !important;
 }
 
 .mood-card {
@@ -2648,8 +2651,9 @@ h1 {
 }
 
 /* PUNKT 5 – Schlussatz: immer sichtbar, gold, unten */
+/* === FIX: MOOD-SCREEN === */
 .mood-note {
-  font-size: clamp(14px, 3.8vw, 19px) !important;
+  font-size: clamp(28px, 7.6vw, 38px) !important;
   color: #f0c040 !important;
   opacity: 1 !important;
   visibility: visible !important;
