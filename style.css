@@ -2888,3 +2888,23 @@ h1 {
 .sq-vortex-btn:hover {
   animation: vortexSpin 0.5s ease forwards;
 }
+
+/* === FIX: UNTERSEITEN-TITEL – Überschriften aller drei Bereiche vereinheitlicht === */
+
+/* Bereichs-Kopfzeile (gilt für Teleskop, Questlog UND Schatztruhe) */
+.rucksack-area-hdr-title {
+  font-size: clamp(22px, 5vw, 30px) !important;
+  white-space: nowrap !important;
+}
+
+/* Quest-Log-Überschrift auf dem Pergament (Questlog-Bereich) */
+.ruck-scroll-heading {
+  font-size: clamp(22px, 5vw, 30px) !important;
+  white-space: nowrap !important;
+}
+
+/* Quest-Eintrags-Titel auf dem Pergament (Questlog-Bereich) */
+.ruck-perg-title {
+  font-size: clamp(22px, 5vw, 30px) !important;
+  white-space: nowrap !important;
+}
