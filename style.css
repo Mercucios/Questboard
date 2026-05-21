@@ -2531,90 +2531,100 @@ h1 {
 .ruck-star-num{ font-family: 'Cinzel', serif !important; }
 .sq-ap-btn    { font-family: 'Cinzel', serif !important; font-weight: 700 !important; }
 
-/* === FIX: STARTSEITE – komplettes Mood-Screen Layout === */
+/* === FIX: MOOD-SCREEN === */
 
-/* A – Container */
+/* PUNKT 1 – Hauptcontainer */
 .mood-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
   min-height: 100dvh !important;
   height: auto !important;
-  justify-content: space-evenly !important;
-  align-items: center !important;
-  padding: 1rem !important;
+  padding: 8px 12px !important;
+  box-sizing: border-box !important;
   overflow: hidden !important;
+  margin: 0 !important;
 }
-/* Flex-Kinder: eigene Margins neutralisieren, space-evenly übernimmt */
-.logo-block  { margin: 0 !important; }
-.mood-note   { margin: 0 !important; }
 
-/* B – Orb */
+/* PUNKT 2 – Galaxie/Orb */
 .logo-orb {
-  width:      clamp(100px, 28vw, 140px) !important;
-  height:     clamp(100px, 28vw, 140px) !important;
-  margin-top: clamp(0.2rem, 1vh, 0.6rem) !important;
-}
-
-/* C – Titel */
-h1 {
-  font-size:     clamp(32px, 8vw, 52px) !important;
-  margin-bottom: clamp(0.1rem, 0.5vh, 0.4rem) !important;
-}
-
-/* D – Untertitel */
-.logo-sub {
-  font-size:     clamp(14px, 3.5vw, 20px) !important;
-  margin-top:    0 !important;
-  margin-bottom: clamp(0.2rem, 0.8vh, 0.5rem) !important;
-}
-
-/* E – Datum-Chip */
-.date-chip {
-  margin-top:    clamp(0.1rem, 0.5vh, 0.3rem) !important;
-  margin-bottom: clamp(0.2rem, 0.8vh, 0.6rem) !important;
-}
-
-/* F – Frage */
-.mood-prompt {
-  margin-top:    clamp(0.2rem, 0.8vh, 0.5rem) !important;
-  margin-bottom: clamp(0.2rem, 0.8vh, 0.5rem) !important;
-}
-
-/* G – Grid */
-.mood-grid {
-  margin-top:    clamp(0.2rem, 0.8vh, 0.5rem) !important;
-  margin-bottom: 0 !important;
-  gap:           clamp(6px, 1.5vw, 10px) !important;
-  width:         100% !important;
-}
-
-/* H – Cards */
-.mood-card {
-  padding:  clamp(8px, 2vw, 14px) !important;
-  height:   clamp(120px, 26vw, 160px) !important;
-  overflow: visible !important;
-  gap:      clamp(2px, 0.8vw, 4px) !important;
-}
-
-/* I – Glyph */
-.mood-glyph {
-  height: clamp(52px, 13vw, 72px) !important;
+  width: clamp(80px, 22vw, 120px) !important;
+  height: clamp(80px, 22vw, 120px) !important;
   margin: 0 auto !important;
 }
+
+/* PUNKT 3 – Logo-Block (Titel + Untertitel) */
+.logo-block {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+  margin: 0 !important;
+}
+
+h1 {
+  font-size: clamp(28px, 7.5vw, 44px) !important;
+  margin: 0 !important;
+}
+
+.logo-sub {
+  font-size: clamp(13px, 3.5vw, 18px) !important;
+  margin: 0 !important;
+}
+
+/* PUNKT 4 – Datum-Chip */
+.date-chip {
+  margin: 0 !important;
+  padding: 8px 20px !important;
+}
+
+/* PUNKT 5 – Frage */
+.mood-prompt {
+  font-size: clamp(18px, 4.5vw, 26px) !important;
+  margin: 0 !important;
+}
+
+/* PUNKT 6 – Mood-Grid + Karten */
+.mood-grid {
+  margin: 0 !important;
+  gap: clamp(6px, 1.5vw, 10px) !important;
+  width: 100% !important;
+}
+
+.mood-card {
+  padding: clamp(8px, 2vw, 12px) clamp(4px, 1vw, 8px) !important;
+  height: clamp(100px, 24vw, 140px) !important;
+  overflow: visible !important;
+}
+
+.mood-glyph {
+  width: clamp(44px, 12vw, 64px) !important;
+  height: clamp(44px, 12vw, 64px) !important;
+  margin: 0 auto !important;
+}
+
 .mood-glyph video {
-  width:  clamp(52px, 13vw, 72px) !important;
-  height: clamp(52px, 13vw, 72px) !important;
+  width: clamp(44px, 12vw, 64px) !important;
+  height: clamp(44px, 12vw, 64px) !important;
 }
 
-/* J – Name */
 .mood-name {
-  font-size:   clamp(15px, 4vw, 20px) !important;
-  margin:      clamp(4px, 1vw, 6px) 0 clamp(2px, 0.5vw, 4px) !important;
+  font-size: clamp(13px, 3.8vw, 18px) !important;
+  margin: 3px 0 2px !important;
   white-space: nowrap !important;
 }
 
-/* K – Sub */
 .mood-sub {
-  font-size:   clamp(10px, 2.5vw, 13px) !important;
+  font-size: clamp(10px, 2.4vw, 13px) !important;
   white-space: nowrap !important;
-  overflow:    visible !important;
-  padding:     0 2px !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* PUNKT 7 – Fußzeile */
+.mood-note {
+  font-size: clamp(12px, 3vw, 16px) !important;
+  margin: 0 !important;
+  opacity: 1 !important;
 }
