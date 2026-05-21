@@ -2533,16 +2533,16 @@ h1 {
 
 /* === FIX: MOOD-SCREEN === */
 
-/* PUNKT 1 – Hauptcontainer */
+/* PUNKT 1 – Hauptcontainer: fixe Höhe, space-between */
 .mood-wrap {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: space-between !important;
-  min-height: 100dvh !important;
-  height: auto !important;
-  padding-top: clamp(24px, 6vh, 48px) !important;
-  padding-bottom: clamp(24px, 6vh, 48px) !important;
+  height: 100dvh !important;
+  min-height: unset !important;
+  padding-top: clamp(20px, 4vh, 36px) !important;
+  padding-bottom: clamp(16px, 3vh, 28px) !important;
   padding-left: 12px !important;
   padding-right: 12px !important;
   box-sizing: border-box !important;
@@ -2550,7 +2550,7 @@ h1 {
   margin: 0 !important;
 }
 
-/* PUNKT 2 – Logo-Block + Orb */
+/* PUNKT 2 – Alle direkten Kinder: kein eigenes margin */
 .logo-block {
   display: flex !important;
   flex-direction: column !important;
@@ -2580,68 +2580,84 @@ h1 {
   padding: 8px 20px !important;
 }
 
-/* PUNKT 3 – Schlussatz */
-.mood-note {
-  font-size: clamp(14px, 3.8vw, 20px) !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  opacity: 1 !important;
-  display: block !important;
-  visibility: visible !important;
-  color: #f0c040 !important;
-}
-
-/* Frage */
 .mood-prompt {
   font-size: clamp(18px, 4.5vw, 26px) !important;
   margin: 0 !important;
 }
 
-/* Mood-Grid */
-.mood-grid {
-  margin: 0 !important;
-  gap: clamp(6px, 1.5vw, 10px) !important;
-  width: 100% !important;
-}
-
-.mood-card {
-  padding: clamp(8px, 2vw, 12px) clamp(4px, 1vw, 8px) !important;
-  height: clamp(130px, 30vw, 170px) !important;
-  overflow: visible !important;
-}
-
-.mood-glyph {
-  width: clamp(44px, 12vw, 64px) !important;
-  height: clamp(44px, 12vw, 64px) !important;
-  margin: 0 auto !important;
-}
-
-.mood-glyph video {
-  width: clamp(44px, 12vw, 64px) !important;
-  height: clamp(44px, 12vw, 64px) !important;
-}
-
-.mood-name {
-  font-size: clamp(13px, 3.8vw, 18px) !important;
-  margin: 3px 0 2px !important;
-  white-space: nowrap !important;
-}
-
-/* PUNKT 4 – Energie-Beschreibung */
-.mood-sub {
-  font-size: clamp(11px, 2.8vw, 15px) !important;
-  white-space: nowrap !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-/* PUNKT 5 – Runen-Divider Abstand */
+/* PUNKT 3 – Runen-Divider: einziges Element mit eigenem margin */
 .rune-divider {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
   width: 80% !important;
-  margin: clamp(4px, 1.5vh, 10px) auto !important;
+  margin: clamp(4px, 1vh, 8px) auto !important;
+}
+
+/* PUNKT 4 – Mood-Grid: flex-wrap für 3+2 Layout */
+.mood-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  row-gap: clamp(5px, 1.2vh, 8px) !important;
+  column-gap: clamp(4px, 1vw, 7px) !important;
+  width: 100% !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
+}
+
+/* Oberes Grid (3 Karten, gleichmäßig) */
+.mood-card:nth-child(-n+3) {
+  flex: 0 0 calc(33.33% - 5px) !important;
+}
+
+/* Unteres Grid (2 Karten, ~76% zusammen) */
+.mood-card:nth-child(n+4) {
+  flex: 0 0 calc(38% - 3px) !important;
+}
+
+.mood-card {
+  padding: clamp(8px, 1.8vw, 12px) clamp(3px, 0.8vw, 6px) !important;
+  height: clamp(120px, 26vw, 155px) !important;
+  overflow: visible !important;
+}
+
+.mood-glyph {
+  width: clamp(42px, 11vw, 60px) !important;
+  height: clamp(42px, 11vw, 60px) !important;
+  margin: 0 auto !important;
+}
+
+.mood-glyph video {
+  width: clamp(42px, 11vw, 60px) !important;
+  height: clamp(42px, 11vw, 60px) !important;
+}
+
+.mood-name {
+  font-size: clamp(13px, 3.5vw, 17px) !important;
+  margin: 3px 0 2px !important;
+  white-space: nowrap !important;
+}
+
+.mood-sub {
+  font-size: clamp(11px, 2.8vw, 14px) !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* PUNKT 5 – Schlussatz: immer sichtbar, gold, unten */
+.mood-note {
+  font-size: clamp(14px, 3.8vw, 19px) !important;
+  color: #f0c040 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .rune-line {
