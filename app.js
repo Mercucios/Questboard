@@ -1936,12 +1936,13 @@ function rucksackRecordTreasure(questTitle, treasure, type) {
 }
 
 // ── State ─────────────────────────────────────────────────────────
-let _ruckOpen      = false;
-let _ruckView      = 'cards';
-let _ruckChestDone = false;
-let _ruckCountRaf  = null;
-let _ruckDragY     = 0;
-let _ruckDragging  = false;
+let _ruckOpen        = false;
+let _ruckView        = 'cards';
+let _ruckChestDone   = false;
+let _ruckCountRaf    = null;
+let _ruckDragY       = 0;
+let _ruckDragging    = false;
+let _ruckChestTimers = []; // === FIX: PUNKT 3 – Timer-Handles für Kisten-Animation ===
 
 // ── Open / Close ──────────────────────────────────────────────────
 function openRucksack() {
@@ -1984,6 +1985,13 @@ function _ruckSetView(name, animate) {
   const prev = _ruckView;
   _ruckView  = name;
 
+  // Reset treasure animation state when returning to cards
+  if (name === 'cards') {
+    _ruckChestDone = false;
+    _ruckChestTimers.forEach(clearTimeout);
+    _ruckChestTimers = [];
+  }
+
   if (!animate || prev === name) {
     RUCK_VIEWS.forEach(v => {
       const el = _ruckViewEl(v);
@@ -2019,40 +2027,33 @@ function _ruckPopulate(name) {
   if (name === 'treasure')  _ruckPopTreasure();
 }
 
+// === FIX: PUNKT 5 – Teleskop Fly-in: ±150px Startposition, 0.05s Stagger, Bounce 1.4, CountUp danach ===
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
   const starCount = loadStars().length;
   const numEl     = $('ruck-star-num');
 
-  // CountUp animation
+  // Reset counter to 0 initially; CountUp starts AFTER fly-in animations complete
   if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
-  const t0 = performance.now();
-  const dur = 900;
-  function countStep(now) {
-    const p = Math.min(1, (now - t0) / dur);
-    const e = 1 - Math.pow(1 - p, 3);
-    numEl.textContent = Math.round(e * starCount);
-    if (p < 1) _ruckCountRaf = requestAnimationFrame(countStep);
-  }
-  _ruckCountRaf = requestAnimationFrame(countStep);
+  numEl.textContent = '0';
 
-  // Constellations
+  // Constellations list
   const list = $('ruck-const-list');
   list.innerHTML = '';
-  const info     = getConstellationInfo(starCount);
-  const compN    = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+  const info  = getConstellationInfo(starCount);
+  const compN = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
 
   CONSTELLATIONS.forEach((c, i) => {
     const isComplete = i < compN;
     const isCurrent  = !info.allComplete && i === compN;
     const isNext2    = !isComplete && !isCurrent && (i === compN + 1 || i === compN + 2);
-    if (!isComplete && !isCurrent && !isNext2) return; // hide all beyond next 2
+    if (!isComplete && !isCurrent && !isNext2) return;
 
     const el = document.createElement('div');
     let cls = 'ruck-const-item ';
-    if (isComplete)  cls += 'ci-done';
-    else if (isCurrent) cls += 'ci-active';
-    else cls += 'ci-locked';
+    if (isComplete)      cls += 'ci-done';
+    else if (isCurrent)  cls += 'ci-active';
+    else                 cls += 'ci-locked';
     el.className = cls;
 
     let icon, name, badgeCls, badgeTxt;
@@ -2074,13 +2075,14 @@ function _ruckPopTelescope() {
     list.appendChild(el);
   });
 
-  // Fly-in animation for hero and list items
+  // Fly-in: Hero zuerst, dann Sternbild-Einträge (±150px Startversatz, 0.05s Stagger)
   const hero = document.querySelector('.ruck-stars-hero');
   if (hero) {
     hero.classList.remove('fly-in');
     void hero.offsetWidth;
     hero.classList.add('fly-in');
   }
+
   const items = list.querySelectorAll('.ruck-const-item');
   items.forEach((el, i) => {
     el.classList.remove('fly-in');
@@ -2088,9 +2090,23 @@ function _ruckPopTelescope() {
     const fy = (Math.random() * 300 - 150).toFixed(0);
     el.style.setProperty('--fx', `${fx}px`);
     el.style.setProperty('--fy', `${fy}px`);
-    el.style.animationDelay = `${(i * 0.08 + 0.1).toFixed(2)}s`;
+    el.style.animationDelay = `${(i * 0.05 + 0.1).toFixed(2)}s`;
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('fly-in')));
   });
+
+  // CountUp startet NACH den Fly-in-Animationen (Fly-in max ~items*0.05+0.1+0.8s)
+  const flyInEnd = Math.max(items.length * 0.05 + 0.1 + 0.8, 0.9) * 1000;
+  setTimeout(() => {
+    const t0  = performance.now();
+    const dur = 900;
+    function countStep(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      numEl.textContent = Math.round(e * starCount);
+      if (p < 1) _ruckCountRaf = requestAnimationFrame(countStep);
+    }
+    _ruckCountRaf = requestAnimationFrame(countStep);
+  }, flyInEnd);
 }
 
 // ── Questlog ──────────────────────────────────────────────────────
@@ -2112,37 +2128,104 @@ function _ruckRatingLabel(type, rating) {
   }[rating] || rating;
 }
 
+// === FIX: PUNKT 2 – Questlog Pergament mit Tag-Gruppierung ===
 function _ruckPopQuestlog() {
   const scrollArea = $('ruck-log-scroll');
   const logs       = loadLogs();
   const ratings    = loadDayRatings();
 
-  const entries = [
+  const allEntries = [
     ...logs.map(l => ({ type: 'quest', date: l.date, title: l.questTitle, rating: l.rating, note: l.note })),
-    ...ratings.map(r => ({ type: 'day', date: r.date, title: 'Tagesbewertung', rating: r.rating, note: null })),
-  ].sort((a, b) => b.date.localeCompare(a.date) || (a.type === 'quest' ? -1 : 1));
+    ...ratings.map(r => ({ type: 'day', date: r.date, rating: r.rating })),
+  ];
 
-  if (entries.length === 0) {
-    scrollArea.innerHTML = '<div class="ruck-empty">Noch keine Abenteuer verzeichnet...</div>';
+  // Empty state
+  if (allEntries.length === 0) {
+    scrollArea.innerHTML = `
+      <div class="ruck-scroll-outer">
+        <div class="ruck-scroll-roll"></div>
+        <div class="ruck-scroll-body">
+          <div class="ruck-perg-empty">Noch keine Abenteuer verzeichnet...</div>
+        </div>
+        <div class="ruck-scroll-roll-bot"></div>
+      </div>`;
+    requestAnimationFrame(() => {
+      const body = scrollArea.querySelector('.ruck-scroll-body');
+      if (body) body.classList.add('unrolling');
+    });
     return;
   }
 
-  const entryHtml = entries.map((e, i) => `
-    <div class="ruck-perg-entry" style="animation-delay:${(i * 0.08 + 0.22).toFixed(2)}s">
-      <div class="ruck-perg-date">${_ruckFmtDate(e.date)}</div>
-      <div class="ruck-perg-title">${e.title}</div>
-      <div class="ruck-perg-rating">${_ruckRatingLabel(e.type, e.rating)}</div>
-      ${e.note ? `<div class="ruck-perg-note">${e.note}</div>` : ''}
-    </div>`).join('');
+  // Group by date
+  const byDate = {};
+  allEntries.forEach(e => {
+    if (!byDate[e.date]) byDate[e.date] = { dayRating: null, quests: [] };
+    if (e.type === 'day') byDate[e.date].dayRating = e;
+    else byDate[e.date].quests.push(e);
+  });
+
+  const dates = Object.keys(byDate).sort().reverse();
+
+  const DR_ICONS  = { too_little: '🌱', just_right: '⭐', much: '🔥', too_much: '💀' };
+  const DR_LABELS = { too_little: 'Zu wenig', just_right: 'Genau richtig', much: 'Viel', too_much: 'Zu viel' };
+  const QR_ICONS  = { good: '😄', ok: '😐', bad: '😞' };
+
+  let entryIdx = 0;
+  let bodyHtml = '';
+
+  dates.forEach((date, di) => {
+    const group   = byDate[date];
+    const fmtDate = _ruckFmtDate(date);
+
+    const sepClass = di > 0 ? ' ruck-perg-day-group ruck-perg-day-group-sep' : 'ruck-perg-day-group';
+    bodyHtml += `<div class="${sepClass}">`;
+
+    // Day header
+    bodyHtml += `<div class="ruck-perg-entry ruck-perg-day-hdr" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
+      <span class="ruck-perg-day-ornament">✦</span> ${fmtDate} <span class="ruck-perg-day-ornament">✦</span>
+    </div>`;
+    entryIdx++;
+
+    // Day rating block
+    if (group.dayRating) {
+      const r = group.dayRating;
+      bodyHtml += `<div class="ruck-perg-entry ruck-perg-day-rating" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
+        <span class="ruck-perg-day-rating-icon">${DR_ICONS[r.rating] || '⭐'}</span>
+        <span class="ruck-perg-day-rating-label">Tag: ${DR_LABELS[r.rating] || r.rating}</span>
+      </div>`;
+      entryIdx++;
+    }
+
+    // Quest entries with SVG separators
+    group.quests.forEach((e, qi) => {
+      if (qi > 0) {
+        bodyHtml += `<div class="ruck-perg-sep" aria-hidden="true">
+          <svg width="100%" height="12" viewBox="0 0 200 12" preserveAspectRatio="none">
+            <path d="M0,6 Q25,2 50,6 Q75,10 100,6 Q125,2 150,6 Q175,10 200,6" stroke="#8b6020" stroke-width="1.2" fill="none" opacity="0.4"/>
+          </svg>
+        </div>`;
+      }
+      const ratingIcon = QR_ICONS[e.rating] || '';
+      bodyHtml += `<div class="ruck-perg-entry ruck-perg-quest" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
+        <div class="ruck-perg-entry-hdr">
+          <span class="ruck-perg-title">${e.title}</span>
+          <span class="ruck-perg-rating-icon">${ratingIcon}</span>
+        </div>
+        ${e.note ? `<div class="ruck-perg-note">${e.note}</div>` : ''}
+      </div>`;
+      entryIdx++;
+    });
+
+    bodyHtml += `</div>`;
+  });
 
   scrollArea.innerHTML = `
     <div class="ruck-scroll-outer">
       <div class="ruck-scroll-roll"></div>
-      <div class="ruck-scroll-body">${entryHtml}</div>
+      <div class="ruck-scroll-body">${bodyHtml}</div>
       <div class="ruck-scroll-roll-bot"></div>
     </div>`;
 
-  // Trigger animations after paint
   requestAnimationFrame(() => {
     const body = scrollArea.querySelector('.ruck-scroll-body');
     if (body) body.classList.add('unrolling');
@@ -2170,25 +2253,63 @@ function _ruckSpawnParticles() {
   setTimeout(() => { wrap.innerHTML = ''; }, 2200);
 }
 
+// === FIX: PUNKT 3 – Schatztruhe mit Deckel-Animation, Glitzer, gestaffelten Schätzen ===
 function _ruckPopTreasure() {
-  const container = $('ruck-treasure-entries');
+  // Cancel any pending timers from previous opening
+  _ruckChestTimers.forEach(clearTimeout);
+  _ruckChestTimers = [];
 
-  if (!_ruckChestDone) {
-    _ruckChestDone = true;
-    _ruckSpawnParticles();
-  }
+  const container       = $('ruck-treasure-entries');
+  const particleWrap    = $('ruck-chest-particles');
+  const scrollArea      = particleWrap.parentNode;
 
+  // Remove old hero wrap, create fresh one for re-animation
+  const oldHero = document.getElementById('ruck-chest-hero-wrap');
+  if (oldHero) oldHero.remove();
+  const heroWrap = document.createElement('div');
+  heroWrap.id        = 'ruck-chest-hero-wrap';
+  heroWrap.className = 'ruck-chest-hero-wrap';
+  scrollArea.insertBefore(heroWrap, particleWrap);
+
+  heroWrap.innerHTML = `
+    <div class="ruck-chest-hero-perspective">
+      <svg class="ruck-chest-hero-svg" width="110" height="96" viewBox="0 0 140 120" aria-hidden="true">
+        <!-- Body -->
+        <rect x="10" y="68" width="120" height="46" rx="4" fill="#8a2010" stroke="#c49030" stroke-width="2"/>
+        <rect x="10" y="106" width="120" height="8" rx="2" fill="#c49030"/>
+        <rect x="38" y="72" width="9" height="40" rx="1" fill="#c49030" opacity="0.55"/>
+        <rect x="93" y="72" width="9" height="40" rx="1" fill="#c49030" opacity="0.55"/>
+        <rect x="56" y="72" width="28" height="20" rx="4" fill="#c49030" stroke="#ffe080" stroke-width="1"/>
+        <path d="M63 72 Q63 64 70 64 Q77 64 77 72" fill="none" stroke="#8a5808" stroke-width="3.5"/>
+        <circle cx="70" cy="80" r="3" fill="#6a1808"/>
+        <!-- Lid (animated) -->
+        <g class="ruck-chest-lid-g">
+          <path d="M10 68 L10 42 Q10 34 70 30 Q130 34 130 42 L130 68 Z" fill="#b03020" stroke="#c49030" stroke-width="2"/>
+          <rect x="38" y="32" width="9" height="36" rx="1" fill="#c49030" opacity="0.45"/>
+          <rect x="93" y="32" width="9" height="36" rx="1" fill="#c49030" opacity="0.45"/>
+          <line x1="10" y1="54" x2="130" y2="50" stroke="#7a1808" stroke-width="1" opacity="0.4"/>
+          <text x="70" y="52" text-anchor="middle" font-size="11" fill="#ffe080" opacity="0.8">✦</text>
+        </g>
+      </svg>
+    </div>
+    <div class="ruck-chest-glitter-wrap" id="ruck-chest-glitter-wrap"></div>`;
+
+  // 1. Trigger lid animation after first paint
+  requestAnimationFrame(() => {
+    const lid = heroWrap.querySelector('.ruck-chest-lid-g');
+    if (lid) { void lid.offsetWidth; lid.classList.add('ruck-lid-open'); }
+  });
+
+  // Collect item data
   const stored = rucksackLoadTreasures();
-
-  const today = todayStr();
-  const extra = [];
+  const today  = todayStr();
+  const extra  = [];
   if (appState) {
     appState.quests.filter(q => q.done && q.treasure).forEach(q => {
       const already = stored.some(t => t.date === today && t.questTitle === q.name && t.type === 'quest');
       if (!already) extra.push({ date: today, questTitle: q.name, name: q.treasure.name, type: 'quest' });
     });
   }
-
   const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
 
   if (all.length === 0) {
@@ -2196,36 +2317,53 @@ function _ruckPopTreasure() {
     return;
   }
 
-  // Scatter layout: deterministic positions based on index
-  const COLS = 3;
-  const ROW_H = 110; // px per row
-  const rows  = Math.ceil(all.length / COLS);
-  const minH  = rows * ROW_H + 40;
+  container.innerHTML = ''; // Clear while lid animation plays
 
-  // Pre-defined scatter offsets per column slot to avoid overlap
-  const OFFSETS = [
-    { lPct: 4,  tBase: 8  },
-    { lPct: 36, tBase: 0  },
-    { lPct: 68, tBase: 12 },
-  ];
-  const ROT_CYCLE = [-12, 8, -6, 14, -10, 5, -14, 9, -7, 11, -4, 13];
+  // 2. Goldglitzer-Partikel nach Deckel-Animation (0.6s) + 0.3s Delay = 0.9s
+  _ruckChestTimers.push(setTimeout(() => {
+    const gw = document.getElementById('ruck-chest-glitter-wrap');
+    if (!gw) return;
+    const glyphs = ['✦', '✧', '★', '✦', '✧', '⭐', '✦', '✧'];
+    glyphs.forEach((g, i) => {
+      const el = document.createElement('span');
+      el.className = 'ruck-chest-glitter-item';
+      el.textContent = g;
+      el.style.left = `${8 + Math.random() * 84}%`;
+      el.style.top  = `${-(15 + Math.random() * 10)}px`;
+      el.style.animation = `ruck-glitter-up 0.8s ease-out ${(i * 0.05).toFixed(2)}s forwards`;
+      gw.appendChild(el);
+    });
+  }, 900));
 
-  let html = `<div class="ruck-chest-floor"><div class="ruck-scattered-wrap" style="min-height:${minH}px">`;
-  all.forEach((t, i) => {
-    const col  = i % COLS;
-    const row  = Math.floor(i / COLS);
-    const off  = OFFSETS[col];
-    const lPct = off.lPct;
-    const tPx  = row * ROW_H + off.tBase;
-    const rot  = ROT_CYCLE[i % ROT_CYCLE.length];
-    const delay = (i * 0.055).toFixed(2);
-    html += `<div class="ruck-scatter-item pop-in" style="left:${lPct}%;top:${tPx}px;--rot:${rot}deg;animation-delay:${delay}s">
-      ${_ruckTreasureIcon(t.name, 48)}
-      <div class="ruck-scatter-name">${t.name}</div>
-    </div>`;
-  });
-  html += '</div></div>';
-  container.innerHTML = html;
+  // 3. Schätze erscheinen verstreut nach Glitzer (0.9s) + 0.5s = 1.4s
+  _ruckChestTimers.push(setTimeout(() => {
+    const COLS  = 3;
+    const ROW_H = 110;
+    const rows  = Math.ceil(all.length / COLS);
+    const minH  = rows * ROW_H + 40;
+    const OFFSETS = [
+      { lPct: 4,  tBase: 8  },
+      { lPct: 36, tBase: 0  },
+      { lPct: 68, tBase: 12 },
+    ];
+    const ROT_CYCLE = [-12, 8, -6, 14, -10, 5, -14, 9, -7, 11, -4, 13];
+
+    let html = `<div class="ruck-chest-floor"><div class="ruck-scattered-wrap" style="min-height:${minH}px">`;
+    all.forEach((t, i) => {
+      const col   = i % COLS;
+      const row   = Math.floor(i / COLS);
+      const off   = OFFSETS[col];
+      const tPx   = row * ROW_H + off.tBase;
+      const rot   = ROT_CYCLE[i % ROT_CYCLE.length];
+      const delay = (i * 0.08).toFixed(2);
+      html += `<div class="ruck-scatter-item pop-in" style="left:${off.lPct}%;top:${tPx}px;--rot:${rot}deg;animation-delay:${delay}s">
+        ${_ruckTreasureIcon(t.name, 48)}
+        <div class="ruck-scatter-name">${t.name}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+    container.innerHTML = html;
+  }, 1400));
 }
 
 // ── Drag to close ─────────────────────────────────────────────────

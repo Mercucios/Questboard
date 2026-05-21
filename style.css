@@ -350,7 +350,7 @@ h1 {
 }
 
 .board-title {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1.15rem;
   font-weight: 700;
   color: #f0c040;
@@ -639,7 +639,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.72rem;
   color: #a090b8;
   letter-spacing: 0.1em;
@@ -741,7 +741,7 @@ h1 {
   border: 1px solid rgba(201,162,39,0.38);
   border-radius: 24px;
   color: #f0c040;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -803,7 +803,7 @@ h1 {
 }
 
 .rest-title {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: #c8b89a;
@@ -848,7 +848,7 @@ h1 {
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 20px;
   color: #f0e4c0;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   padding: 0.48rem 1rem;
@@ -931,7 +931,7 @@ h1 {
 /* ── Typography ──────────────────────────────────────────── */
 .reward-loot-name,
 .star-title,
-.starmap-header h3 { font-family: 'Cinzel', serif; }
+.starmap-header h3 { font-family: 'Star2', serif; }
 
 /* ── Gem Dots ──────────────────────────────────────────────── */
 .gem-dot {
@@ -1161,7 +1161,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.72rem;
   color: #a090b8;
   letter-spacing: 0.1em;
@@ -1266,7 +1266,7 @@ h1 {
 .sq-field { margin-bottom: 0.85rem; }
 
 .sq-field-label {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.68rem;
   color: #9080a8;
   letter-spacing: 0.08em;
@@ -1345,7 +1345,7 @@ h1 {
   background: rgba(8,4,28,0.65);
   border: 1px solid rgba(255,255,255,0.1);
   color: #c8b89a;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -1385,7 +1385,7 @@ h1 {
 .quest-log-popup::-webkit-scrollbar-thumb { background: rgba(100,60,10,0.25); border-radius: 2px; }
 
 .scroll-ornament {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.78rem;
   color: #a07828;
   letter-spacing: 0.35em;
@@ -1396,7 +1396,7 @@ h1 {
 }
 
 .log-quest-title {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: #4a2e08;
@@ -1407,7 +1407,7 @@ h1 {
 }
 
 .log-section-label {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.65rem;
   color: #8a6028;
   letter-spacing: 0.1em;
@@ -1624,6 +1624,17 @@ h1 {
   padding: 0.5rem 1rem 0.4rem;
   text-shadow: 0 0 16px rgba(240,192,64,0.6), 0 2px 4px rgba(0,0,0,1);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.rucksack-title-icon {
+  flex-shrink: 0;
+  transform-origin: top center;
+  animation: bag-swing 3s ease-in-out infinite;
+  display: block;
 }
 
 /* ── Slide Container ─────────────────────────────────────── */
@@ -1690,8 +1701,11 @@ h1 {
 }
 
 #inv-card-questlog {
-  background: radial-gradient(ellipse at 28% 28%, rgba(100,58,18,0.72), rgba(38,18,4,0.97));
+  background: radial-gradient(ellipse at 28% 28%, rgba(0,30,80,0.75), rgba(4,8,14,0.97));
 }
+
+#inv-card-questlog .inv-card-sub { color: #60a0e8; }
+#inv-card-treasure .inv-card-sub { color: #c9a227; }
 
 #inv-card-treasure {
   background: radial-gradient(ellipse at 50% 28%, rgba(120,78,8,0.55), rgba(18,8,2,0.97));
@@ -1710,7 +1724,7 @@ h1 {
 }
 
 .inv-card-name {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1rem;
   font-weight: 600;
   color: #f0c040;
@@ -1758,7 +1772,7 @@ h1 {
   background: none;
   border: none;
   color: rgba(201,162,39,0.65);
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1.05rem;
   cursor: pointer;
   padding: 0.2rem 0.55rem;
@@ -1774,7 +1788,7 @@ h1 {
 }
 
 .rucksack-area-hdr-title {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 1rem;
   font-weight: 600;
   color: #f0c040;
@@ -1802,7 +1816,7 @@ h1 {
 }
 
 .ruck-star-num {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 3.8rem;
   font-weight: 700;
   color: #f0c040;
@@ -1840,7 +1854,7 @@ h1 {
   border: 1px solid rgba(201,162,39,0.32);
   border-radius: 20px;
   color: #f0c040;
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.8rem;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
@@ -1855,7 +1869,7 @@ h1 {
 }
 
 .ruck-section-lbl {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.66rem;
   color: #9080a8;
   letter-spacing: 0.1em;
@@ -1896,7 +1910,7 @@ h1 {
 }
 
 .ruck-const-badge {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.58rem;
   font-weight: 700;
   padding: 0.14rem 0.42rem;
@@ -1930,7 +1944,7 @@ h1 {
 }
 
 .ruck-log-title {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.82rem;
   color: #f0c040;
   font-weight: 600;
@@ -2006,7 +2020,7 @@ h1 {
 .ruck-reward-info { flex: 1; min-width: 0; }
 
 .ruck-reward-name {
-  font-family: 'Cinzel', serif;
+  font-family: 'Star2', serif;
   font-size: 0.85rem;
   color: #f0c040;
 }
@@ -2026,4 +2040,487 @@ h1 {
   font-size: 0.66rem;
   color: #4a3a62;
   flex-shrink: 0;
+}
+
+/* === RUCKSACK: Teleskop Fly-in Animation === */
+@keyframes ruck-fly-in {
+  0%   { opacity: 0; transform: translate(var(--fx,0px), var(--fy,-80px)) scale(0.5); }
+  70%  { transform: translate(0,0) scale(1.08); }
+  100% { opacity: 1; transform: translate(0,0) scale(1); }
+}
+
+.ruck-const-item {
+  opacity: 0;
+}
+
+.ruck-const-item.fly-in {
+  animation: ruck-fly-in 0.8s ease-out forwards;
+}
+
+.ruck-stars-hero.fly-in {
+  animation: ruck-fly-in 0.7s ease-out both;
+  --fx: 0px;
+  --fy: -60px;
+}
+
+/* === RUCKSACK: Questlog Pergament === */
+.ruck-scroll-outer {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.6rem 1.5rem;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ruck-scroll-outer::-webkit-scrollbar { width: 3px; }
+.ruck-scroll-outer::-webkit-scrollbar-thumb { background: rgba(100,60,10,0.22); border-radius: 2px; }
+
+.ruck-scroll-roll {
+  height: 16px;
+  background: linear-gradient(to bottom, #7a5210, #c8a040, #b08838);
+  border-radius: 8px;
+  margin: 0 0.3rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ruck-scroll-roll::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 12%;
+  right: 12%;
+  height: 3px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 2px;
+}
+
+.ruck-scroll-roll-bot {
+  height: 16px;
+  background: linear-gradient(to top, #7a5210, #c8a040, #b08838);
+  border-radius: 8px;
+  margin: 0 0.3rem;
+  box-shadow: 0 -3px 8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+.ruck-scroll-body {
+  background: linear-gradient(160deg, #d4b878 0%, #c4a860 40%, #b89850 100%);
+  border-left: 7px solid #8a5818;
+  border-right: 7px solid #8a5818;
+  padding: 0.9rem 1.1rem 0.5rem;
+  box-shadow: inset 0 0 50px rgba(80,40,10,0.12);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+}
+
+.ruck-scroll-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, transparent 55%, rgba(60,30,8,0.1) 100%),
+              radial-gradient(ellipse at 50% 100%, transparent 55%, rgba(60,30,8,0.1) 100%);
+  pointer-events: none;
+}
+
+@keyframes scroll-unroll-body {
+  from { opacity: 0; transform: scaleY(0); }
+  to   { opacity: 1; transform: scaleY(1); }
+}
+
+.ruck-scroll-body.unrolling {
+  animation: scroll-unroll-body 0.5s ease-out both;
+  transform-origin: top center;
+}
+
+@keyframes perg-entry-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ruck-perg-entry {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(80,40,10,0.18);
+  opacity: 0;
+}
+
+.ruck-perg-entry.perg-in {
+  animation: perg-entry-in 0.35s ease-out forwards;
+}
+
+.ruck-perg-entry:last-child { border-bottom: none; }
+
+.ruck-perg-date {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.7rem;
+  color: #7a5010;
+  margin-bottom: 0.2rem;
+  opacity: 0.8;
+}
+
+.ruck-perg-title {
+  font-family: 'Star2', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3a2008;
+  margin-bottom: 0.18rem;
+  line-height: 1.2;
+}
+
+.ruck-perg-rating {
+  font-family: system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: #5a3812;
+  margin-bottom: 0.12rem;
+}
+
+.ruck-perg-note {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #7a5020;
+  line-height: 1.5;
+  margin-top: 0.15rem;
+}
+
+.ruck-perg-empty {
+  text-align: center;
+  font-family: 'Star2', serif;
+  color: #8a6830;
+  font-size: 0.9rem;
+  padding: 2.5rem 1rem;
+  line-height: 1.8;
+}
+
+/* === RUCKSACK: Schatztruhe Scatter === */
+.ruck-chest-floor {
+  background: repeating-linear-gradient(
+    88deg,
+    rgba(90,18,6,0.96) 0px,
+    rgba(70,12,4,0.96) 4px,
+    rgba(82,16,6,0.96) 8px,
+    rgba(100,20,6,0.93) 14px,
+    rgba(68,12,4,0.96) 18px
+  );
+  border: 2px solid rgba(196,144,48,0.55);
+  border-radius: 0 0 10px 10px;
+  border-top: none;
+  min-height: 300px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ruck-chest-floor::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(196,144,48,0.08) 0%, transparent 30%);
+  pointer-events: none;
+}
+
+.ruck-scattered-wrap {
+  position: relative;
+  padding: 0.5rem;
+}
+
+@keyframes scatter-pop {
+  0%   { opacity: 0; transform: rotate(var(--rot,0deg)) scale(0); }
+  65%  { transform: rotate(var(--rot,0deg)) scale(1.14); }
+  100% { opacity: 1; transform: rotate(var(--rot,0deg)) scale(1); }
+}
+
+.ruck-scatter-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  opacity: 0;
+}
+
+.ruck-scatter-item.pop-in {
+  animation: scatter-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+.ruck-scatter-name {
+  font-family: 'Star2', serif;
+  font-size: 0.55rem;
+  color: #f0c040;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(240,192,64,0.4);
+  text-align: center;
+  white-space: nowrap;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ruck-chest-empty {
+  text-align: center;
+  font-family: 'Star2', serif;
+  color: #c49030;
+  font-size: 0.9rem;
+  padding: 3rem 1rem;
+  line-height: 1.8;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+
+/* === RUCKSACK: Reward Popup SVG Icon === */
+.reward-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  margin-bottom: 0.8rem;
+  animation: bounce-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s both;
+  filter: drop-shadow(0 0 12px rgba(240,192,64,0.5));
+}
+
+/* === FIX: PUNKT 1 – Star2 Schrift global auf alle fehlenden Bereiche === */
+.date-chip { font-family: 'Star2', serif; font-size: 16px; font-weight: 400; }
+.mana-row  { font-family: 'Star2', serif; }
+.mana-text { font-family: 'Star2', serif; }
+.mood-badge { font-family: 'Star2', serif; }
+.reward-loot-label { font-family: 'Star2', serif; }
+.reward-msg { font-family: 'Star2', serif; }
+.star-msg { font-family: 'Star2', serif; }
+.rest-msg { font-family: 'Star2', serif; }
+.day-rating-sub { font-family: 'Star2', serif; }
+.day-rating-auto-hint { font-family: 'Star2', serif; }
+.dr-label { font-family: 'Star2', serif; }
+.dr-desc  { font-family: 'Star2', serif; }
+.subtle-skip-btn { font-family: 'Star2', serif; }
+.sq-cat-btn span { font-family: 'Star2', serif; }
+.sq-input { font-family: 'Star2', serif; }
+.log-rating-btn span:last-child { font-family: 'Star2', serif; }
+.log-note-input { font-family: 'Star2', serif; }
+.log-view-rating-line { font-family: 'Star2', serif; }
+.log-view-note-text { font-family: 'Star2', serif; }
+.ruck-const-name { font-family: 'Star2', serif; }
+.ruck-log-date { font-family: 'Star2', serif; }
+.ruck-log-note { font-family: 'Star2', serif; }
+.ruck-star-sub { font-family: 'Star2', serif; }
+.ruck-reward-quest { font-family: 'Star2', serif; }
+.ruck-reward-date  { font-family: 'Star2', serif; }
+.update-toast-msg  { font-family: 'Star2', serif; }
+.inv-card-sub { font-family: 'Star2', serif; }
+.ruck-perg-date   { font-family: 'Star2', serif; }
+.ruck-perg-rating { font-family: 'Star2', serif; }
+.ruck-perg-note   { font-family: 'Star2', serif; }
+.quest-cat-label { font-family: 'Star2', serif; }
+.mana-label { font-family: 'Star2', serif; }
+.board-title { font-family: 'Star2', serif; }
+.board-title span { font-family: 'Star2', serif; }
+
+/* === FIX: PUNKT 2B – Questlog Pergament Design === */
+.ruck-scroll-roll {
+  height: 18px !important;
+  background: #b89050 !important;
+  border: 1px solid #8b6020 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+  margin: 0 0.2rem !important;
+}
+.ruck-scroll-roll::before { display: none !important; }
+
+.ruck-scroll-roll-bot {
+  height: 18px !important;
+  background: #b89050 !important;
+  border: 1px solid #8b6020 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.4) !important;
+  margin: 0 0.2rem !important;
+}
+
+.ruck-scroll-body {
+  background: #c8a870 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border: 2px solid #8b6020 !important;
+  box-shadow:
+    inset 0 0 40px rgba(60,30,8,0.18),
+    inset 5px 0 14px rgba(0,0,0,0.12),
+    inset -5px 0 14px rgba(0,0,0,0.12) !important;
+  color: #4a2800 !important;
+  padding: 0.7rem 0.8rem 0.6rem !important;
+}
+
+/* === FIX: PUNKT 2A – Pergament Entry animation translateY 10px === */
+@keyframes perg-entry-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* === FIX: PUNKT 2C – Entry-Struktur auf dem Pergament === */
+.ruck-perg-date {
+  font-family: 'Star2', serif !important;
+  font-size: 0.66rem !important;
+  color: #8b6020 !important;
+  margin-bottom: 0.18rem !important;
+}
+.ruck-perg-title {
+  font-family: 'Star2', serif;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: #3a1800 !important;
+  margin-bottom: 0.12rem !important;
+  line-height: 1.25 !important;
+}
+.ruck-perg-rating {
+  font-family: 'Star2', serif;
+  font-size: 1.4rem !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.1rem !important;
+}
+.ruck-perg-note {
+  font-family: 'Star2', serif !important;
+  font-style: italic !important;
+  font-size: 0.82rem !important;
+  color: #5a3010 !important;
+  line-height: 1.45 !important;
+}
+.ruck-perg-empty {
+  font-style: italic !important;
+  color: #8b6020 !important;
+  text-align: center !important;
+}
+
+/* === FIX: PUNKT 2D – Tag-Gruppierung === */
+.ruck-perg-day-group { padding: 0.2rem 0; }
+
+.ruck-perg-day-group + .ruck-perg-day-group {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 2px solid rgba(139,96,32,0.3);
+}
+
+.ruck-perg-day-hdr {
+  font-family: 'Star2', serif !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  color: #4a2800 !important;
+  text-align: center !important;
+  padding: 0.35rem 0 0.45rem !important;
+  border-bottom: none !important;
+  letter-spacing: 0.04em;
+}
+
+.ruck-perg-day-ornament {
+  color: #8b6020;
+  font-size: 0.65rem;
+  vertical-align: middle;
+}
+
+.ruck-perg-day-rating {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  padding: 0.38rem 0.55rem !important;
+  background: #b89050 !important;
+  border-radius: 6px !important;
+  margin: 0.2rem 0 0.3rem !important;
+  border-bottom: none !important;
+}
+
+.ruck-perg-day-rating-icon { font-size: 1.25rem; line-height: 1; }
+
+.ruck-perg-day-rating-label {
+  font-family: 'Star2', serif;
+  font-size: 0.76rem;
+  color: #3a1800;
+  font-weight: 600;
+}
+
+.ruck-perg-quest {
+  padding: 0.45rem 0.3rem !important;
+  border-bottom: none !important;
+}
+
+.ruck-perg-entry-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.12rem;
+}
+
+.ruck-perg-rating-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
+
+.ruck-perg-sep { margin: 0.05rem 0; line-height: 0; }
+
+/* === FIX: PUNKT 3 – Schatztruhe Chest Hero Animation === */
+.ruck-chest-hero-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.7rem 0 0.4rem;
+  position: relative;
+}
+
+.ruck-chest-hero-perspective {
+  perspective: 300px;
+  perspective-origin: 50% 60%;
+}
+
+.ruck-chest-hero-svg { display: block; overflow: visible; }
+
+@keyframes ruck-lid-open-anim {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-80deg); }
+}
+
+.ruck-chest-lid-g {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.ruck-chest-lid-g.ruck-lid-open {
+  animation: ruck-lid-open-anim 0.6s ease-out forwards;
+}
+
+.ruck-chest-glitter-wrap {
+  position: relative;
+  height: 0;
+  width: 120px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ruck-chest-glitter-item {
+  position: absolute;
+  color: #f0c040;
+  font-size: 1.1rem;
+  opacity: 0;
+  text-shadow: 0 0 6px rgba(240,192,64,0.9);
+}
+
+@keyframes ruck-glitter-up {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.3); }
+}
+
+/* Inset gold border on chest floor */
+.ruck-chest-floor {
+  box-shadow:
+    inset 0 0 0 3px #c49030,
+    inset 0 0 20px rgba(196,144,48,0.12) !important;
+}
+
+/* === FIX: PUNKT 4 – Container-Farben Questlog vs. Schatztruhe === */
+#inv-card-questlog {
+  background: linear-gradient(150deg, #0a1428 0%, #04080e 100%) !important;
+}
+
+#inv-card-treasure {
+  background: linear-gradient(150deg, #1a0808 0%, #0a0404 100%) !important;
+}
+
+/* === FIX: PUNKT 5 – Teleskop bounce scale 1.4 === */
+@keyframes ruck-fly-in {
+  0%   { opacity: 0; transform: translate(var(--fx,0px), var(--fy,-80px)) scale(0.5); }
+  75%  { opacity: 1; transform: translate(0,0) scale(1.4); }
+  88%  { transform: translate(0,0) scale(0.95); }
+  100% { opacity: 1; transform: translate(0,0) scale(1); }
 }
