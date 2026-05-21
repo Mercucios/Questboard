@@ -2531,11 +2531,90 @@ h1 {
 .ruck-star-num{ font-family: 'Cinzel', serif !important; }
 .sq-ap-btn    { font-family: 'Cinzel', serif !important; font-weight: 700 !important; }
 
-/* === FIX: PUNKT 3 – Mood-Sub Schrift kleiner, Card-Padding angepasst === */
-.mood-sub {
-  font-size: clamp(11px, 2.8vw, 14px) !important;
+/* === FIX: STARTSEITE – komplettes Mood-Screen Layout === */
+
+/* A – Container */
+.mood-wrap {
+  min-height: 100dvh !important;
+  height: auto !important;
+  justify-content: space-evenly !important;
+  align-items: center !important;
+  padding: 1rem !important;
+  overflow: hidden !important;
 }
+/* Flex-Kinder: eigene Margins neutralisieren, space-evenly übernimmt */
+.logo-block  { margin: 0 !important; }
+.mood-note   { margin: 0 !important; }
+
+/* B – Orb */
+.logo-orb {
+  width:      clamp(100px, 28vw, 140px) !important;
+  height:     clamp(100px, 28vw, 140px) !important;
+  margin-top: clamp(0.2rem, 1vh, 0.6rem) !important;
+}
+
+/* C – Titel */
+h1 {
+  font-size:     clamp(32px, 8vw, 52px) !important;
+  margin-bottom: clamp(0.1rem, 0.5vh, 0.4rem) !important;
+}
+
+/* D – Untertitel */
+.logo-sub {
+  font-size:     clamp(14px, 3.5vw, 20px) !important;
+  margin-top:    0 !important;
+  margin-bottom: clamp(0.2rem, 0.8vh, 0.5rem) !important;
+}
+
+/* E – Datum-Chip */
+.date-chip {
+  margin-top:    clamp(0.1rem, 0.5vh, 0.3rem) !important;
+  margin-bottom: clamp(0.2rem, 0.8vh, 0.6rem) !important;
+}
+
+/* F – Frage */
+.mood-prompt {
+  margin-top:    clamp(0.2rem, 0.8vh, 0.5rem) !important;
+  margin-bottom: clamp(0.2rem, 0.8vh, 0.5rem) !important;
+}
+
+/* G – Grid */
+.mood-grid {
+  margin-top:    clamp(0.2rem, 0.8vh, 0.5rem) !important;
+  margin-bottom: 0 !important;
+  gap:           clamp(6px, 1.5vw, 10px) !important;
+  width:         100% !important;
+}
+
+/* H – Cards */
 .mood-card {
-  padding: 0.4rem !important;
-  gap: 0.3rem !important;
+  padding:  clamp(8px, 2vw, 14px) !important;
+  height:   clamp(120px, 26vw, 160px) !important;
+  overflow: visible !important;
+  gap:      clamp(2px, 0.8vw, 4px) !important;
+}
+
+/* I – Glyph */
+.mood-glyph {
+  height: clamp(52px, 13vw, 72px) !important;
+  margin: 0 auto !important;
+}
+.mood-glyph video {
+  width:  clamp(52px, 13vw, 72px) !important;
+  height: clamp(52px, 13vw, 72px) !important;
+}
+
+/* J – Name */
+.mood-name {
+  font-size:   clamp(15px, 4vw, 20px) !important;
+  margin:      clamp(4px, 1vw, 6px) 0 clamp(2px, 0.5vw, 4px) !important;
+  white-space: nowrap !important;
+}
+
+/* K – Sub */
+.mood-sub {
+  font-size:   clamp(10px, 2.5vw, 13px) !important;
+  white-space: nowrap !important;
+  overflow:    visible !important;
+  padding:     0 2px !important;
 }
