@@ -4,7 +4,8 @@
       "Bash(Get-ChildItem C:UsersDavidQuestboard *)",
       "Bash(git *)",
       "Bash(Set-Content -Path 'C:\\\\Users\\\\David\\\\Questboard\\\\constellations.js' -Encoding utf8 -Value '@ *)",
-      "Bash(Write-Output \"created\")"
+      "Bash(Write-Output \"created\")",
+      "Bash(node *)"
     ]
   }
 }
