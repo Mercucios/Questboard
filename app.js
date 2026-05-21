@@ -2337,29 +2337,23 @@ function _ruckPopTreasure() {
 
   // 3. Schätze erscheinen verstreut nach Glitzer (0.9s) + 0.5s = 1.4s
   _ruckChestTimers.push(setTimeout(() => {
-    const COLS  = 3;
-    const ROW_H = 110;
-    const rows  = Math.ceil(all.length / COLS);
-    const minH  = rows * ROW_H + 40;
-    const OFFSETS = [
-      { lPct: 4,  tBase: 8  },
-      { lPct: 36, tBase: 0  },
-      { lPct: 68, tBase: 12 },
-    ];
-    const ROT_CYCLE = [-12, 8, -6, 14, -10, 5, -14, 9, -7, 11, -4, 13];
+    // === FIX: PUNKT 1 – chaotische Verteilung, kein Label ===
+    const PER_ROW = 3;
+    const rows    = Math.ceil(all.length / PER_ROW);
+    const minH    = rows * 120 + 70;
+    // Spalten-Ankerpunkte; mit starkem Zufallsversatz überlappen Icons bewusst
+    const COL_ANCHORS = [10, 40, 70];
 
     let html = `<div class="ruck-chest-floor"><div class="ruck-scattered-wrap" style="min-height:${minH}px">`;
     all.forEach((t, i) => {
-      const col   = i % COLS;
-      const row   = Math.floor(i / COLS);
-      const off   = OFFSETS[col];
-      const tPx   = row * ROW_H + off.tBase;
-      const rot   = ROT_CYCLE[i % ROT_CYCLE.length];
-      const delay = (i * 0.08).toFixed(2);
-      html += `<div class="ruck-scatter-item pop-in" style="left:${off.lPct}%;top:${tPx}px;--rot:${rot}deg;animation-delay:${delay}s">
-        ${_ruckTreasureIcon(t.name, 48)}
-        <div class="ruck-scatter-name">${t.name}</div>
-      </div>`;
+      const col     = i % PER_ROW;
+      const row     = Math.floor(i / PER_ROW);
+      const leftPct = Math.max(-12, Math.min(84, COL_ANCHORS[col] + (Math.random() - 0.5) * 44));
+      const topPx   = Math.max(0, row * 118 + (Math.random() - 0.5) * 55);
+      const rot     = -25 + Math.random() * 50;
+      const zIdx    = 1 + Math.floor(Math.random() * 8);
+      const delay   = (i * 0.08).toFixed(2);
+      html += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPx.toFixed(0)}px;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
     html += '</div></div>';
     container.innerHTML = html;

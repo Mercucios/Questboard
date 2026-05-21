@@ -2524,3 +2524,18 @@ h1 {
   88%  { transform: translate(0,0) scale(0.95); }
   100% { opacity: 1; transform: translate(0,0) scale(1); }
 }
+
+/* === FIX: PUNKT 2 – Zahlen-Schrift Cinzel (gut lesbar, mittelalterlich) === */
+.date-chip    { font-family: 'Cinzel', serif !important; font-size: 18px !important; font-weight: 600 !important; }
+.mana-text    { font-family: 'Cinzel', serif !important; }
+.ruck-star-num{ font-family: 'Cinzel', serif !important; }
+.sq-ap-btn    { font-family: 'Cinzel', serif !important; font-weight: 700 !important; }
+
+/* === FIX: PUNKT 3 – Mood-Sub Schrift kleiner, Card-Padding angepasst === */
+.mood-sub {
+  font-size: clamp(11px, 2.8vw, 14px) !important;
+}
+.mood-card {
+  padding: 0.4rem !important;
+  gap: 0.3rem !important;
+}
