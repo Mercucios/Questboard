@@ -2594,7 +2594,7 @@ h1 {
 
 .mood-card {
   padding: clamp(8px, 2vw, 12px) clamp(4px, 1vw, 8px) !important;
-  height: clamp(100px, 24vw, 140px) !important;
+  height: clamp(130px, 30vw, 170px) !important;
   overflow: visible !important;
 }
 
@@ -2624,7 +2624,43 @@ h1 {
 
 /* PUNKT 7 – Fußzeile */
 .mood-note {
-  font-size: clamp(12px, 3vw, 16px) !important;
-  margin: 0 !important;
+  font-size: clamp(16px, 4.2vw, 22px) !important;
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   opacity: 1 !important;
+}
+
+/* === FIX: MOOD-SCREEN – Runen-Trenner === */
+.rune-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 80%;
+  margin: 0.4rem auto;
+}
+
+.rune-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c4a030 50%, transparent);
+  opacity: 0.5;
+}
+
+.rune-icon {
+  font-size: 13px;
+  color: #c4a030;
+  animation: runePulse 2s ease-in-out infinite;
+}
+
+.rune-icon:nth-child(2) { animation-delay: 0s; }
+.rune-icon:nth-child(3) { animation-delay: 0.3s; }
+.rune-icon:nth-child(4) { animation-delay: 0.6s; color: #c080ff; font-size: 16px; }
+.rune-icon:nth-child(5) { animation-delay: 0.9s; }
+.rune-icon:nth-child(6) { animation-delay: 1.2s; }
+
+@keyframes runePulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.2); }
 }
