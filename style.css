@@ -2538,29 +2538,31 @@ h1 {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: space-evenly !important;
+  justify-content: space-between !important;
   min-height: 100dvh !important;
   height: auto !important;
-  padding: 8px 12px !important;
+  padding-top: clamp(24px, 6vh, 48px) !important;
+  padding-bottom: clamp(24px, 6vh, 48px) !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   margin: 0 !important;
 }
 
-/* PUNKT 2 – Galaxie/Orb */
-.logo-orb {
-  width: clamp(80px, 22vw, 120px) !important;
-  height: clamp(80px, 22vw, 120px) !important;
-  margin: 0 auto !important;
-}
-
-/* PUNKT 3 – Logo-Block (Titel + Untertitel) */
+/* PUNKT 2 – Logo-Block + Orb */
 .logo-block {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   gap: 2px !important;
   margin: 0 !important;
+}
+
+.logo-orb {
+  width: clamp(80px, 22vw, 120px) !important;
+  height: clamp(80px, 22vw, 120px) !important;
+  margin: 0 auto !important;
 }
 
 h1 {
@@ -2573,19 +2575,29 @@ h1 {
   margin: 0 !important;
 }
 
-/* PUNKT 4 – Datum-Chip */
 .date-chip {
   margin: 0 !important;
   padding: 8px 20px !important;
 }
 
-/* PUNKT 5 – Frage */
+/* PUNKT 3 – Schlussatz */
+.mood-note {
+  font-size: clamp(14px, 3.8vw, 20px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+  color: #f0c040 !important;
+}
+
+/* Frage */
 .mood-prompt {
   font-size: clamp(18px, 4.5vw, 26px) !important;
   margin: 0 !important;
 }
 
-/* PUNKT 6 – Mood-Grid + Karten */
+/* Mood-Grid */
 .mood-grid {
   margin: 0 !important;
   gap: clamp(6px, 1.5vw, 10px) !important;
@@ -2615,30 +2627,21 @@ h1 {
   white-space: nowrap !important;
 }
 
+/* PUNKT 4 – Energie-Beschreibung */
 .mood-sub {
-  font-size: clamp(10px, 2.4vw, 13px) !important;
+  font-size: clamp(11px, 2.8vw, 15px) !important;
   white-space: nowrap !important;
   overflow: visible !important;
   text-overflow: clip !important;
 }
 
-/* PUNKT 7 – Fußzeile */
-.mood-note {
-  font-size: clamp(16px, 4.2vw, 22px) !important;
-  margin-top: auto !important;
-  margin-bottom: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  opacity: 1 !important;
-}
-
-/* === FIX: MOOD-SCREEN – Runen-Trenner === */
+/* PUNKT 5 – Runen-Divider Abstand */
 .rune-divider {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 80%;
-  margin: 0.4rem auto;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 80% !important;
+  margin: clamp(4px, 1.5vh, 10px) auto !important;
 }
 
 .rune-line {
