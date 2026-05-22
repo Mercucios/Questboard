@@ -2990,3 +2990,154 @@ h1 {
   color: rgba(255,255,255,0.18);
   cursor: not-allowed;
 }
+
+/* === QUEST-BOARD UPDATE === */
+
+/* P1: Board-Titel Schriftgröße */
+.board-title { font-size: 1.56rem; }
+
+/* P2: Sidequest-Heading eine Stufe kleiner */
+.sidequest-heading .sq-heading-text { font-size: 1.3rem; }
+
+/* P4: Stärkere Blasen-Animation + stärkerer Flaschen-Glow */
+@keyframes bubble {
+  0%   { transform: translateY(0) scale(1);    opacity: 0.7; }
+  100% { transform: translateY(-30px) scale(0.3); opacity: 0; }
+}
+.mana-bubble-1 { animation: bubble 2.2s ease-in-out 0s   infinite; }
+.mana-bubble-2 { animation: bubble 2.2s ease-in-out 0.7s infinite; }
+.mana-bubble-3 { animation: bubble 2.2s ease-in-out 1.4s infinite; }
+.mana-bubble-4 { animation: bubble 2.2s ease-in-out 2.0s infinite; }
+.mana-bottle-svg {
+  filter: drop-shadow(0 0 8px rgba(40,100,255,0.6)) drop-shadow(0 0 3px rgba(80,150,255,0.35));
+}
+
+/* P5: Mana-Flasche + Tagesverfassung in einer Zeile */
+.mana-mood-flex {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+.mana-mood-flex .mana-bottle-row { margin-bottom: 0; }
+.mana-mood-flex .mood-badge {
+  font-size: clamp(16px, 4vw, 22px);
+  color: #f0c040;
+}
+
+/* P6: Swap-Button → gleiche Form wie Complete-Button */
+.quest-btn-swap {
+  background: radial-gradient(circle at 40% 35%, #2a1a50, #120828);
+  border: 2px solid #a080d0;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+}
+.quest-btn-swap:hover:not(:disabled) {
+  border-color: #c0a0f0;
+  box-shadow: 0 0 14px rgba(160,120,240,0.35);
+  transform: scale(1.08) rotate(20deg);
+}
+.quest-btn-swap:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none;
+}
+.quest-btn-swap:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+/* P7: Kategorie-Farben via data-category */
+.quest-card[data-category="Körperpflege"]  { background: linear-gradient(135deg,rgba(122,176,224,.10),rgba(122,176,224,.04)); border-color:rgba(122,176,224,.28); }
+.quest-card[data-category="Körperpflege"]  .quest-cat-label { color:#7ab0e0 !important; }
+.quest-card[data-category="Outdoor"]       { background: linear-gradient(135deg,rgba(90,170,106,.10),rgba(90,170,106,.04)); border-color:rgba(90,170,106,.28); }
+.quest-card[data-category="Outdoor"]       .quest-cat-label { color:#5aaa6a !important; }
+.quest-card[data-category="Küche"]         { background: linear-gradient(135deg,rgba(224,138,48,.10),rgba(224,138,48,.04)); border-color:rgba(224,138,48,.28); }
+.quest-card[data-category="Küche"]         .quest-cat-label { color:#e08a30 !important; }
+.quest-card[data-category="Schlafzimmer"]  { background: linear-gradient(135deg,rgba(138,112,192,.10),rgba(138,112,192,.04)); border-color:rgba(138,112,192,.28); }
+.quest-card[data-category="Schlafzimmer"]  .quest-cat-label { color:#8a70c0 !important; }
+.quest-card[data-category="Vorraum"]       { background: linear-gradient(135deg,rgba(176,128,64,.10),rgba(176,128,64,.04)); border-color:rgba(176,128,64,.28); }
+.quest-card[data-category="Vorraum"]       .quest-cat-label { color:#b08040 !important; }
+.quest-card[data-category="Ordnung"]       { background: linear-gradient(135deg,rgba(100,180,160,.10),rgba(100,180,160,.04)); border-color:rgba(100,180,160,.28); }
+.quest-card[data-category="Ordnung"]       .quest-cat-label { color:#64b4a0 !important; }
+.quest-card[data-category="Wäsche"]        { background: linear-gradient(135deg,rgba(160,140,220,.10),rgba(160,140,220,.04)); border-color:rgba(160,140,220,.28); }
+.quest-card[data-category="Wäsche"]        .quest-cat-label { color:#a08cdc !important; }
+.quest-card[data-category="Catze Hort"]    { background: linear-gradient(135deg,rgba(192,112,152,.10),rgba(192,112,152,.04)); border-color:rgba(192,112,152,.28); }
+.quest-card[data-category="Catze Hort"]    .quest-cat-label { color:#c07098 !important; }
+.quest-card[data-category="Rast & Freude"] { background: linear-gradient(135deg,rgba(192,168,64,.10),rgba(192,168,64,.04)); border-color:rgba(192,168,64,.28); }
+.quest-card[data-category="Rast & Freude"] .quest-cat-label { color:#c0a840 !important; }
+
+/* P8: Rast-Tag – Nacht-Blau Stil */
+.quest-rest-tag {
+  background: #0a1a2a;
+  border: 1px solid #4080c0;
+  color: #80c0ff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* P9: Tap-Feedback auf Quest-Karten */
+.quest-card:active {
+  transform: scale(0.98) !important;
+  border-color: #f0c040 !important;
+  box-shadow: 0 0 14px rgba(240,192,64,0.35) !important;
+  animation: none !important;
+}
+
+/* P10: Shooting-Star Animation */
+.shooting-star-fx {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 22px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+.shooting-star-fx::before {
+  content: '★';
+  color: #f0c040;
+  text-shadow: 0 0 8px #f0c040, 0 0 16px rgba(255,220,80,.8);
+  display: block;
+}
+.shooting-star-fx--go { animation: shootingStar 0.8s ease-out forwards; }
+@keyframes shootingStar {
+  0%   { opacity:1; transform:translate(-50%,-50%) scale(1.8);
+         filter:drop-shadow(0 0 12px #f0c040); }
+  15%  { opacity:1; transform:translate(-50%,-50%) scale(2.4);
+         filter:drop-shadow(0 0 20px #fff) drop-shadow(0 0 8px #f0c040); }
+  100% { opacity:0; transform:translate(calc(-50% + 200px),calc(-50% - 200px)) scale(0.1);
+         filter:drop-shadow(0 0 0px transparent); }
+}
+
+/* P11: Quest-Liste – unsichtbarer Scrollbar */
+.quest-list {
+  max-height: 50dvh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.quest-list::-webkit-scrollbar { display: none; }
+
+/* P12: Schwierigkeits-Sterne nach Mana-Level */
+.difficulty-1 .mana-rune { color:#b0b0b0; text-shadow:0 0 3px rgba(180,180,180,.5); }
+.difficulty-2 .mana-rune { color:#60c060; text-shadow:0 0 4px rgba(80,200,80,.5); }
+.difficulty-3 .mana-rune { color:#4080ff; text-shadow:0 0 4px rgba(60,120,255,.5); }
+.difficulty-4 .mana-rune { color:#9060d0; text-shadow:0 0 4px rgba(140,80,220,.5); }
+.difficulty-5 .mana-rune { color:#e04040; text-shadow:0 0 4px rgba(220,60,60,.5); }
+
+/* P13: Quest-Titel + Kategorie-Label Typografie */
+.quest-name { font-size: clamp(16px,4vw,20px); }
+.quest-cat-label {
+  font-family: 'Cinzel', 'Star2', serif;
+  font-size: clamp(12px,3vw,15px);
+}

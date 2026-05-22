@@ -654,14 +654,24 @@ function makeQuestCard(q, mana) {
   const canAfford = q.mana === 0 || mana >= q.mana;
   const canSwap   = appState.pool.some(p => p.rest === q.rest);
   const card      = document.createElement('div');
-  card.className  = `quest-card${q.rest ? ' rest-card' : ''}`;
+
+  // === QUEST-BOARD UPDATE === P7/P12: data-category + difficulty class
+  const diffCount = q.mana > 0
+    ? (q.mana >= 10 ? Math.min(5, Math.ceil(q.mana / 10)) : Math.min(5, q.mana))
+    : 0;
+  card.className       = `quest-card${q.rest ? ' rest-card' : ''}${diffCount > 0 ? ` difficulty-${diffCount}` : ''}`;
+  card.dataset.name     = q.name;
+  card.dataset.category = q.category || '';
 
   // === MANA-SYSTEM ===
+  // === QUEST-BOARD UPDATE === P8: 🌙 Rast statt "Rast"
   const costHtml = q.mana > 0
     ? `<span class="quest-cost-runes">${manaSymbols(q.mana)}</span>`
-    : `<span class="quest-rest-tag">Rast</span>`;
+    : `<span class="quest-rest-tag">🌙 Rast</span>`;
 
   const checkSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  // === QUEST-BOARD UPDATE === P6: SVG-Pfeil statt ⇄
+  const swapSvg  = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#c0a0f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h14M14 4l3 3-3 3M17 13H3M6 10l-3 3 3 3"/></svg>`;
 
   card.innerHTML = `
     <div class="quest-info">
@@ -672,7 +682,7 @@ function makeQuestCard(q, mana) {
       </div>
     </div>
     <div class="quest-actions">
-      <button class="quest-btn-swap" ${canSwap ? '' : 'disabled'} aria-label="${q.name} tauschen">⇄</button>
+      <button class="quest-btn-swap" ${canSwap ? '' : 'disabled'} aria-label="${q.name} tauschen">${swapSvg}</button>
       <button class="quest-complete-btn${canAfford ? '' : ' cant-afford'}"
               ${canAfford ? '' : 'disabled'}
               aria-label="${q.name} abschließen">
@@ -766,6 +776,20 @@ function _finalizeQuestCompletion(name) {
 
   rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
   saveDayState(appState);
+
+  // === QUEST-BOARD UPDATE === P10: Shooting-Star-Animation
+  const _cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
+  if (_cardEl) {
+    const _rect = _cardEl.getBoundingClientRect();
+    const _star = document.createElement('div');
+    _star.className  = 'shooting-star-fx';
+    _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
+    _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
+    document.body.appendChild(_star);
+    requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
+    setTimeout(() => _star.remove(), 800);
+  }
+
   renderBoard();
   showRewardPopup(quest);
 
@@ -1328,14 +1352,12 @@ function init() {
   });
 
   // Feature 1 – Day Rating
-  $('btn-day-rating').addEventListener('click', showDayRatingPopup);
   initDayRatingPopup();
   setInterval(checkAndShowDayRating, 60000);
 
   // Feature 2 – Sidequests
   // === FIX: SIDEQUEST & UNTERSEITEN – Strudel als einziger Add-Button ===
-  $('sq-vortex-btn').addEventListener('click',  showSqCreateModal);
-  $('btn-sq-add-hdr').addEventListener('click', showSqCreateModal);
+  $('sq-vortex-btn').addEventListener('click', showSqCreateModal);
   initSqCreateModal();
 
   // Feature 3 – Quest Log
