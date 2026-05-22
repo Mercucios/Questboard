@@ -2641,13 +2641,13 @@ h1 {
 }
 
 .mood-name {
-  font-size: clamp(13px, 3.5vw, 17px) !important;
+  font-size: clamp(15px, 4vw, 19px) !important;
   margin: 3px 0 2px !important;
   white-space: nowrap !important;
 }
 
 .mood-sub {
-  font-size: clamp(11px, 2.8vw, 14px) !important;
+  font-size: clamp(13px, 3.3vw, 16px) !important;
   white-space: nowrap !important;
   overflow: visible !important;
   text-overflow: clip !important;
@@ -2676,7 +2676,9 @@ h1 {
 
 /* === FIX: MOOD-SCREEN === */
 .rune-icon {
+  opacity: 0.5;
   animation: runePulse 8s ease-in-out infinite;
+  animation-fill-mode: both;
 }
 
 /* === FIX: MOOD-SCREEN === */
@@ -2689,8 +2691,9 @@ h1 {
 .rune-icon:nth-child(8) { animation-duration: 8s; animation-delay: 6.0s; font-size: 18px; color: #c4a030; }
 
 @keyframes runePulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.2); }
+  0%   { opacity: 0.5; transform: scale(1); }
+  50%  { opacity: 1;   transform: scale(1.2); }
+  100% { opacity: 0.5; transform: scale(1); }
 }
 
 /* === FIX: SIDEQUEST & UNTERSEITEN – Drawer Karten Schrift (halbiert) === */

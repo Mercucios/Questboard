@@ -2,7 +2,7 @@
 
 // ── Versionsnummer: beim Deploy auf aktuelles Datum/Uhrzeit setzen ────────────
 // Format: YYYYMMDD-N  (N hochzählen bei mehreren Deploys am selben Tag)
-const CACHE = 'questboard-20260521-16';
+const CACHE = 'questboard-20260522-1';
 
 const PRECACHE_URLS = [
   './',
