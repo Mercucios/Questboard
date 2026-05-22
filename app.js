@@ -617,20 +617,64 @@ function manaSymbols(mana) {
   return Array(count).fill('<span class="mana-rune">✦</span>').join('');
 }
 
+// === MANA & QUEST UPDATE === P1/P2/P3/P4: Glasflasche, Layout, Mini-Phials
+let _lastMiniBottleCount = -1;
+
 function updateManaBottle(mana, maxMana) {
   const effectiveMax = maxMana || MAX_MANA;
   const pct = effectiveMax > 0 ? Math.max(0, Math.min(1, mana / effectiveMax)) : 0;
   const rect = document.getElementById('mana-fill-rect');
   if (rect) {
     rect.style.transform = `scaleY(${pct.toFixed(3)})`;
-    const fillColor = pct > 0.6 ? '#2060ff'
-                    : pct > 0.3 ? '#1040c0'
-                    : pct > 0.1 ? '#0820a0'
-                    : '#4a0080';
-    rect.style.fill = fillColor;
+    rect.style.fill = pct > 0.6 ? 'url(#mana-liq-hi)'
+                    : pct > 0.3 ? 'url(#mana-liq-mid)'
+                    : pct > 0.1 ? 'url(#mana-liq-lo)'
+                    : 'url(#mana-liq-empty)';
+    // Wavy surface follows liquid level
+    const surface = document.getElementById('mana-surface');
+    if (surface) {
+      const fy = Math.max(28, Math.min(72, 72 - 44 * pct));
+      surface.setAttribute('d', `M6 ${fy.toFixed(1)} Q17 ${(fy - 3).toFixed(1)} 28 ${fy.toFixed(1)} Q39 ${(fy + 3).toFixed(1)} 50 ${fy.toFixed(1)}`);
+    }
+  }
+  // Outer glow when mana > 30%
+  const svg = document.getElementById('mana-bottle-svg');
+  if (svg) {
+    svg.style.filter = pct > 0.3
+      ? 'drop-shadow(0 4px 8px rgba(0,80,200,0.3)) drop-shadow(0 0 6px rgba(40,100,255,0.35))'
+      : '';
   }
   const textEl = document.getElementById('mana-text');
   if (textEl) textEl.textContent = `${mana} / ${effectiveMax}`;
+  _updateMiniBottles(mana, effectiveMax);
+}
+
+// === MANA & QUEST UPDATE === P4: Mini-Phials für Extra-Mana
+const _PHIAL_COLORS = ['#20c040', '#c4a030', '#e06010', '#c02020', '#8020c0'];
+
+function _makeMinPhialSvg(color) {
+  return `<svg width="12" height="32" viewBox="0 0 14 38" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` +
+    `<ellipse cx="7" cy="36" rx="5" ry="2" fill="rgba(0,0,0,0.2)"/>` +
+    `<rect x="4" y="0" width="6" height="5" rx="2" fill="#c49030"/>` +
+    `<rect x="2" y="4" width="10" height="30" rx="5" fill="${color}" opacity="0.9"/>` +
+    `<ellipse cx="4.5" cy="15" rx="1.5" ry="5" fill="white" opacity="0.3"/>` +
+    `</svg>`;
+}
+
+function _updateMiniBottles(mana, maxMana) {
+  const extra = Math.max(0, mana - maxMana);
+  const count = Math.min(5, Math.floor(extra / 10));
+  const container = document.getElementById('mana-mini-bottles');
+  if (!container || count === _lastMiniBottleCount) return;
+  _lastMiniBottleCount = count;
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const phial = document.createElement('div');
+    phial.className = 'mana-mini-phial';
+    phial.innerHTML = _makeMinPhialSvg(_PHIAL_COLORS[i] || _PHIAL_COLORS[4]);
+    container.appendChild(phial);
+    requestAnimationFrame(() => requestAnimationFrame(() => phial.classList.add('visible')));
+  }
 }
 
 function renderBoard() {
@@ -649,6 +693,16 @@ function renderBoard() {
 
   renderSidequests();
 }
+
+// === MANA & QUEST UPDATE === P7/P8: Tag-Kategorien mit Badge-Stil
+const TAG_CAT_STYLE = {
+  'Körperpflege': { bg:'#1a4060', text:'#60c0ff', border:'#2060a0' },
+  'Küche':        { bg:'#3a1a00', text:'#ff8040', border:'#804020' },
+  'Ordnung':      { bg:'#1a3a1a', text:'#60d060', border:'#206020' },
+  'Wäsche':       { bg:'#2a1a3a', text:'#c080ff', border:'#6030a0' },
+  'Sport':        { bg:'#3a1a1a', text:'#ff6060', border:'#a02020' },
+  'Arbeit':       { bg:'#3a2a00', text:'#d4a030', border:'#806010' },
+};
 
 function makeQuestCard(q, mana) {
   const canAfford = q.mana === 0 || mana >= q.mana;
@@ -669,6 +723,18 @@ function makeQuestCard(q, mana) {
     ? `<span class="quest-cost-runes">${manaSymbols(q.mana)}</span>`
     : `<span class="quest-rest-tag">🌙 Rast</span>`;
 
+  // === MANA & QUEST UPDATE === P7: Rast-Quests ohne Kategorie-Text
+  // === MANA & QUEST UPDATE === P8: Tag-Kategorien als farbige Badge
+  let catHtml = '';
+  if (!q.rest) {
+    const tagStyle = TAG_CAT_STYLE[q.category];
+    if (tagStyle) {
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}">${q.category}</span>`;
+    } else {
+      catHtml = `<span class="quest-cat-row">${catIconHtml(q.category)}</span>`;
+    }
+  }
+
   const checkSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   // === QUEST-BOARD UPDATE === P6: SVG-Pfeil statt ⇄
   const swapSvg  = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#c0a0f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h14M14 4l3 3-3 3M17 13H3M6 10l-3 3 3 3"/></svg>`;
@@ -677,7 +743,7 @@ function makeQuestCard(q, mana) {
     <div class="quest-info">
       <div class="quest-name">${q.name}</div>
       <div class="quest-meta">
-        <span class="quest-cat-row">${catIconHtml(q.category)}</span>
+        ${catHtml}
         ${costHtml}
       </div>
     </div>
@@ -1363,6 +1429,9 @@ function init() {
   // Feature 3 – Quest Log
   initLogPopup();
   $('btn-log-view-close').addEventListener('click', () => $('popup-log-view').classList.add('hidden'));
+
+  // === MANA & QUEST UPDATE === P3: Mana Top-Up
+  _initManaTopUp();
 
   // === RUCKSACK ===
   initRucksack();
@@ -2557,4 +2626,42 @@ function initRucksack() {
   });
 
   _ruckInitDrag();
+}
+
+// === MANA & QUEST UPDATE === P3: Klick auf Flasche → Mana hinzufügen
+function _initManaTopUp() {
+  const bottleSvg = document.getElementById('mana-bottle-svg');
+  const popup     = document.getElementById('mana-topup-popup');
+  if (!bottleSvg || !popup) return;
+
+  bottleSvg.style.cursor = 'pointer';
+
+  bottleSvg.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!popup.classList.contains('hidden')) {
+      popup.classList.add('hidden');
+      return;
+    }
+    const rect = bottleSvg.getBoundingClientRect();
+    // Position popup below bottle, clamped to viewport
+    const popLeft = Math.min(rect.left, window.innerWidth - 220);
+    popup.style.left = Math.max(4, popLeft) + 'px';
+    popup.style.top  = (rect.bottom + 8) + 'px';
+    popup.classList.remove('hidden');
+  });
+
+  popup.querySelectorAll('.mana-topup-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const amount  = parseInt(btn.dataset.mana, 10);
+      const maxMana = appState.maxMana || MAX_MANA;
+      appState.mana = Math.min(appState.mana + amount, maxMana + 50);
+      _lastMiniBottleCount = -1; // force refresh
+      saveDayState(appState);
+      updateManaBottle(appState.mana, maxMana);
+      popup.classList.add('hidden');
+    });
+  });
+
+  document.addEventListener('click', () => popup.classList.add('hidden'));
 }
