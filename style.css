@@ -3180,11 +3180,13 @@ h1 {
 }
 .mana-mood-flex .mana-bottle-row { margin-bottom: 0; }
 .mana-flex-spacer { flex: 1; }
+/* PUNKT 3: Tagesstimmung fett */
 .mana-mood-flex .mood-badge {
   font-size: clamp(18px, 5vw, 26px);
   color: #f0c040;
   text-align: right;
   white-space: nowrap;
+  font-weight: 700;
 }
 .mana-text {
   color: #80c0ff;
@@ -3249,4 +3251,60 @@ h1 {
   font-weight: 600;
   border: 1px solid;
   line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
 }
+
+/* === MANA & REMINDER UPDATE === PUNKT 5A: Undo-Toast mit Countdown-Ring */
+.mana-undo-toast {
+  position: fixed;
+  bottom: 72px;
+  right: 12px;
+  z-index: 350;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 6, 40, 0.94);
+  border: 1px solid #c4a030;
+  border-radius: 24px;
+  padding: 4px 12px 4px 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.55);
+  opacity: 0;
+  transform: scale(0.8) translateY(8px);
+  transition: opacity 0.18s, transform 0.18s;
+  pointer-events: none;
+  cursor: pointer;
+}
+.mana-undo-toast.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+.mana-undo-ring { transform: rotate(-90deg); }
+.mana-undo-ring-fg {
+  stroke-dasharray: 87.96;
+  stroke-dashoffset: 87.96;
+  stroke-linecap: round;
+}
+@keyframes mana-undo-countdown {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 87.96; }
+}
+.mana-undo-ring-fg--go {
+  animation: mana-undo-countdown 3s linear forwards;
+}
+.mana-undo-label {
+  font-family: 'Cinzel', 'Star2', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f0c040;
+}
+
+/* === MANA & REMINDER UPDATE === PUNKT 5B: Phial Wiggle + Entfernen */
+@keyframes phial-wiggle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25%       { transform: scale(1.08) rotate(-6deg); }
+  75%       { transform: scale(1.08) rotate(6deg); }
+}
+.mana-mini-phial.phial-wiggle { animation: phial-wiggle 0.28s ease-in-out infinite; }
+.mana-mini-phial.phial-removing { transform: scale(0) !important; transition: transform 0.25s ease-in !important; }

@@ -674,6 +674,27 @@ function _updateMiniBottles(mana, maxMana) {
     phial.innerHTML = _makeMinPhialSvg(_PHIAL_COLORS[i] || _PHIAL_COLORS[4]);
     container.appendChild(phial);
     requestAnimationFrame(() => requestAnimationFrame(() => phial.classList.add('visible')));
+    // === MANA & REMINDER UPDATE === PUNKT 5B: Long-Press (500ms) → Fläschchen entfernen
+    let _phialPressTimer = null;
+    phial.addEventListener('touchstart', e => {
+      e.preventDefault();
+      phial.classList.add('phial-wiggle');
+      _phialPressTimer = setTimeout(() => {
+        phial.classList.remove('phial-wiggle');
+        phial.classList.add('phial-removing');
+        const base = appState.maxMana || MAX_MANA;
+        appState.mana = Math.max(base, appState.mana - 10);
+        _lastMiniBottleCount = -1;
+        saveDayState(appState);
+        setTimeout(() => renderBoard(), 260);
+      }, 500);
+    }, { passive: false });
+    const _cancelPhialPress = () => {
+      clearTimeout(_phialPressTimer);
+      phial.classList.remove('phial-wiggle');
+    };
+    phial.addEventListener('touchend',  _cancelPhialPress);
+    phial.addEventListener('touchmove', _cancelPhialPress);
   }
 }
 
@@ -695,14 +716,18 @@ function renderBoard() {
 }
 
 // === MANA & QUEST UPDATE === P7/P8: Tag-Kategorien mit Badge-Stil
+// === MANA & REMINDER UPDATE === PUNKT 4: Emotes ergänzt
 const TAG_CAT_STYLE = {
-  'Körperpflege': { bg:'#1a4060', text:'#60c0ff', border:'#2060a0' },
-  'Küche':        { bg:'#3a1a00', text:'#ff8040', border:'#804020' },
-  'Ordnung':      { bg:'#1a3a1a', text:'#60d060', border:'#206020' },
-  'Wäsche':       { bg:'#2a1a3a', text:'#c080ff', border:'#6030a0' },
-  'Sport':        { bg:'#3a1a1a', text:'#ff6060', border:'#a02020' },
-  'Arbeit':       { bg:'#3a2a00', text:'#d4a030', border:'#806010' },
+  'Körperpflege': { bg:'#1a4060', text:'#60c0ff', border:'#2060a0', emoji:'💧' },
+  'Küche':        { bg:'#3a1a00', text:'#ff8040', border:'#804020', emoji:'🔥' },
+  'Ordnung':      { bg:'#1a3a1a', text:'#60d060', border:'#206020', emoji:'✨' },
+  'Wäsche':       { bg:'#2a1a3a', text:'#c080ff', border:'#6030a0', emoji:'👕' },
+  'Sport':        { bg:'#3a1a1a', text:'#ff6060', border:'#a02020', emoji:'⚡' },
+  'Arbeit':       { bg:'#3a2a00', text:'#d4a030', border:'#806010', emoji:'💼' },
 };
+
+// === MANA & REMINDER UPDATE === PUNKT 4: Kompakt-Modus (nur Emoji, kein Text)
+let _catTagCompact = false;
 
 function makeQuestCard(q, mana) {
   const canAfford = q.mana === 0 || mana >= q.mana;
@@ -725,11 +750,13 @@ function makeQuestCard(q, mana) {
 
   // === MANA & QUEST UPDATE === P7: Rast-Quests ohne Kategorie-Text
   // === MANA & QUEST UPDATE === P8: Tag-Kategorien als farbige Badge
+  // === MANA & REMINDER UPDATE === PUNKT 4: Emote vor Text, Klick → Kompakt-Modus
   let catHtml = '';
   if (!q.rest) {
     const tagStyle = TAG_CAT_STYLE[q.category];
     if (tagStyle) {
-      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}">${q.category}</span>`;
+      const label = _catTagCompact ? tagStyle.emoji : `${tagStyle.emoji} ${q.category}`;
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}" title="${q.category}">${label}</span>`;
     } else {
       catHtml = `<span class="quest-cat-row">${catIconHtml(q.category)}</span>`;
     }
@@ -857,6 +884,8 @@ function _finalizeQuestCompletion(name) {
   }
 
   renderBoard();
+  // === MANA & REMINDER UPDATE === PUNKT 2A: mana leer → Tagesrating zeigen
+  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
   showRewardPopup(quest);
 
   const totalDone = appState.quests.filter(q => q.done).length;
@@ -1433,6 +1462,20 @@ function init() {
   // === MANA & QUEST UPDATE === P3: Mana Top-Up
   _initManaTopUp();
 
+  // === MANA & REMINDER UPDATE === PUNKT 4: Klick auf Kategorie-Badge → Kompakt-Toggle
+  document.getElementById('quest-list')?.addEventListener('click', e => {
+    if (e.target.closest('.quest-cat-tag')) {
+      _catTagCompact = !_catTagCompact;
+      renderBoard();
+    }
+  });
+
+  // === MANA & REMINDER UPDATE === PUNKT 2B: Notification-Erlaubnis + Tages-Reminder
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+  scheduleDailyReminder();
+
   // === RUCKSACK ===
   initRucksack();
 }
@@ -1745,6 +1788,29 @@ function getViennaHour() {
   return parseInt(parts.find(p => p.type === 'hour')?.value ?? '0', 10);
 }
 
+// === MANA & REMINDER UPDATE === PUNKT 2B: Minuten für 21:30-Check
+function getViennaMinute() {
+  const parts = new Intl.DateTimeFormat('de-AT', {
+    timeZone: 'Europe/Vienna', hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(new Date());
+  return parseInt(parts.find(p => p.type === 'minute')?.value ?? '0', 10);
+}
+
+// === MANA & REMINDER UPDATE === PUNKT 2B: Tages-Push-Reminder um 21:30
+function scheduleDailyReminder() {
+  if (!('Notification' in window)) return;
+  const now    = new Date();
+  const target = new Date();
+  target.setHours(21, 30, 0, 0);
+  if (now >= target) return;
+  const delay = target - now;
+  setTimeout(() => {
+    if (Notification.permission === 'granted' && !getTodayDayRating()) {
+      new Notification('Questboard ✦', { body: 'Zeit für deine Tagesbewertung!', icon: './icon.svg' });
+    }
+  }, delay);
+}
+
 function showDayRatingPopup() {
   if (!appState) return;
 
@@ -1780,7 +1846,9 @@ function showDayRatingPopup() {
 function checkAndShowDayRating() {
   if (!appState) return;
   if (getTodayDayRating()) return;
-  if (getViennaHour() < 21) return;
+  // === MANA & REMINDER UPDATE === PUNKT 2B: 21:30 statt 21:00
+  const h = getViennaHour(), m = getViennaMinute();
+  if (h < 21 || (h === 21 && m < 30)) return;
   if (_dayRatingDismissedAt) {
     const minSince = (Date.now() - _dayRatingDismissedAt) / 60000;
     if (minSince < 30) return;
@@ -2629,6 +2697,40 @@ function initRucksack() {
 }
 
 // === MANA & QUEST UPDATE === P3: Klick auf Flasche → Mana hinzufügen
+// === MANA & REMINDER UPDATE === PUNKT 5A: Undo-Button mit Countdown-Ring
+let _undoTimer = null;
+let _undoEl    = null;
+
+function _showManaUndoButton(addedAmount, prevMana) {
+  if (_undoTimer) clearTimeout(_undoTimer);
+  if (!_undoEl) {
+    _undoEl = document.createElement('div');
+    _undoEl.className = 'mana-undo-toast';
+    _undoEl.innerHTML = `<svg class="mana-undo-ring" viewBox="0 0 36 36" width="32" height="32">
+      <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3"/>
+      <circle class="mana-undo-ring-fg" cx="18" cy="18" r="14" fill="none" stroke="#c4a030" stroke-width="3"/>
+    </svg><span class="mana-undo-label"></span>`;
+    document.body.appendChild(_undoEl);
+  }
+  // Reset ring animation
+  const fg = _undoEl.querySelector('.mana-undo-ring-fg');
+  fg?.classList.remove('mana-undo-ring-fg--go');
+  void fg?.offsetWidth; // force reflow
+  _undoEl.querySelector('.mana-undo-label').textContent = `↩ −${addedAmount}`;
+  // Replace onclick so captured prevMana is always fresh
+  _undoEl.onclick = () => {
+    if (_undoTimer) clearTimeout(_undoTimer);
+    appState.mana = prevMana;
+    _lastMiniBottleCount = -1;
+    saveDayState(appState);
+    renderBoard();
+    _undoEl.classList.remove('visible');
+  };
+  _undoEl.classList.add('visible');
+  requestAnimationFrame(() => fg?.classList.add('mana-undo-ring-fg--go'));
+  _undoTimer = setTimeout(() => _undoEl.classList.remove('visible'), 3000);
+}
+
 function _initManaTopUp() {
   const bottleSvg = document.getElementById('mana-bottle-svg');
   const popup     = document.getElementById('mana-topup-popup');
@@ -2655,10 +2757,14 @@ function _initManaTopUp() {
       e.stopPropagation();
       const amount  = parseInt(btn.dataset.mana, 10);
       const maxMana = appState.maxMana || MAX_MANA;
+      const prevMana = appState.mana;
       appState.mana = Math.min(appState.mana + amount, maxMana + 50);
       _lastMiniBottleCount = -1; // force refresh
       saveDayState(appState);
-      updateManaBottle(appState.mana, maxMana);
+      // === MANA & REMINDER UPDATE === PUNKT 1: re-render board so quest cards update
+      renderBoard();
+      // === MANA & REMINDER UPDATE === PUNKT 5A: undo button
+      _showManaUndoButton(appState.mana - prevMana, prevMana);
       popup.classList.add('hidden');
     });
   });
