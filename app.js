@@ -2,30 +2,30 @@
 
 const STORE_STATE = 'qb_state';
 const STORE_STARS = 'qb_stars';
-const MAX_MANA    = 10;
+const MAX_MANA    = 30;
 
 const QUESTS_DATA = [
-  { name: 'Duschen',            mana: 2, category: 'Körperpflege',  rest: false },
-  { name: 'Haare waschen',      mana: 2, category: 'Körperpflege',  rest: false },
-  { name: 'Zähneputzen',        mana: 1, category: 'Körperpflege',  rest: false },
-  { name: 'Einkaufen',          mana: 5, category: 'Outdoor',        rest: false },
-  { name: 'Spazieren gehen',    mana: 2, category: 'Outdoor',        rest: false },
-  { name: 'Garderobe ordnen',   mana: 1, category: 'Vorraum',        rest: false },
-  { name: 'Kommode ordnen',     mana: 1, category: 'Ordnung',        rest: false },
-  { name: 'Tafeln reinigen',    mana: 1, category: 'Ordnung',        rest: false },
-  { name: 'Klopapier nachfüllen', mana: 1, category: 'WC',           rest: false },
-  { name: 'Geschirrspüler',     mana: 1, category: 'Küche',          rest: false },
-  { name: 'Kaffee Corner ordnen', mana: 1, category: 'Küche',        rest: false },
-  { name: 'Staubwischen',       mana: 1, category: 'Wohnzimmer',     rest: false },
-  { name: 'Bettwäsche wechseln', mana: 2, category: 'Schlafzimmer',  rest: false },
-  { name: 'Handtücher wechseln', mana: 2, category: 'Bad',           rest: false },
-  { name: 'Bett machen',        mana: 1, category: 'Schlafzimmer',   rest: false },
-  { name: 'Waschbecken wischen', mana: 1, category: 'Bad',           rest: false },
-  { name: 'Gewandkasten ordnen', mana: 2, category: 'Catze Hort',    rest: false },
-  { name: 'Waschen',            mana: 1, category: 'Wäsche',         rest: false },
-  { name: 'Aufhängen',          mana: 1, category: 'Wäsche',         rest: false },
-  { name: 'Sortieren',          mana: 1, category: 'Wäsche',         rest: false },
-  { name: 'Wegräumen',          mana: 1, category: 'Wäsche',         rest: false },
+  { name: 'Duschen',            mana: 20, category: 'Körperpflege',  rest: false },
+  { name: 'Haare waschen',      mana: 20, category: 'Körperpflege',  rest: false },
+  { name: 'Zähneputzen',        mana: 10, category: 'Körperpflege',  rest: false },
+  { name: 'Einkaufen',          mana: 50, category: 'Outdoor',        rest: false },
+  { name: 'Spazieren gehen',    mana: 20, category: 'Outdoor',        rest: false },
+  { name: 'Garderobe ordnen',   mana: 10, category: 'Vorraum',        rest: false },
+  { name: 'Kommode ordnen',     mana: 10, category: 'Ordnung',        rest: false },
+  { name: 'Tafeln reinigen',    mana: 10, category: 'Ordnung',        rest: false },
+  { name: 'Klopapier nachfüllen', mana: 10, category: 'WC',           rest: false },
+  { name: 'Geschirrspüler',     mana: 10, category: 'Küche',          rest: false },
+  { name: 'Kaffee Corner ordnen', mana: 10, category: 'Küche',        rest: false },
+  { name: 'Staubwischen',       mana: 10, category: 'Wohnzimmer',     rest: false },
+  { name: 'Bettwäsche wechseln', mana: 20, category: 'Schlafzimmer',  rest: false },
+  { name: 'Handtücher wechseln', mana: 20, category: 'Bad',           rest: false },
+  { name: 'Bett machen',        mana: 10, category: 'Schlafzimmer',   rest: false },
+  { name: 'Waschbecken wischen', mana: 10, category: 'Bad',           rest: false },
+  { name: 'Gewandkasten ordnen', mana: 20, category: 'Catze Hort',    rest: false },
+  { name: 'Waschen',            mana: 10, category: 'Wäsche',         rest: false },
+  { name: 'Aufhängen',          mana: 10, category: 'Wäsche',         rest: false },
+  { name: 'Sortieren',          mana: 10, category: 'Wäsche',         rest: false },
+  { name: 'Wegräumen',          mana: 10, category: 'Wäsche',         rest: false },
   { name: 'Musik hören',        mana: 0, category: 'Rast & Freude',  rest: true  },
   { name: 'Zeichnen',           mana: 0, category: 'Rast & Freude',  rest: true  },
   { name: 'Häkeln',             mana: 0, category: 'Rast & Freude',  rest: true  },
@@ -109,7 +109,7 @@ const REST_MSGS = [
   'Heute darfst du einfach atmen. Alles andere kann warten.',
   'Selbst die leiseste Flamme leuchtet noch. Du auch.',
   'Du musst heute nichts beweisen – nicht mir, nicht dir.',
-  'Ruh dich aus. Morgen ist ein neuer Tag mit neuer Energie.',
+  'Ruh dich aus. Morgen ist ein neuer Tag mit neuem Mana.',
 ];
 
 const REWARD_MSGS = [
@@ -125,7 +125,7 @@ const REWARD_MSGS = [
   'Schritt für Schritt — und du bist schon so weit.',
   'Du bist genug. Heute und jeden Tag.',
   'Nicht aufgeben — du bist auf dem richtigen Weg.',
-  'Diese Energie gehört dir. Du hast sie verdient.',
+  'Dieses Mana gehört dir. Du hast es verdient.',
   'Welch tapferes Wesen du bist!',
   'Dein innerer Drache ist mächtig.',
   'Heute bist du dein eigenes Abenteuer.',
@@ -608,6 +608,31 @@ function showScreen(id) {
 let appState;
 let starMapAnimFrame = null;
 
+// === MANA-SYSTEM === Mana-Flasche aktualisieren
+function manaSymbols(mana) {
+  if (mana <= 0) return '';
+  const count = mana >= 10
+    ? Math.min(5, Math.ceil(mana / 10))
+    : Math.min(5, mana);
+  return Array(count).fill('<span class="mana-rune">✦</span>').join('');
+}
+
+function updateManaBottle(mana, maxMana) {
+  const effectiveMax = maxMana || MAX_MANA;
+  const pct = effectiveMax > 0 ? Math.max(0, Math.min(1, mana / effectiveMax)) : 0;
+  const rect = document.getElementById('mana-fill-rect');
+  if (rect) {
+    rect.style.transform = `scaleY(${pct.toFixed(3)})`;
+    const fillColor = pct > 0.6 ? '#2060ff'
+                    : pct > 0.3 ? '#1040c0'
+                    : pct > 0.1 ? '#0820a0'
+                    : '#4a0080';
+    rect.style.fill = fillColor;
+  }
+  const textEl = document.getElementById('mana-text');
+  if (textEl) textEl.textContent = `${mana} / ${effectiveMax}`;
+}
+
 function renderBoard() {
   const { quests, mana } = appState;
   const active = quests.filter(q => !q.done);
@@ -618,8 +643,8 @@ function renderBoard() {
   // Done quests hidden from board — accessible via Rucksack Questlog/Schatztruhe
   $('treasure-section').classList.add('hidden');
 
-  $('mana-text').textContent   = `${mana} / ${MAX_MANA}`;
-  $('mana-fill').style.width   = `${(mana / MAX_MANA) * 100}%`;
+  // === MANA-SYSTEM ===
+  updateManaBottle(mana, appState.maxMana || MAX_MANA);
   $('star-count').textContent  = loadStars().length;
 
   renderSidequests();
@@ -631,9 +656,12 @@ function makeQuestCard(q, mana) {
   const card      = document.createElement('div');
   card.className  = `quest-card${q.rest ? ' rest-card' : ''}`;
 
+  // === MANA-SYSTEM ===
   const costHtml = q.mana > 0
-    ? `<span class="quest-cost">${Array(q.mana).fill('<span class="gem-dot gem-dot--xs" style="--gem-color:#4a9eff"></span>').join('')}</span>`
+    ? `<span class="quest-cost-runes">${manaSymbols(q.mana)}</span>`
     : `<span class="quest-rest-tag">Rast</span>`;
+
+  const checkSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   card.innerHTML = `
     <div class="quest-info">
@@ -645,16 +673,16 @@ function makeQuestCard(q, mana) {
     </div>
     <div class="quest-actions">
       <button class="quest-btn-swap" ${canSwap ? '' : 'disabled'} aria-label="${q.name} tauschen">⇄</button>
-      <button class="quest-btn${canAfford ? '' : ' cant-afford'}"
+      <button class="quest-complete-btn${canAfford ? '' : ' cant-afford'}"
               ${canAfford ? '' : 'disabled'}
               aria-label="${q.name} abschließen">
-        ${canAfford ? '✦' : '—'}
+        ${canAfford ? checkSvg : '<span style="color:rgba(255,255,255,0.2)">—</span>'}
       </button>
     </div>`;
 
   card.querySelector('.quest-btn-swap').addEventListener('click', () => swapQuest(q.name));
   if (canAfford) {
-    card.querySelector('.quest-btn').addEventListener('click', () => completeQuest(q.name));
+    card.querySelector('.quest-complete-btn').addEventListener('click', () => completeQuest(q.name));
   }
   return card;
 }
@@ -720,7 +748,15 @@ function _finalizeQuestCompletion(name) {
 
   quest.done     = true;
   quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
-  appState.mana  = Math.max(0, appState.mana - quest.mana);
+
+  // === MANA-SYSTEM ===
+  if (quest.rest) {
+    if (!appState.maxMana) appState.maxMana = MAX_MANA;
+    appState.maxMana = Math.min(appState.maxMana + 10, 60);
+    appState.mana    = Math.min(appState.mana + 10, appState.maxMana);
+  } else {
+    appState.mana = Math.max(0, appState.mana - quest.mana);
+  }
 
   if (!quest.rest) {
     const rhythm = loadRhythm();
@@ -1222,6 +1258,8 @@ function init() {
 
   if (saved) {
     appState = saved;
+    // === MANA-SYSTEM === backward compat
+    if (!appState.maxMana) appState.maxMana = MAX_MANA;
     if (!appState.pool || appState.pool.length === 0) {
       const shownNames = new Set(appState.quests.map(q => q.name));
       appState.pool = QUESTS_DATA.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false }));
@@ -1239,6 +1277,7 @@ function init() {
           date:        todayStr(),
           mood,
           mana:        MAX_MANA,
+          maxMana:     MAX_MANA,
           quests,
           pool,
           starAwarded: false,
@@ -1618,18 +1657,18 @@ function getViennaHour() {
 function showDayRatingPopup() {
   if (!appState) return;
 
-  const apUsed    = MAX_MANA - appState.mana;
+  const apUsed    = (appState.maxMana || MAX_MANA) - appState.mana;
   const autoHint  = $('day-rating-auto-hint');
   const existing  = getTodayDayRating();
 
-  // Pre-select auto rating if < 2 AP used and no existing rating
+  // === MANA-SYSTEM === Pre-select auto rating if < 20 Mana used and no existing rating
   let autoRated = false;
-  if (!existing && apUsed < 2) {
+  if (!existing && apUsed < 20) {
     autoRated = true;
     const tooMuchBtn = document.querySelector('.day-rating-opt-btn[data-rating="too_much"]');
     document.querySelectorAll('.day-rating-opt-btn').forEach(b => b.classList.remove('selected'));
     tooMuchBtn?.classList.add('selected');
-    autoHint.textContent = `Heute wurden weniger als 2 AP verbraucht (${apUsed} AP). Das deutet auf einen überwältigenden Tag hin – „Zu viel" wurde vorausgewählt.`;
+    autoHint.textContent = `Heute wurden weniger als 20 Mana verbraucht (${apUsed} Mana). Das deutet auf einen überwältigenden Tag hin – „Zu viel" wurde vorausgewählt.`;
     autoHint.classList.remove('hidden');
     $('btn-day-rating-save').disabled = false;
   } else {
@@ -1674,7 +1713,7 @@ function initDayRatingPopup() {
     saveDayRating({
       date:      todayStr(),
       rating:    selected.dataset.rating,
-      apUsed:    MAX_MANA - (appState?.mana ?? MAX_MANA),
+      apUsed:    (appState?.maxMana ?? MAX_MANA) - (appState?.mana ?? MAX_MANA),
       autoRated,
     });
     $('popup-day-rating').classList.add('hidden');
@@ -1719,11 +1758,11 @@ function makeSidequestCard(sq) {
   const card = document.createElement('div');
   card.className = `sidequest-card${sq.done ? ' sidequest-done' : ''}`;
 
-  const costHtml = Array(sq.mana)
-    .fill('<span class="gem-dot gem-dot--xs" style="--gem-color:#4a9eff"></span>')
-    .join('');
+  // === MANA-SYSTEM ===
+  const costHtml = sq.mana > 0 ? manaSymbols(sq.mana) : '';
 
   const log       = getTodayLog(sq.id);
+  const sqCheckSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const actionHtml = sq.done
     ? `<div class="quest-done-mark">
         ${log
@@ -1731,7 +1770,7 @@ function makeSidequestCard(sq) {
           : '✓'}
        </div>`
     : `<div class="quest-actions">
-        <button class="quest-btn" aria-label="${sq.title} abschließen">✦</button>
+        <button class="quest-complete-btn" aria-label="${sq.title} abschließen">${sqCheckSvg}</button>
        </div>`;
 
   card.innerHTML = `
@@ -1747,7 +1786,7 @@ function makeSidequestCard(sq) {
     ${actionHtml}`;
 
   if (!sq.done) {
-    card.querySelector('.quest-btn').addEventListener('click', () => completeSidequest(sq.id));
+    card.querySelector('.quest-complete-btn').addEventListener('click', () => completeSidequest(sq.id));
   } else if (log) {
     card.querySelector('.log-view-btn')?.addEventListener('click', () => showLogView(log));
   }

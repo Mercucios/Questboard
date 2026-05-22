@@ -158,13 +158,32 @@
           <span id="star-count" class="hidden">0</span>
         </div>
       </div>
+      <!-- === MANA-SYSTEM === -->
       <div class="mana-area">
-        <div class="mana-row">
-          <span class="mana-label"><span class="gem-mana-icon"></span> Energie</span>
-          <span id="mana-text" class="mana-text">10 / 10</span>
-        </div>
-        <div class="mana-track">
-          <div id="mana-fill" class="mana-fill"></div>
+        <div class="mana-bottle-row">
+          <svg id="mana-bottle-svg" class="mana-bottle-svg" width="28" height="48" viewBox="0 0 32 52" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <clipPath id="mana-bottle-clip">
+                <path d="M9 18 Q5 22 5 28 L5 44 Q5 48 16 48 Q27 48 27 44 L27 28 Q27 22 23 18 Z"/>
+              </clipPath>
+            </defs>
+            <!-- Korken -->
+            <rect x="11" y="3" width="10" height="7" rx="2" fill="#c49030"/>
+            <!-- Flaschenhals -->
+            <path d="M11 10 L9 18 L23 18 L21 10 Z" fill="none" stroke="#4080ff" stroke-width="1.5" stroke-linejoin="round"/>
+            <!-- Flaschen-Silhouette -->
+            <path d="M9 18 Q5 22 5 28 L5 44 Q5 48 16 48 Q27 48 27 44 L27 28 Q27 22 23 18 Z" fill="none" stroke="#4080ff" stroke-width="1.5"/>
+            <!-- Glanzpunkt -->
+            <ellipse cx="9.5" cy="28" rx="2" ry="5" fill="white" opacity="0.3"/>
+            <!-- Füllung + Blasen (geclippt auf Flaschen-Form) -->
+            <g clip-path="url(#mana-bottle-clip)">
+              <rect id="mana-fill-rect" x="5" y="18" width="22" height="30" fill="#2060ff"/>
+              <circle class="mana-bubble-1" cx="10" cy="44" r="1.5" fill="rgba(255,255,255,0.5)"/>
+              <circle class="mana-bubble-2" cx="17" cy="46" r="1.2" fill="rgba(255,255,255,0.5)"/>
+              <circle class="mana-bubble-3" cx="22" cy="42" r="1"   fill="rgba(255,255,255,0.5)"/>
+            </g>
+          </svg>
+          <span id="mana-text" class="mana-text">30 / 30</span>
         </div>
       </div>
       <div id="mood-badge" class="mood-badge"></div>
@@ -315,11 +334,11 @@
       <div class="sq-field">
         <div class="sq-field-label">AP-Kosten <span class="sq-req">*</span></div>
         <div class="sq-ap-picker">
-          <button class="sq-ap-btn" data-ap="1">1</button>
-          <button class="sq-ap-btn" data-ap="2">2</button>
-          <button class="sq-ap-btn" data-ap="3">3</button>
-          <button class="sq-ap-btn" data-ap="4">4</button>
-          <button class="sq-ap-btn" data-ap="5">5</button>
+          <button class="sq-ap-btn" data-ap="10">10</button>
+          <button class="sq-ap-btn" data-ap="20">20</button>
+          <button class="sq-ap-btn" data-ap="30">30</button>
+          <button class="sq-ap-btn" data-ap="40">40</button>
+          <button class="sq-ap-btn" data-ap="50">50</button>
         </div>
       </div>
       <div class="sq-field">
