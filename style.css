@@ -3308,3 +3308,137 @@ h1 {
 }
 .mana-mini-phial.phial-wiggle { animation: phial-wiggle 0.28s ease-in-out infinite; }
 .mana-mini-phial.phial-removing { transform: scale(0) !important; transition: transform 0.25s ease-in !important; }
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 1: Mana +/- Popup (2 Reihen) */
+.mana-topup-popup { padding: 8px 8px 6px; }
+.mana-topup-row { display: flex; gap: 5px; margin-bottom: 4px; }
+.mana-topup-row:last-child { margin-bottom: 0; }
+.mana-plus-btn {
+  background: #0a3a1a !important;
+  border: 1px solid #20c040 !important;
+  color: #40e060 !important;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 38px;
+  font-family: 'Cinzel', 'Star2', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+.mana-plus-btn:hover  { background: #124a24 !important; transform: scale(1.08); }
+.mana-plus-btn:active { transform: scale(0.95); }
+.mana-minus-btn {
+  background: #3a0a0a !important;
+  border: 1px solid #c02020 !important;
+  color: #ff4040 !important;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 38px;
+  font-family: 'Cinzel', 'Star2', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+.mana-minus-btn:hover  { background: #4a1010 !important; transform: scale(1.08); }
+.mana-minus-btn:active { transform: scale(0.95); }
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 2: Orb links, Titel absolut zentriert */
+.board-top { position: relative; }
+.board-top-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.board-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 3: Tagesstimmung als Pill */
+.mood-pill {
+  background: #1a0838 !important;
+  border: 1px solid #c4a030 !important;
+  border-radius: 20px !important;
+  padding: 5px 12px !important;
+  font-size: clamp(13px, 3.5vw, 17px) !important;
+  font-weight: 700 !important;
+  color: #f0c040 !important;
+  white-space: nowrap !important;
+  font-family: 'Star2', serif !important;
+  text-align: center !important;
+  box-shadow: 0 0 10px rgba(196,160,48,0.2) !important;
+}
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 4: Formular-Schriften */
+.sq-field-label {
+  font-size: clamp(13px, 3.5vw, 16px) !important;
+  color: #f0c040 !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.sq-input {
+  font-size: clamp(15px, 4vw, 19px) !important;
+  color: #c8a8ff !important;
+}
+.sq-input::placeholder { color: rgba(200,168,255,0.3) !important; }
+
+.category-select {
+  width: 100%;
+  background: #1a0838;
+  border: 1px solid #c4a030;
+  border-radius: 8px;
+  color: #f0c040;
+  font-size: clamp(15px, 4vw, 19px);
+  font-family: 'Star2', serif;
+  padding: 8px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.category-select:focus { border-color: #f0c040; box-shadow: 0 0 0 2px rgba(240,192,64,0.15); }
+.category-select option { background: #0c0822; color: #f0c040; }
+
+.sq-save-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: clamp(15px, 4vw, 19px) !important;
+}
+.sq-cancel-btn {
+  font-size: clamp(15px, 4vw, 19px) !important;
+  color: #ff6060 !important;
+  border: 1px solid #ff4040 !important;
+  border-radius: 20px !important;
+  padding: 6px 20px !important;
+  display: inline-block !important;
+}
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 5: Rune-Pulse Emotes */
+@keyframes darkPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%       { opacity: 0.9; transform: scale(1.15); }
+}
+.rune-pulse {
+  animation: darkPulse 4s ease-in-out infinite;
+  display: inline-block;
+}
+.sq-vortex-btn.rune-pulse {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+}
+
+/* === SIDEQUEST & MANA UPDATE === PUNKT 7: Tag-Schrift größer */
+.quest-cat-tag { font-size: clamp(13px, 3.2vw, 16px) !important; }

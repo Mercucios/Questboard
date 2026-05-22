@@ -97,8 +97,10 @@
   <!-- QUEST BOARD SCREEN -->
   <section id="screen-board" class="screen">
     <div class="board-header">
+      <!-- === SIDEQUEST & MANA UPDATE === PUNKT 2: Kugel links, Titel zentriert, Rucksack rechts -->
       <div class="board-top">
-        <div class="board-title"><div id="crystal-lottie" style="width:40px;height:40px;"></div><span>Heutige Quests</span></div>
+        <div class="board-top-left"><div id="crystal-lottie" style="width:40px;height:40px;"></div></div>
+        <div class="board-title"><span>Heutige Quests</span></div>
         <div class="board-top-actions">
           <button id="btn-reset" class="reset-btn" title="Neu starten">↺</button>
           <button id="btn-rucksack" class="rucksack-btn" aria-label="Rucksack öffnen">
@@ -228,7 +230,7 @@
           </div>
           <div id="mana-mini-bottles" class="mana-mini-bottles"></div>
           <div class="mana-flex-spacer"></div>
-          <div id="mood-badge" class="mood-badge"></div>
+          <div id="mood-badge" class="mood-badge mood-pill"></div>
         </div>
       </div>
     </div>
@@ -243,8 +245,9 @@
       <!-- FEATURE 2: Sidequest Section -->
       <!-- === FIX: SIDEQUEST & UNTERSEITEN === -->
       <div id="sidequest-section" class="sidequest-section">
+        <!-- === SIDEQUEST & MANA UPDATE === PUNKT 5: Rune-Pulse Emotes -->
         <div class="sidequest-heading">
-          <button id="sq-vortex-btn" class="sq-vortex-btn" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">🌀</button><span class="sq-heading-text">Unerwartete Pfade</span>
+          <button id="sq-vortex-btn" class="sq-vortex-btn rune-pulse" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">🌀</button><span class="sq-heading-text">Unerwartete Pfade</span><span class="rune-pulse" style="animation-delay:0.8s">✦</span><span class="rune-pulse" style="animation-delay:1.6s">🔮</span><span class="rune-pulse" style="animation-delay:2.4s">⚗️</span>
         </div>
         <div id="sidequest-list" class="sidequest-list"></div>
       </div>
@@ -354,29 +357,45 @@
   </div>
 
   <!-- FEATURE 2: Sidequest Create Popup -->
+  <!-- === SIDEQUEST & MANA UPDATE === PUNKT 4: Dropdown, Mana-Label, neue Buttons -->
   <div id="popup-sq-create" class="overlay hidden" role="dialog" aria-modal="true">
     <div class="popup sq-create-popup">
-      <div class="popup-sparkle">⚡ ✦ ⚡</div>
+      <div class="popup-sparkle">💫 ✦ 💫</div>
       <h3 class="sq-create-title">Unerwarteter Pfad</h3>
       <div class="sq-field">
         <div class="sq-field-label">Kategorie <span class="sq-req">*</span></div>
-        <div class="sq-category-grid">
-          <button class="sq-cat-btn" data-cat="soziales" data-emoji="👨‍👩‍👧">👨‍👩‍👧<span>Soziales</span></button>
-          <button class="sq-cat-btn" data-cat="ausflug" data-emoji="🚗">🚗<span>Ausflug</span></button>
-          <button class="sq-cat-btn" data-cat="gesundheit" data-emoji="🏥">🏥<span>Gesundheit</span></button>
-          <button class="sq-cat-btn" data-cat="besorgung" data-emoji="🛒">🛒<span>Besorgung</span></button>
-          <button class="sq-cat-btn" data-cat="event" data-emoji="🎉">🎉<span>Event</span></button>
-          <button class="sq-cat-btn" data-cat="notfall" data-emoji="🆘">🆘<span>Notfall</span></button>
-          <button class="sq-cat-btn" data-cat="selbstfuersorge" data-emoji="🌿">🌿<span>Selbstfürsorge</span></button>
-          <button class="sq-cat-btn" data-cat="arbeit" data-emoji="💼">💼<span>Arbeit</span></button>
-        </div>
+        <select id="sq-cat-select" class="category-select">
+          <option value="" disabled selected>Kategorie wählen…</option>
+          <option value="koerperpflege">💧 Körperpflege</option>
+          <option value="kueche">🔥 Küche</option>
+          <option value="ordnung">✨ Ordnung</option>
+          <option value="waesche">👕 Wäsche</option>
+          <option value="sport">⚡ Sport</option>
+          <option value="arbeit">💼 Arbeit</option>
+          <option value="rast">🌙 Rast</option>
+          <option value="ausflug">🗺️ Ausflug</option>
+          <option value="soziales">👥 Soziales</option>
+          <option value="gesundheit">🏥 Gesundheit</option>
+          <option value="besorgung">🛒 Besorgung</option>
+          <option value="event">🎉 Event</option>
+          <option value="notfall">🆘 Notfall</option>
+          <option value="selbstfuersorge">🌿 Selbstfürsorge</option>
+        </select>
       </div>
       <div class="sq-field">
         <div class="sq-field-label">Name der Quest <span class="sq-req">*</span></div>
         <input id="sq-title-input" class="sq-input" type="text" placeholder="Was erwartet dich?" maxlength="60">
       </div>
       <div class="sq-field">
-        <div class="sq-field-label">AP-Kosten <span class="sq-req">*</span></div>
+        <div class="sq-field-label">
+          ⚗ Mana
+          <svg width="10" height="18" viewBox="0 0 14 38" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-left:4px;opacity:0.85" aria-hidden="true">
+            <rect x="4" y="0" width="6" height="5" rx="2" fill="#c49030"/>
+            <rect x="2" y="4" width="10" height="30" rx="5" fill="#4090ff" opacity="0.9"/>
+            <ellipse cx="4.5" cy="15" rx="1.5" ry="5" fill="white" opacity="0.3"/>
+          </svg>
+          <span class="sq-req">*</span>
+        </div>
         <div class="sq-ap-picker">
           <button class="sq-ap-btn" data-ap="10">10</button>
           <button class="sq-ap-btn" data-ap="20">20</button>
@@ -389,8 +408,10 @@
         <div class="sq-field-label">Beschreibung <span class="sq-opt">(optional)</span></div>
         <textarea id="sq-desc-input" class="sq-input sq-textarea" placeholder="Details..." maxlength="200" rows="2"></textarea>
       </div>
-      <button id="btn-sq-save" class="btn-action" disabled>Quest annehmen ⚡</button>
-      <button id="btn-sq-cancel" class="subtle-skip-btn">Abbrechen</button>
+      <button id="btn-sq-save" class="btn-action sq-save-btn" disabled>
+        <svg width="20" height="20" viewBox="0 0 28 28" style="vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Quest annehmen
+      </button>
+      <button id="btn-sq-cancel" class="subtle-skip-btn sq-cancel-btn">Abbrechen</button>
     </div>
   </div>
 
@@ -574,14 +595,21 @@
     </div>
   </div>
 
-  <!-- === MANA & QUEST UPDATE === P3: Mana Top-Up Popup -->
+  <!-- === SIDEQUEST & MANA UPDATE === PUNKT 1: Mana +/- Popup (2 Reihen) -->
   <div id="mana-topup-popup" class="mana-topup-popup hidden">
-    <div class="mana-topup-inner">
-      <button class="mana-topup-btn" data-mana="10">+10</button>
-      <button class="mana-topup-btn" data-mana="20">+20</button>
-      <button class="mana-topup-btn" data-mana="30">+30</button>
-      <button class="mana-topup-btn" data-mana="40">+40</button>
-      <button class="mana-topup-btn" data-mana="50">+50</button>
+    <div class="mana-topup-row mana-topup-plus-row">
+      <button class="mana-topup-btn mana-plus-btn" data-mana-delta="10">+10</button>
+      <button class="mana-topup-btn mana-plus-btn" data-mana-delta="20">+20</button>
+      <button class="mana-topup-btn mana-plus-btn" data-mana-delta="30">+30</button>
+      <button class="mana-topup-btn mana-plus-btn" data-mana-delta="40">+40</button>
+      <button class="mana-topup-btn mana-plus-btn" data-mana-delta="50">+50</button>
+    </div>
+    <div class="mana-topup-row mana-topup-minus-row">
+      <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-10">−10</button>
+      <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-20">−20</button>
+      <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-30">−30</button>
+      <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-40">−40</button>
+      <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-50">−50</button>
     </div>
   </div>
 

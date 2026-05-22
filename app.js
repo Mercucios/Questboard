@@ -1888,6 +1888,14 @@ function initDayRatingPopup() {
 // === FEATURE 2: Spontane Sidequests ================================
 // ═══════════════════════════════════════════════════════════════════
 
+// === SIDEQUEST & MANA UPDATE === PUNKT 4: Kategorie-Emoji-Map
+const SQ_CAT_EMOJIS = {
+  koerperpflege: '💧', kueche: '🔥', ordnung: '✨', waesche: '👕',
+  sport: '⚡', arbeit: '💼', rast: '🌙', ausflug: '🗺️',
+  soziales: '👥', gesundheit: '🏥', besorgung: '🛒',
+  event: '🎉', notfall: '🆘', selbstfuersorge: '🌿',
+};
+
 const STORE_SIDEQUESTS = 'questboard_sidequests';
 
 function loadTodaySidequests() {
@@ -1933,7 +1941,7 @@ function makeSidequestCard(sq) {
        </div>`;
 
   card.innerHTML = `
-    <span class="sq-lightning-badge">⚡ Sidequest</span>
+    <span class="sq-lightning-badge">💫 Sidequest</span>
     <span class="sq-cat-emoji">${sq.emoji}</span>
     <div class="quest-info">
       <div class="quest-name">${sq.title}</div>
@@ -1955,27 +1963,27 @@ function makeSidequestCard(sq) {
 function showSqCreateModal() {
   $('sq-title-input').value  = '';
   $('sq-desc-input').value   = '';
-  document.querySelectorAll('.sq-cat-btn').forEach(b => b.classList.remove('selected'));
+  // === SIDEQUEST & MANA UPDATE === PUNKT 4: Select statt Grid
+  const sel = $('sq-cat-select');
+  if (sel) sel.value = '';
   document.querySelectorAll('.sq-ap-btn').forEach(b => b.classList.remove('selected'));
   $('btn-sq-save').disabled  = true;
   $('popup-sq-create').classList.remove('hidden');
 }
 
 function _updateSqSaveState() {
-  const hasCategory = !!document.querySelector('.sq-cat-btn.selected');
+  // === SIDEQUEST & MANA UPDATE === PUNKT 4: Select statt Grid
+  const catSel   = $('sq-cat-select');
+  const hasCategory = !!(catSel && catSel.value);
   const hasTitle    = $('sq-title-input').value.trim().length > 0;
   const hasAp       = !!document.querySelector('.sq-ap-btn.selected');
   $('btn-sq-save').disabled = !(hasCategory && hasTitle && hasAp);
 }
 
 function initSqCreateModal() {
-  document.querySelectorAll('.sq-cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.sq-cat-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      _updateSqSaveState();
-    });
-  });
+  // === SIDEQUEST & MANA UPDATE === PUNKT 4: Dropdown statt Grid
+  const catSel = $('sq-cat-select');
+  if (catSel) catSel.addEventListener('change', _updateSqSaveState);
 
   document.querySelectorAll('.sq-ap-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1988,16 +1996,17 @@ function initSqCreateModal() {
   $('sq-title-input').addEventListener('input', _updateSqSaveState);
 
   $('btn-sq-save').addEventListener('click', () => {
-    const catBtn = document.querySelector('.sq-cat-btn.selected');
+    const catSel = $('sq-cat-select');
     const apBtn  = document.querySelector('.sq-ap-btn.selected');
     const title  = $('sq-title-input').value.trim();
-    if (!catBtn || !apBtn || !title) return;
+    const catValue = catSel?.value || '';
+    if (!catValue || !apBtn || !title) return;
 
     const sq = {
       id:          `sq_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
       date:        todayStr(),
-      category:    catBtn.dataset.cat,
-      emoji:       catBtn.dataset.emoji,
+      category:    catValue,
+      emoji:       SQ_CAT_EMOJIS[catValue] || '⚡',
       title,
       mana:        parseInt(apBtn.dataset.ap, 10),
       description: $('sq-desc-input').value.trim() || null,
@@ -2716,7 +2725,8 @@ function _showManaUndoButton(addedAmount, prevMana) {
   const fg = _undoEl.querySelector('.mana-undo-ring-fg');
   fg?.classList.remove('mana-undo-ring-fg--go');
   void fg?.offsetWidth; // force reflow
-  _undoEl.querySelector('.mana-undo-label').textContent = `↩ −${addedAmount}`;
+  const _undoSign = addedAmount >= 0 ? '−' : '+';
+  _undoEl.querySelector('.mana-undo-label').textContent = `↩ ${_undoSign}${Math.abs(addedAmount)}`;
   // Replace onclick so captured prevMana is always fresh
   _undoEl.onclick = () => {
     if (_undoTimer) clearTimeout(_undoTimer);
@@ -2752,18 +2762,21 @@ function _initManaTopUp() {
     popup.classList.remove('hidden');
   });
 
+  // === SIDEQUEST & MANA UPDATE === PUNKT 1: +/- Buttons mit signed delta
   popup.querySelectorAll('.mana-topup-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const amount  = parseInt(btn.dataset.mana, 10);
+      const delta   = parseInt(btn.dataset.manaDelta, 10);
       const maxMana = appState.maxMana || MAX_MANA;
       const prevMana = appState.mana;
-      appState.mana = Math.min(appState.mana + amount, maxMana + 50);
-      _lastMiniBottleCount = -1; // force refresh
+      if (delta > 0) {
+        appState.mana = Math.min(appState.mana + delta, maxMana + 50);
+      } else {
+        appState.mana = Math.max(0, appState.mana + delta);
+      }
+      _lastMiniBottleCount = -1;
       saveDayState(appState);
-      // === MANA & REMINDER UPDATE === PUNKT 1: re-render board so quest cards update
       renderBoard();
-      // === MANA & REMINDER UPDATE === PUNKT 5A: undo button
       _showManaUndoButton(appState.mana - prevMana, prevMana);
       popup.classList.add('hidden');
     });
