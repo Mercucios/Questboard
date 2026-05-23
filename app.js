@@ -1039,7 +1039,30 @@ function openStarMap() {
   const canvas  = $('starmap-canvas');
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
+  // === STERNENKARTE UPDATE === PUNKT 4B: CSS-Twinkle-Sterne injizieren
+  _injectStarmapStars();
   startStarMapAnimation(loadStars().length);
+}
+
+// === STERNENKARTE UPDATE === PUNKT 4B: 40-60 CSS-animierte Twinkle-Sterne
+function _injectStarmapStars() {
+  const starmap = $('popup-starmap');
+  starmap.querySelectorAll('.starmap-twinkle-star').forEach(s => s.remove());
+  const count = 40 + Math.floor(Math.random() * 21);
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'starmap-twinkle-star';
+    const sz = (1 + Math.random() * 1.5).toFixed(1);
+    s.style.cssText = [
+      `left:${(Math.random() * 100).toFixed(1)}%`,
+      `top:${(Math.random() * 100).toFixed(1)}%`,
+      `width:${sz}px`,
+      `height:${sz}px`,
+      `animation-duration:${(2 + Math.random() * 3).toFixed(2)}s`,
+      `animation-delay:${(Math.random() * 4).toFixed(2)}s`,
+    ].join(';');
+    starmap.appendChild(s);
+  }
 }
 
 // ── Star map canvas (fullscreen) ──────────────────────────────────────────────
@@ -1149,16 +1172,18 @@ function startStarMapAnimation(starCount) {
   function drawLines(pe) {
     if (!allStarsEarned) return 0;
     const total = c.lines.length * LINE_DUR;
-    ctx.lineWidth = 0.8; ctx.setLineDash([]);
+    ctx.lineWidth = 1.5; ctx.setLineDash([]);
     for (let li = 0; li < c.lines.length; li++) {
       const ls = li * LINE_DUR;
       if (pe < ls) break;
       const prog = Math.min(1, (pe - ls) / LINE_DUR);
       const [ai, bi] = c.lines[li];
       const a = cStars[ai], b = cStars[bi];
+      const ax = Math.round(a.x) + 0.5, ay = Math.round(a.y) + 0.5;
+      const bx = Math.round(b.x) + 0.5, by = Math.round(b.y) + 0.5;
       ctx.strokeStyle = 'rgba(210,230,255,0.55)';
-      ctx.beginPath(); ctx.moveTo(a.x, a.y);
-      ctx.lineTo(a.x + (b.x - a.x) * prog, a.y + (b.y - a.y) * prog);
+      ctx.beginPath(); ctx.moveTo(ax, ay);
+      ctx.lineTo(ax + (bx - ax) * prog, ay + (by - ay) * prog);
       ctx.stroke();
     }
     return total;
@@ -2355,17 +2380,42 @@ function _ruckPopulate(name) {
   if (name === 'treasure')  _ruckPopTreasure();
 }
 
+// === STERNENKARTE UPDATE === PUNKT 5: Mini-SVG-Vorschau für Sternbilder
+function _makeConstSvg(c, state) {
+  const vw = 80, vh = 64;
+  const pts = c.stars.map(s => ({ x: s.x * vw, y: s.y * vh }));
+
+  let linesHtml = '';
+  if (state === 'done' || state === 'active') {
+    (c.lines || []).forEach(([ai, bi]) => {
+      const a = pts[ai], b = pts[bi];
+      const stroke = state === 'done' ? 'rgba(210,230,255,0.6)' : 'rgba(180,210,255,0.35)';
+      const dash = state === 'active' ? 'stroke-dasharray="3 3"' : '';
+      linesHtml += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${stroke}" stroke-width="1.2" ${dash}/>`;
+    });
+  }
+
+  let dotsHtml = '';
+  pts.forEach(p => {
+    const r    = state === 'done' ? 2.5 : state === 'active' ? 2.2 : 1.5;
+    const fill = state === 'done'
+      ? '#fff9d5'
+      : state === 'active' ? 'rgba(200,225,255,0.85)' : 'rgba(150,170,210,0.4)';
+    dotsHtml += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${fill}"/>`;
+  });
+
+  return `<svg viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" class="ci-svg">${linesHtml}${dotsHtml}</svg>`;
+}
+
 // === FIX: PUNKT 5 – Teleskop Fly-in: ±150px Startposition, 0.05s Stagger, Bounce 1.4, CountUp danach ===
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
   const starCount = loadStars().length;
   const numEl     = $('ruck-star-num');
 
-  // Reset counter to 0 initially; CountUp starts AFTER fly-in animations complete
   if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
   numEl.textContent = '0';
 
-  // Constellations list
   const list = $('ruck-const-list');
   list.innerHTML = '';
   const info  = getConstellationInfo(starCount);
@@ -2374,33 +2424,53 @@ function _ruckPopTelescope() {
   CONSTELLATIONS.forEach((c, i) => {
     const isComplete = i < compN;
     const isCurrent  = !info.allComplete && i === compN;
-    const isNext2    = !isComplete && !isCurrent && (i === compN + 1 || i === compN + 2);
-    if (!isComplete && !isCurrent && !isNext2) return;
+    const isNext1    = !isComplete && !isCurrent && i === compN + 1;
+    const isNext2    = !isComplete && !isCurrent && i === compN + 2;
+    const isFar      = !isComplete && !isCurrent && !isNext1 && !isNext2;
 
     const el = document.createElement('div');
-    let cls = 'ruck-const-item ';
-    if (isComplete)      cls += 'ci-done';
-    else if (isCurrent)  cls += 'ci-active';
-    else                 cls += 'ci-locked';
-    el.className = cls;
 
-    let icon, name, badgeCls, badgeTxt;
     if (isComplete) {
-      icon = '⭐'; name = c.name;
-      badgeCls = 'badge-done'; badgeTxt = 'Entdeckt ✦';
+      el.className = 'ruck-const-item ci-done';
+      el.innerHTML = `
+        <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
+        <div class="ci-info">
+          <span class="ruck-const-name">${c.name}</span>
+          <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
+          <div class="const-lore-box hidden">
+            <span class="const-lore-loading">✦ Die Sterne erzählen…</span>
+            <p class="const-lore-text"></p>
+          </div>
+        </div>`;
     } else if (isCurrent) {
-      // === KATEGORIE MODAL & SPIRALS === PUNKT 5: Name verbergen bis freigeschaltet
-      icon = '🔭'; name = '???';
-      badgeCls = 'badge-active'; badgeTxt = `${info.earned}/${c.starsNeeded}`;
+      // === STERNENKARTE UPDATE === PUNKT 5A: Erstes gesperrtes – Punkte + gestrichelte Linien
+      el.className = 'ruck-const-item ci-active';
+      el.innerHTML = `
+        <div class="ci-svg-wrap">${_makeConstSvg(c, 'active')}</div>
+        <div class="ci-info">
+          <span class="ruck-const-name">❓ ❓ ❓</span>
+          <span class="ruck-const-badge badge-active">🔒</span>
+          <span class="badge-star-count">⭐ ${info.earned} / ${c.starsNeeded}</span>
+        </div>`;
+    } else if (isNext1 || isNext2) {
+      // === STERNENKARTE UPDATE === PUNKT 5B: 2. + 3. gesperrtes – nur schwache Punkte
+      el.className = 'ruck-const-item ci-locked';
+      el.innerHTML = `
+        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
+        <div class="ci-info">
+          <span class="ruck-const-name">❓ ❓ ❓</span>
+          <span class="ruck-const-badge badge-locked">🔒</span>
+        </div>`;
     } else {
-      icon = '🔒'; name = '???';
-      badgeCls = 'badge-locked'; badgeTxt = `✦ ${c.starsNeeded} Sterne`;
+      // === STERNENKARTE UPDATE === PUNKT 5C: Alle weiteren – blur + Nebel
+      el.className = 'ruck-const-item ci-far';
+      el.innerHTML = `
+        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
+        <div class="ci-info">
+          <span class="ruck-const-name">❓ ❓ ❓</span>
+        </div>`;
     }
 
-    el.innerHTML = `
-      <span class="ruck-const-icon">${icon}</span>
-      <span class="ruck-const-name">${name}</span>
-      <span class="ruck-const-badge ${badgeCls}">${badgeTxt}</span>`;
     list.appendChild(el);
   });
 
@@ -2412,7 +2482,7 @@ function _ruckPopTelescope() {
     hero.classList.add('fly-in');
   }
 
-  const items = list.querySelectorAll('.ruck-const-item');
+  const items = list.querySelectorAll('.ruck-const-item:not(.ci-far)');
   items.forEach((el, i) => {
     el.classList.remove('fly-in');
     const fx = (Math.random() * 300 - 150).toFixed(0);
@@ -2423,7 +2493,7 @@ function _ruckPopTelescope() {
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('fly-in')));
   });
 
-  // CountUp startet NACH den Fly-in-Animationen (Fly-in max ~items*0.05+0.1+0.8s)
+  // CountUp startet NACH den Fly-in-Animationen
   const flyInEnd = Math.max(items.length * 0.05 + 0.1 + 0.8, 0.9) * 1000;
   setTimeout(() => {
     const t0  = performance.now();
@@ -2436,6 +2506,24 @@ function _ruckPopTelescope() {
     }
     _ruckCountRaf = requestAnimationFrame(countStep);
   }, flyInEnd);
+
+  // === STERNENKARTE UPDATE === PUNKT 6: Lore-Text für abgeschlossene Sternbilder
+  const doneItems = list.querySelectorAll('.ci-done');
+  doneItems.forEach((el, idx) => {
+    const constName = el.querySelector('.ruck-const-name')?.textContent?.trim();
+    if (!constName) return;
+    const loreBox     = el.querySelector('.const-lore-box');
+    const loreTxt     = el.querySelector('.const-lore-text');
+    const loreLoading = el.querySelector('.const-lore-loading');
+    if (!loreBox || !loreTxt) return;
+    const delay = flyInEnd + idx * 300;
+    setTimeout(async () => {
+      loreBox.classList.remove('hidden');
+      const text = await generateConstellationText(constName);
+      if (loreLoading) loreLoading.style.display = 'none';
+      if (text) _typewriter(loreTxt, text);
+    }, delay);
+  });
 }
 
 // ── Questlog ──────────────────────────────────────────────────────
@@ -2822,9 +2910,10 @@ function initRucksack() {
   });
 
   // Starmap button within telescope area
+  // === STERNENKARTE UPDATE === PUNKT 1: openStarMap zuerst → kein Quest-Flash
   $('ruck-open-starmap').addEventListener('click', () => {
+    openStarMap();
     closeRucksack();
-    setTimeout(openStarMap, 400);
   });
 
   _ruckInitDrag();
@@ -2908,4 +2997,53 @@ function _initManaTopUp() {
   });
 
   document.addEventListener('click', () => popup.classList.add('hidden'));
+}
+
+// === STERNENKARTE UPDATE === PUNKT 6: Anthropic API – Sternbild-Lore
+
+async function generateConstellationText(constellationName) {
+  const cacheKey = 'constellation_text_' + constellationName;
+  const saved = localStorage.getItem(cacheKey);
+  if (saved) return saved;
+
+  const apiKey = localStorage.getItem('qb_api_key');
+  if (!apiKey) return null;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das Sternbild [STERNBILD-NAME] einen mittelgroßen Text (1 Absatz Lore + 1-2 Sätze persönlicher Bezug zur Userin). Der Lore-Teil soll mythisch und episch sein – orientiere dich an realen und fiktiven Mythen (griechisch, nordisch, keltisch, fantasy). Der persönliche Teil soll die Userin direkt ansprechen (\"du\") und lobend sowie ermutigend sein. Antworte nur mit dem Text, keine Einleitung.',
+        messages: [{
+          role: 'user',
+          content: 'Erstelle einen mythischen und persönlichen Text für das Sternbild: ' + constellationName,
+        }],
+      }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const text = data.content?.[0]?.text?.trim() || null;
+    if (text) localStorage.setItem(cacheKey, text);
+    return text;
+  } catch {
+    return null;
+  }
+}
+
+function _typewriter(el, text, speed) {
+  el.textContent = '';
+  const ms = speed || 28;
+  let i = 0;
+  function tick() {
+    if (i < text.length) { el.textContent += text[i++]; setTimeout(tick, ms); }
+  }
+  tick();
 }

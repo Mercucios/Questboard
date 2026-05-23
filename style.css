@@ -4105,3 +4105,174 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   background: rgba(240,192,64,0.28);
   transform: scale(0.88);
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* SESSION 5 – STERNENKARTE UPDATE                            */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* PUNKT 1: Sternenkarte über Rucksack-Drawer (z-index 21) */
+.starmap-fs {
+  z-index: 30 !important;
+}
+
+/* PUNKT 2: Einheitlicher Zurück-Button */
+.back-btn {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838) !important;
+  border: 2px solid #c4a030 !important;
+  border-radius: 50% !important;
+  width: 52px !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #f0c040 !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  z-index: 100 !important;
+  touch-action: manipulation !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  letter-spacing: 0 !important;
+  transition: box-shadow 0.2s, transform 0.15s !important;
+  box-shadow: 0 0 10px rgba(196,160,48,0.25) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.back-btn:active {
+  transform: scale(0.9) !important;
+  box-shadow: 0 0 20px rgba(196,160,48,0.5) !important;
+}
+
+/* PUNKT 2 (cont): Rucksack-Header Platz für absoluten Zurück-Button */
+.rucksack-area-hdr {
+  position: relative !important;
+  padding-left: 72px !important;
+  min-height: 68px !important;
+}
+
+/* PUNKT 3A: Schärfere Schrift in der Sternenkarte */
+#popup-starmap {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  font-smooth: always !important;
+}
+
+/* PUNKT 4A: Nebel-Hintergrund in der Sternenkarte */
+@keyframes nebulaFloat1 {
+  0%,100% { transform: translate(0,0) scale(1);    opacity: 0.15; }
+  50%     { transform: translate(20px,-15px) scale(1.05); opacity: 0.25; }
+}
+@keyframes nebulaFloat2 {
+  0%,100% { transform: translate(0,0) scale(1);    opacity: 0.1; }
+  50%     { transform: translate(-15px,20px) scale(0.95); opacity: 0.2; }
+}
+.starmap-nebula {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.nebula-sm-1 {
+  width: 300px; height: 200px;
+  background: radial-gradient(ellipse, rgba(100,40,200,0.3), transparent);
+  animation: nebulaFloat1 20s ease-in-out infinite;
+  top: 10%; left: 20%;
+}
+.nebula-sm-2 {
+  width: 250px; height: 180px;
+  background: radial-gradient(ellipse, rgba(40,80,200,0.25), transparent);
+  animation: nebulaFloat2 25s ease-in-out infinite;
+  top: 50%; right: 10%;
+}
+.nebula-sm-3 {
+  width: 200px; height: 150px;
+  background: radial-gradient(ellipse, rgba(80,20,150,0.2), transparent);
+  animation: nebulaFloat1 30s ease-in-out infinite reverse;
+  bottom: 20%; left: 40%;
+}
+
+/* PUNKT 4B: CSS-Twinkle-Sterne (JS-generiert) */
+@keyframes starTwinkle {
+  0%,100% { opacity: 0.2; transform: scale(1); }
+  50%     { opacity: 0.9; transform: scale(1.3); }
+}
+.starmap-twinkle-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 2;
+  animation: starTwinkle ease-in-out infinite;
+}
+
+/* PUNKT 5: Mini-SVG-Vorschau in Sternbild-Liste */
+.ruck-const-item {
+  align-items: flex-start !important;
+  gap: 0.75rem !important;
+  padding: 0.65rem 0.75rem !important;
+}
+.ci-svg-wrap {
+  flex-shrink: 0;
+  width: 80px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ci-svg {
+  display: block;
+  width: 80px;
+  height: 64px;
+}
+.ci-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding-top: 0.15rem;
+}
+.ruck-const-name {
+  flex: unset !important;
+}
+/* ci-far: alle weiteren – blur + opacity */
+.ruck-const-item.ci-far {
+  opacity: 0.18 !important;
+  filter: blur(4px) !important;
+  pointer-events: none !important;
+  border-color: transparent !important;
+}
+/* Star count badge in 'active' entry – Cinzel font for clear numbers */
+.badge-star-count {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.75rem;
+  color: #f0e4c0;
+  margin-top: 0.18rem;
+  display: block;
+}
+
+/* PUNKT 5 lore box */
+.const-lore-box {
+  margin-top: 0.55rem;
+  background: rgba(10,4,30,0.8);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+}
+.const-lore-box.hidden { display: none; }
+.const-lore-loading {
+  font-family: 'Star2', serif;
+  font-size: 0.75rem;
+  color: rgba(240,192,64,0.6);
+  letter-spacing: 0.06em;
+}
+.const-lore-text {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: clamp(13px, 3.5vw, 17px);
+  color: #c8a8ff;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
