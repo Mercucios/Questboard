@@ -4377,3 +4377,121 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 }
 .candle-flame { transform-origin: 50% 100%; animation: flicker ease-in-out infinite; }
 .candle-glow  { animation: flickerGlow ease-in-out infinite; }
+
+/* === VICTORY & REWARDS UPDATE === */
+
+/* PUNKT 1 – Victory Screen */
+.victory-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: linear-gradient(180deg, #08001a 0%, #160028 50%, #08000f 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.victory-screen.active {
+  opacity: 1; pointer-events: all;
+}
+.victory-banner {
+  position: absolute; top: 0; width: 72px; height: 100%;
+  opacity: 0; transform: scaleY(0); transform-origin: top center;
+}
+.victory-banner-left  { left: 0;  background: linear-gradient(180deg, #cc1010 0%, #880808 50%, #550404 100%); }
+.victory-banner-right { right: 0; background: linear-gradient(180deg, #cc1010 0%, #880808 50%, #550404 100%); }
+.victory-banner.anim {
+  animation: victoryBannerDrop 0.55s cubic-bezier(0.2, 0.8, 0.4, 1) 0.15s forwards;
+}
+@keyframes victoryBannerDrop {
+  0%   { opacity: 0; transform: scaleY(0); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+.victory-confetti-wrap {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.victory-confetti {
+  position: absolute; top: -20px; width: 10px; height: 14px; border-radius: 2px;
+  opacity: 0;
+  animation: confettiFall var(--cf-dur) ease-in var(--cf-delay) forwards;
+}
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(110vh) rotate(var(--cf-rot)); }
+}
+.victory-trumpet {
+  position: absolute; font-size: 2.5rem; top: 20%;
+  opacity: 0;
+}
+.victory-trumpet-l { left: 12%; }
+.victory-trumpet-r { right: 12%; }
+.victory-trumpet-l.anim { animation: trumpetInL 0.5s cubic-bezier(0.2, 0.8, 0.4, 1) 0.45s forwards; }
+.victory-trumpet-r.anim { animation: trumpetInR 0.5s cubic-bezier(0.2, 0.8, 0.4, 1) 0.45s forwards; }
+@keyframes trumpetInL {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-30deg); }
+  70%  { opacity: 1; transform: scale(1.15) rotate(-20deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-20deg); }
+}
+@keyframes trumpetInR {
+  0%   { opacity: 0; transform: scale(0.4) rotate(30deg); }
+  70%  { opacity: 1; transform: scale(1.15) rotate(20deg); }
+  100% { opacity: 1; transform: scale(1) rotate(20deg); }
+}
+.victory-content {
+  text-align: center; z-index: 1; padding: 1rem 5rem;
+  pointer-events: none;
+}
+.victory-title {
+  font-family: 'Cinzel', serif; font-size: 1.75rem; font-weight: 700;
+  color: #f0c040;
+  animation: victoryTitleGlow 2s ease-in-out infinite alternate;
+}
+@keyframes victoryTitleGlow {
+  0%   { text-shadow: 0 0 16px rgba(240,192,64,0.8); }
+  100% { text-shadow: 0 0 40px rgba(240,192,64,1), 0 0 80px rgba(255,210,80,0.5); }
+}
+.victory-quest-name {
+  font-family: 'Crimson Text', Georgia, serif; font-size: 1.25rem; font-style: italic;
+  color: #e0d0c0; margin: 0.4rem 0 1rem;
+}
+.victory-reward-wrap {
+  margin: 0.5rem auto;
+  animation: rewardBounce 0.7s cubic-bezier(0.2, 0.8, 0.4, 1) 0.8s both;
+}
+@keyframes rewardBounce {
+  0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(3deg);  opacity: 1; }
+  100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+}
+.victory-reward-icon { display: flex; justify-content: center; }
+.victory-reward-name {
+  font-family: 'Cinzel', serif; font-size: 1rem; color: #c49030;
+  margin-top: 0.3rem; letter-spacing: 0.04em;
+}
+.victory-continue {
+  margin-top: 1.75rem; color: rgba(255,255,255,0.45);
+  font-size: 0.9rem; font-family: 'Crimson Text', Georgia, serif;
+  animation: victoryPulse 1.5s ease-in-out 1s infinite;
+}
+@keyframes victoryPulse {
+  0%,100% { opacity: 0.45; }
+  50%     { opacity: 0.9; }
+}
+
+/* Quest-Karte golden flash beim Abschließen */
+@keyframes questCardGoldenFlash {
+  0%   { box-shadow: none; }
+  35%  { box-shadow: 0 0 28px rgba(240,192,64,0.9), 0 0 60px rgba(255,210,80,0.4); }
+  100% { box-shadow: none; }
+}
+.quest-card--completing {
+  animation: questCardGoldenFlash 0.6s ease-out forwards;
+}
+
+/* PUNKT 2 – Stern-Popup größer + Stern-Animation */
+.star-popup { width: 80% !important; max-width: 360px !important; }
+.star-burst  { font-size: 80px !important; display: block !important; text-align: center !important; }
+.star-title  { font-size: 1.5rem !important; }
+@keyframes starFallIn {
+  0%   { transform: translateY(-90px) scale(0.4); opacity: 0; }
+  60%  { transform: translateY(8px) scale(1.15);  opacity: 1; }
+  100% { transform: translateY(0)   scale(1);      opacity: 1; }
+}
+#popup-star.active-star .star-burst { animation: starFallIn 0.75s cubic-bezier(0.2, 0.8, 0.4, 1) both; }

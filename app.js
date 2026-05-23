@@ -135,6 +135,31 @@ const REWARD_MSGS = [
   'Die Horde wächst — genau wie du.',
 ];
 
+// === VICTORY & REWARDS UPDATE === PUNKT 5: Zufällige Belohnungen
+const REWARDS = [
+  'Rubin', 'Smaragd', 'Saphir', 'Amethyst', 'Goldnugget',
+  'Zaubertrank', 'Zauberstab', 'Hexenkessel', 'Kristallkugel', 'Zauberbuch',
+  'Amulett', 'Drachenschuppe', 'Ritterschild', 'Königskrone', 'Drachenzahn', 'Phönixfeder',
+];
+
+function getRandomReward() {
+  return { name: REWARDS[Math.floor(Math.random() * REWARDS.length)] };
+}
+
+// === VICTORY & REWARDS UPDATE === PUNKT 2: Stern-Reaktionen
+const starReactions = [
+  'Du leuchtest wie tausend Sterne!',
+  'Unbezwingbar! Dein Drachen-Herz brennt!',
+  'Du bist mächtiger als du weißt.',
+  'Heute bist du eine Legende!',
+  'Strahlend wie der Morgenstern!',
+  'Kein Berg zu hoch für dich!',
+  'Du erfüllst die Prophezeiung!',
+  'Welch epischer Triumph!',
+  'Deine Stärke ist grenzenlos!',
+  'Der Himmel neigt sich vor dir!',
+];
+
 // ── Daily Symbols ─────────────────────────────────────────────────────────────
 
 const DAILY_SYMBOLS = [
@@ -632,29 +657,55 @@ function manaSymbols(mana) {
 // === MANA & QUEST UPDATE === P1/P2/P3/P4: Glasflasche, Layout, Mini-Phials
 let _lastMiniBottleCount = -1;
 
+// === VICTORY & REWARDS UPDATE === PUNKT 3+4: 6-Stufen-Mana + Blasen-Pause
 function updateManaBottle(mana, maxMana) {
   const effectiveMax = maxMana || MAX_MANA;
   const pct = effectiveMax > 0 ? Math.max(0, Math.min(1, mana / effectiveMax)) : 0;
   const rect = document.getElementById('mana-fill-rect');
   if (rect) {
     rect.style.transform = `scaleY(${pct.toFixed(3)})`;
-    rect.style.fill = pct > 0.6 ? 'url(#mana-liq-hi)'
-                    : pct > 0.3 ? 'url(#mana-liq-mid)'
-                    : pct > 0.1 ? 'url(#mana-liq-lo)'
-                    : 'url(#mana-liq-empty)';
-    // Wavy surface follows liquid level
+
+    let gradId, glow1, glow2, bubbleDur;
+    if (pct >= 0.76) {
+      gradId = 'mana-liq-s1'; glow1 = 'rgba(60,160,255,0.55)';  glow2 = 'rgba(80,200,255,0.4)';  bubbleDur = '2s';
+    } else if (pct >= 0.51) {
+      gradId = 'mana-liq-s2'; glow1 = 'rgba(30,120,230,0.45)';  glow2 = 'rgba(40,140,255,0.3)';  bubbleDur = '2.8s';
+    } else if (pct >= 0.26) {
+      gradId = 'mana-liq-s3'; glow1 = 'rgba(20,80,180,0.35)';   glow2 = 'rgba(30,90,200,0.25)';  bubbleDur = '4s';
+    } else if (pct >= 0.11) {
+      gradId = 'mana-liq-s4'; glow1 = 'rgba(30,40,160,0.4)';    glow2 = 'rgba(40,50,180,0.28)';  bubbleDur = '6s';
+    } else if (pct > 0) {
+      gradId = 'mana-liq-s5'; glow1 = 'rgba(60,20,140,0.45)';   glow2 = 'rgba(80,30,160,0.32)';  bubbleDur = '9s';
+    } else {
+      gradId = 'mana-liq-s6'; glow1 = '';                        glow2 = '';                       bubbleDur = null;
+    }
+
+    rect.style.fill = `url(#${gradId})`;
+
+    // Bubble speed + pause at empty
+    document.querySelectorAll('.mana-bubble').forEach(b => {
+      if (bubbleDur) {
+        b.style.animationPlayState = 'running';
+        b.style.animationDuration  = bubbleDur;
+      } else {
+        b.style.animationPlayState = 'paused';
+      }
+    });
+
+    // Outer glow
+    const svg = document.getElementById('mana-bottle-svg');
+    if (svg) {
+      svg.style.filter = glow1
+        ? `drop-shadow(0 4px 8px ${glow1}) drop-shadow(0 0 6px ${glow2})`
+        : '';
+    }
+
+    // Wavy surface
     const surface = document.getElementById('mana-surface');
     if (surface) {
       const fy = Math.max(28, Math.min(72, 72 - 44 * pct));
       surface.setAttribute('d', `M6 ${fy.toFixed(1)} Q17 ${(fy - 3).toFixed(1)} 28 ${fy.toFixed(1)} Q39 ${(fy + 3).toFixed(1)} 50 ${fy.toFixed(1)}`);
     }
-  }
-  // Outer glow when mana > 30%
-  const svg = document.getElementById('mana-bottle-svg');
-  if (svg) {
-    svg.style.filter = pct > 0.3
-      ? 'drop-shadow(0 4px 8px rgba(0,80,200,0.3)) drop-shadow(0 0 6px rgba(40,100,255,0.35))'
-      : '';
   }
   const textEl = document.getElementById('mana-text');
   if (textEl) textEl.textContent = `${mana} / ${effectiveMax}`;
@@ -885,24 +936,77 @@ function swapQuest(name) {
   renderBoard();
 }
 
+// === VICTORY & REWARDS UPDATE === PUNKT 1+5: Victory-Flow + Belohnung vorbestimmen
 function completeQuest(name) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
-  // === TAG & RAST UPDATE === PUNKT 8: Rast-Quests direkt zum Mana-Popup
-  if (quest.rest) {
-    showRestManaPopup(quest);
-    return;
+  if (quest.rest) { showRestManaPopup(quest); return; }
+
+  const reward = getRandomReward();
+  _pendingCompletion = { type: 'quest', id: name, questTitle: name, reward };
+
+  // Golden glow on quest card
+  const cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
+  if (cardEl) cardEl.classList.add('quest-card--completing');
+
+  // Shooting star from card position
+  if (cardEl) {
+    const _rect = cardEl.getBoundingClientRect();
+    const _star = document.createElement('div');
+    _star.className  = 'shooting-star-fx';
+    _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
+    _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
+    document.body.appendChild(_star);
+    requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
+    setTimeout(() => _star.remove(), 800);
   }
-  _pendingCompletion = { type: 'quest', id: name, questTitle: name };
-  openLogPopup(name, name);
+
+  setTimeout(() => showVictoryScreen(quest, reward), 600);
 }
 
-function _finalizeQuestCompletion(name) {
+function showVictoryScreen(quest, reward) {
+  const vs = document.getElementById('victory-screen');
+  if (!vs) { openLogPopup(quest.name, quest.name); return; }
+
+  document.getElementById('victory-quest-name').textContent  = quest.name;
+  document.getElementById('victory-reward-name').textContent = reward.name;
+  document.getElementById('victory-reward-icon').innerHTML   = _ruckTreasureIcon(reward.name, 72);
+
+  // Confetti
+  const wrap   = document.getElementById('victory-confetti-wrap');
+  wrap.innerHTML = '';
+  const colors = ['#f0c040','#ff4060','#40c0ff','#80ff60','#c060ff','#ff8020','#ffffff'];
+  const total  = 30 + Math.floor(Math.random() * 11);
+  for (let i = 0; i < total; i++) {
+    const c = document.createElement('div');
+    c.className = 'victory-confetti';
+    c.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};--cf-dur:${(1.5+Math.random()*2).toFixed(2)}s;--cf-delay:${(Math.random()*0.9).toFixed(2)}s;--cf-rot:${Math.round((Math.random()-0.5)*720)}deg`;
+    wrap.appendChild(c);
+  }
+
+  // Show + trigger animations
+  vs.classList.add('active');
+  vs.querySelectorAll('.victory-banner, .victory-trumpet').forEach(el => el.classList.add('anim'));
+
+  const onTap = (e) => {
+    e.stopPropagation();
+    vs.classList.remove('active');
+    vs.querySelectorAll('.victory-banner, .victory-trumpet').forEach(el => el.classList.remove('anim'));
+    wrap.innerHTML = '';
+    vs.removeEventListener('click',    onTap);
+    vs.removeEventListener('touchend', onTap);
+    openLogPopup(quest.name, quest.name);
+  };
+  vs.addEventListener('click',    onTap);
+  vs.addEventListener('touchend', onTap);
+}
+
+function _finalizeQuestCompletion(name, preReward) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
 
   quest.done     = true;
-  quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  quest.treasure = preReward || TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
 
   // === MANA-SYSTEM ===
   if (quest.rest) {
@@ -938,7 +1042,6 @@ function _finalizeQuestCompletion(name) {
   renderBoard();
   // === MANA & REMINDER UPDATE === PUNKT 2A: mana leer → Tagesrating zeigen
   if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
-  showRewardPopup(quest);
 
   const totalDone = appState.quests.filter(q => q.done).length;
   if (totalDone >= 2 && !appState.starAwarded) {
@@ -1008,7 +1111,12 @@ function awardStar() {
   appState.starAwarded = true;
   saveDayState(appState);
   $('star-count').textContent = stars.length;
-  $('popup-star').classList.remove('hidden');
+  // === VICTORY & REWARDS UPDATE === PUNKT 2: Zufällige Reaktion + Stern-Animation
+  $('star-msg').textContent = starReactions[Math.floor(Math.random() * starReactions.length)];
+  const popupStar = $('popup-star');
+  popupStar.classList.remove('hidden');
+  popupStar.classList.remove('active-star');
+  requestAnimationFrame(() => requestAnimationFrame(() => popupStar.classList.add('active-star')));
 }
 
 function getConstellationInfo(starCount) {
@@ -2262,7 +2370,7 @@ function initLogPopup() {
     _pendingCompletion = null;
 
     if (pending.type === 'quest') {
-      _finalizeQuestCompletion(pending.id);
+      _finalizeQuestCompletion(pending.id, pending.reward);
     } else {
       _finalizeSidequestCompletion(pending.id);
     }
