@@ -5,7 +5,9 @@
       "Bash(git *)",
       "Bash(Set-Content -Path 'C:\\\\Users\\\\David\\\\Questboard\\\\constellations.js' -Encoding utf8 -Value '@ *)",
       "Bash(Write-Output \"created\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\David\\\\Questboard\" -Recurse -File)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }
