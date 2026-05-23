@@ -3749,22 +3749,22 @@ h1 {
 .quest-cat-label              { text-transform: none !important; }
 
 /* PUNKT 5: Rast-Quest Sternenhimmel (Option E) */
+/* === FIX: FORM & TAGS === PUNKT 1: overflow:visible, kein bg-image Konflikt */
 .quest-card.rast-quest {
-  background: linear-gradient(
-    135deg,
-    #06020f 0%,
-    #0a1828 40%,
-    #060e1a 100%
-  ) !important;
-  background-image: none !important;
+  background-color: #06020f !important;
+  background-image: linear-gradient(135deg, #06020f 0%, #0a1828 40%, #060e1a 100%) !important;
   border: 1px solid rgba(64,128,192,0.5) !important;
   position: relative;
-  overflow: hidden;
+  overflow: visible !important;
+  height: auto !important;
+  min-height: unset !important;
+  padding: 0.9rem 0.95rem !important;
 }
 .quest-card.rast-quest::before {
   content: '';
   position: absolute;
   inset: 0;
+  border-radius: 14px;
   background-image:
     radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px),
     radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
@@ -3784,4 +3784,100 @@ h1 {
 .quest-card.rast-quest > * {
   position: relative;
   z-index: 1;
+}
+
+/* === FIX: FORM & TAGS === */
+
+/* PUNKT 2: Zahlen-Schrift Cinzel für Mana-Picker im Sidequest-Formular */
+.sq-ap-btn                  { font-family: 'Cinzel', 'Star2', serif !important; }
+input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
+.number-display,
+[class*="mana-cost"]        { font-family: 'Cinzel', 'Star2', serif; }
+
+/* PUNKT 3: Sidequest-Formular Vollbild */
+#popup-sq-create {
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+.sq-create-popup {
+  width: 100dvw !important;
+  height: 100dvh !important;
+  max-width: 100dvw !important;
+  max-height: 100dvh !important;
+  border-radius: 0 !important;
+  overflow-y: auto !important;
+  padding: clamp(20px, 5vw, 40px) clamp(16px, 4vw, 32px) !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.sq-create-title {
+  font-size: clamp(26px, 7vw, 36px) !important;
+}
+.sq-create-popup .sq-field-label {
+  font-size: clamp(18px, 5vw, 24px) !important;
+}
+.sq-create-popup .sq-input {
+  font-size: clamp(18px, 5vw, 24px) !important;
+  padding: clamp(12px, 3vw, 18px) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.sq-create-popup .btn-action,
+.sq-create-popup .subtle-skip-btn {
+  font-size: clamp(18px, 5vw, 24px) !important;
+}
+.sq-create-popup .path-trigger-btn {
+  font-size: clamp(18px, 5vw, 24px) !important;
+}
+.sq-create-popup .path-label {
+  font-size: clamp(18px, 5vw, 24px) !important;
+}
+.sq-create-popup .sq-ap-btn {
+  font-size: clamp(18px, 5vw, 24px) !important;
+  width: 52px !important;
+  height: 52px !important;
+}
+.sq-create-popup .sq-ap-picker {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+/* PUNKT 4: Wirbel-Funkeln Animation */
+@keyframes sparklePulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%      { opacity: 0.9; transform: scale(1.2); }
+}
+.form-sparkle {
+  font-size: 22px;
+  display: inline-block;
+  animation: sparklePulse 3s ease-in-out infinite;
+}
+
+/* PUNKT 5: Kategorie-Modal Überschrift größer & fett */
+.cat-modal-title {
+  font-size: clamp(28px, 7vw, 38px) !important;
+  font-weight: 700 !important;
+  font-family: 'Star2', serif !important;
+  color: #c4a030 !important;
+  text-align: center !important;
+  margin-bottom: 16px !important;
+  font-style: normal !important;
+}
+
+/* PUNKT 6: Tags/Kategorien – Kleinbuchstaben erzwingen */
+.quest-cat-tag,
+.quest-rest-tag,
+.sq-lightning-badge,
+.quest-category,
+.sidequest-heading,
+.treasure-heading,
+.cat-card-name,
+.quest-cat-label,
+[class*="tag"],
+[class*="badge"],
+[class*="category"],
+[class*="label"] {
+  text-transform: none !important;
 }
