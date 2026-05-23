@@ -273,219 +273,231 @@ function _ruckTreasureIcon(name, size) {
   const u = 'ri' + (++_ruckIconSeq);
   const s = size || 52;
   const icons = {
-    'Rubin': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#ff6080"/><stop offset="45%" stop-color="#d01830"/><stop offset="100%" stop-color="#600010"/></radialGradient>
-      </defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}a)"/>
-      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.7"/>
-      <line x1="22" y1="4" x2="30" y2="14" stroke="#ffb0c0" stroke-width="0.8" opacity="0.7"/>
-      <ellipse cx="16" cy="13" rx="5" ry="3" fill="white" opacity="0.25" transform="rotate(-20 16 13)"/></svg>`,
+    'Rubin': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#ff9aaa"/><stop offset="30%" stop-color="#e81e38"/><stop offset="65%" stop-color="#a00018"/><stop offset="100%" stop-color="#500008"/></radialGradient>
+      </defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <polygon points="22,4 32,10 28,20 16,20 12,10" fill="#ff6070" opacity="0.3"/>
+      <polygon points="22,4 30,9 24,7" fill="#ffb0be" opacity="0.55"/>
+      <ellipse cx="15" cy="13" rx="5.5" ry="3" fill="white" opacity="0.45" transform="rotate(-20 15 13)"/></svg>`,
 
-    'Smaragd': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#60ff90"/><stop offset="45%" stop-color="#0a9048"/><stop offset="100%" stop-color="#024020"/></radialGradient>
-      </defs><polygon points="22,4 36,12 36,32 22,40 8,32 8,12" fill="url(#${u}a)"/>
-      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.6"/>
-      <line x1="22" y1="4" x2="29" y2="12" stroke="#90ffb0" stroke-width="0.8" opacity="0.7"/>
-      <ellipse cx="16" cy="12" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-15 16 12)"/></svg>`,
+    'Smaragd': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#90ffaa"/><stop offset="30%" stop-color="#12a852"/><stop offset="65%" stop-color="#046830"/><stop offset="100%" stop-color="#012a10"/></radialGradient>
+      </defs><polygon points="22,4 36,12 36,32 22,40 8,32 8,12" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <polygon points="22,4 33,10 30,22 14,22 11,10" fill="#50ff80" opacity="0.25"/>
+      <polygon points="22,4 31,9 25,7" fill="#c0ffcc" opacity="0.5"/>
+      <ellipse cx="15" cy="12" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-15 15 12)"/></svg>`,
 
-    'Saphir': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#80c0ff"/><stop offset="45%" stop-color="#1848d0"/><stop offset="100%" stop-color="#041060"/></radialGradient>
-      </defs><polygon points="22,3 40,16 34,38 10,38 4,16" fill="url(#${u}a)"/>
-      <polygon points="22,3 31,9 25,7" fill="white" opacity="0.65"/>
-      <line x1="22" y1="3" x2="32" y2="13" stroke="#b0d8ff" stroke-width="0.8" opacity="0.7"/>
-      <ellipse cx="15" cy="14" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-20 15 14)"/></svg>`,
+    'Saphir': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#90d0ff"/><stop offset="30%" stop-color="#1848d8"/><stop offset="65%" stop-color="#0828a0"/><stop offset="100%" stop-color="#040e50"/></radialGradient>
+      </defs><polygon points="22,3 40,16 34,38 10,38 4,16" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <polygon points="22,3 34,12 30,26 14,26 10,12" fill="#4090ff" opacity="0.25"/>
+      <polygon points="22,3 32,10 26,7" fill="#c0e0ff" opacity="0.5"/>
+      <ellipse cx="14" cy="14" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-20 14 14)"/></svg>`,
 
-    'Amethyst': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="35%" cy="25%" r="75%"><stop offset="0%" stop-color="#e090ff"/><stop offset="45%" stop-color="#7020c0"/><stop offset="100%" stop-color="#2a0860"/></radialGradient>
-      </defs><polygon points="22,4 37,13 37,31 22,40 7,31 7,13" fill="url(#${u}a)"/>
-      <polygon points="22,4 30,8 24,6" fill="white" opacity="0.65"/>
-      <line x1="22" y1="4" x2="30" y2="12" stroke="#d090ff" stroke-width="0.8" opacity="0.7"/>
-      <ellipse cx="16" cy="12" rx="5" ry="3" fill="white" opacity="0.22" transform="rotate(-20 16 12)"/></svg>`,
+    'Amethyst': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#e8a0ff"/><stop offset="30%" stop-color="#7820c8"/><stop offset="65%" stop-color="#4a0890"/><stop offset="100%" stop-color="#1e0448"/></radialGradient>
+      </defs><polygon points="22,4 37,13 37,31 22,40 7,31 7,13" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <polygon points="22,4 33,10 30,22 14,22 11,10" fill="#c060ff" opacity="0.25"/>
+      <polygon points="22,4 31,9 25,7" fill="#ddb0ff" opacity="0.5"/>
+      <ellipse cx="15" cy="12" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-20 15 12)"/></svg>`,
 
-    'Geode': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c0a0ff" stop-opacity="0.8"/><stop offset="60%" stop-color="#4a2090"/><stop offset="100%" stop-color="#0a0420"/></radialGradient>
-      <radialGradient id="${u}b" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#e0c0ff"/><stop offset="100%" stop-color="#6030a0" stop-opacity="0"/></radialGradient>
-      </defs><ellipse cx="22" cy="22" rx="20" ry="20" fill="#0a0420" stroke="#4a2090" stroke-width="1"/>
-      <ellipse cx="22" cy="22" rx="15" ry="15" fill="#2a1060" stroke="#8060c0" stroke-width="0.7"/>
+    'Geode': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c8a8ff" stop-opacity="0.95"/><stop offset="50%" stop-color="#5030a0"/><stop offset="100%" stop-color="#0a0420"/></radialGradient>
+      <radialGradient id="${u}b" cx="35%" cy="25%" r="50%"><stop offset="0%" stop-color="rgba(220,190,255,0.6)"/><stop offset="100%" stop-color="rgba(220,190,255,0)"/></radialGradient>
+      </defs><ellipse cx="22" cy="22" rx="20" ry="20" fill="#060214" stroke="#3a1878" stroke-width="1.2" filter="url(#${u}f)"/>
+      <ellipse cx="22" cy="22" rx="15" ry="15" fill="#1e0c58" stroke="#7050c0" stroke-width="0.8"/>
       <ellipse cx="22" cy="22" rx="10" ry="10" fill="url(#${u}a)"/>
-      <polygon points="22,14 25,20 22,26 19,20" fill="url(#${u}b)" stroke="#e0c0ff" stroke-width="0.5"/>
-      <ellipse cx="17" cy="16" rx="4" ry="2.5" fill="white" opacity="0.2" transform="rotate(-30 17 16)"/></svg>`,
+      <polygon points="22,14 26,20 22,26 18,20" fill="url(#${u}b)" stroke="#e0c0ff" stroke-width="0.6"/>
+      <ellipse cx="16" cy="15" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-30 16 15)"/></svg>`,
 
-    'Goldnugget': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe080"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#7a5008"/></radialGradient>
-      </defs><ellipse cx="18" cy="20" rx="12" ry="10" fill="url(#${u}a)"/>
-      <ellipse cx="28" cy="26" rx="11" ry="9" fill="url(#${u}a)"/>
-      <ellipse cx="22" cy="15" rx="9" ry="8" fill="url(#${u}a)"/>
-      <ellipse cx="15" cy="17" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-25 15 17)"/></svg>`,
+    'Goldnugget': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#ffe898"/><stop offset="35%" stop-color="#d4a030"/><stop offset="70%" stop-color="#9a6808"/><stop offset="100%" stop-color="#4a2e00"/></radialGradient>
+      </defs><ellipse cx="18" cy="20" rx="12" ry="10" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <ellipse cx="28" cy="26" rx="11" ry="9" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <ellipse cx="22" cy="15" rx="9" ry="8" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <ellipse cx="14" cy="16" rx="4.5" ry="2.5" fill="white" opacity="0.45" transform="rotate(-25 14 16)"/>
+      <ellipse cx="24" cy="12" rx="3.5" ry="2" fill="white" opacity="0.35" transform="rotate(-15 24 12)"/></svg>`,
 
-    'Zaubertrank': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#80d0ff"/><stop offset="55%" stop-color="#1870c0"/><stop offset="100%" stop-color="#041848"/></radialGradient>
-      </defs><rect x="18" y="6" width="8" height="6" rx="2" fill="#6a4010"/>
-      <path d="M16 12 Q12 20 12 28 Q12 38 22 38 Q32 38 32 28 Q32 20 28 12Z" fill="url(#${u}a)"/>
-      <ellipse cx="20" cy="26" rx="4" ry="3" fill="white" opacity="0.55"/>
-      <circle cx="27" cy="30" r="2.5" fill="white" opacity="0.45"/>
-      <path d="M16 12 Q10 22 12 30" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/></svg>`,
+    'Zaubertrank': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#a0e0ff"/><stop offset="35%" stop-color="#1870c8"/><stop offset="70%" stop-color="#0838a0"/><stop offset="100%" stop-color="#020e3c"/></radialGradient>
+      </defs><rect x="18" y="5" width="8" height="7" rx="2" fill="#6a4212" stroke="#a06820" stroke-width="0.8"/>
+      <path d="M16 12 Q12 20 12 28 Q12 38 22 38 Q32 38 32 28 Q32 20 28 12Z" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <path d="M16 12 Q12 20 12 28 Q12 38 22 38" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
+      <ellipse cx="19" cy="25" rx="4.5" ry="3" fill="white" opacity="0.55"/>
+      <circle cx="27" cy="30" r="2.5" fill="white" opacity="0.4"/>
+      <ellipse cx="16" cy="18" rx="3" ry="1.5" fill="white" opacity="0.3" transform="rotate(-20 16 18)"/></svg>`,
 
-    'Zauberstab': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c080ff"/><stop offset="100%" stop-color="#4010a0"/></linearGradient>
-      <radialGradient id="${u}b" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#f0c040"/><stop offset="100%" stop-color="#c08000"/></radialGradient>
-      </defs><line x1="8" y1="36" x2="32" y2="12" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
-      <polygon points="32,12 29,5 33,10 40,8 35,14 39,19 33,15 32,22 30,14 24,18" fill="url(#${u}b)"/>
-      <line x1="29" y1="6" x2="39" y2="7" stroke="#f0c040" stroke-width="0.7" opacity="0.7"/>
-      <line x1="37" y1="16" x2="38" y2="22" stroke="#f0c040" stroke-width="0.7" opacity="0.7"/></svg>`,
+    'Zauberstab': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.6)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d090ff"/><stop offset="100%" stop-color="#3808a8"/></linearGradient>
+      <radialGradient id="${u}b" cx="40%" cy="30%" r="55%"><stop offset="0%" stop-color="#ffffd0"/><stop offset="45%" stop-color="#f0c040"/><stop offset="100%" stop-color="#a06000"/></radialGradient>
+      </defs><line x1="8" y1="36" x2="32" y2="12" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round" filter="url(#${u}f)"/>
+      <polygon points="32,12 29,5 33,10 40,7 35,13 39,19 33,15 32,23 30,14 24,18" fill="url(#${u}b)" filter="url(#${u}f)"/>
+      <line x1="29" y1="5" x2="40" y2="7" stroke="#ffe068" stroke-width="0.9" opacity="0.7"/>
+      <line x1="37" y1="15" x2="39" y2="21" stroke="#ffe068" stroke-width="0.9" opacity="0.7"/>
+      <ellipse cx="33" cy="10" rx="4" ry="2" fill="white" opacity="0.4" transform="rotate(-30 33 10)"/></svg>`,
 
-    'Hexenkessel': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="50%" cy="60%" r="55%"><stop offset="0%" stop-color="#3a1868"/><stop offset="100%" stop-color="#0a0418"/></radialGradient>
-      </defs><path d="M8 20 Q8 38 22 38 Q36 38 36 20 Q36 14 22 14 Q8 14 8 20Z" fill="url(#${u}a)" stroke="#8040c0" stroke-width="1.2"/>
-      <ellipse cx="22" cy="20" rx="14" ry="6" fill="#2a1050"/>
-      <path d="M14 20 Q17 17 22 21 Q26 17 30 20" fill="none" stroke="#60ff80" stroke-width="1.2" opacity="0.8"/>
-      <path d="M17 20 Q19 15 22 18" fill="none" stroke="#80ffaa" stroke-width="0.8" opacity="0.6"/>
-      <line x1="8" y1="18" x2="2" y2="12" stroke="#8040c0" stroke-width="1.8" stroke-linecap="round"/>
-      <line x1="36" y1="18" x2="42" y2="12" stroke="#8040c0" stroke-width="1.8" stroke-linecap="round"/>
-      <rect x="6" y="36" width="32" height="4" rx="2" fill="#2a0840"/></svg>`,
+    'Hexenkessel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#5a2890"/><stop offset="55%" stop-color="#1a0640"/><stop offset="100%" stop-color="#06020e"/></radialGradient>
+      </defs><path d="M8 20 Q8 38 22 38 Q36 38 36 20 Q36 14 22 14 Q8 14 8 20Z" fill="url(#${u}a)" stroke="#9050d0" stroke-width="1.5" filter="url(#${u}f)"/>
+      <ellipse cx="22" cy="20" rx="14" ry="6" fill="#200840"/>
+      <path d="M14 20 Q17 17 22 21 Q26 17 30 20" fill="none" stroke="#80ff90" stroke-width="1.5" opacity="0.85"/>
+      <path d="M17 20 Q19 14 22 18" fill="none" stroke="#c0ffb0" stroke-width="0.9" opacity="0.65"/>
+      <line x1="8" y1="18" x2="2" y2="12" stroke="#7030a8" stroke-width="2" stroke-linecap="round"/>
+      <line x1="36" y1="18" x2="42" y2="12" stroke="#7030a8" stroke-width="2" stroke-linecap="round"/>
+      <rect x="6" y="36" width="32" height="5" rx="2.5" fill="#180430"/>
+      <ellipse cx="14" cy="16" rx="4" ry="2" fill="white" opacity="0.2" transform="rotate(-15 14 16)"/></svg>`,
 
-    'Kristallkugel': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#9060e0"/><stop offset="55%" stop-color="#2a0868"/><stop offset="100%" stop-color="#080214"/></radialGradient>
-      <radialGradient id="${u}b" cx="30%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(220,200,255,0.5)"/><stop offset="100%" stop-color="rgba(220,200,255,0)"/></radialGradient>
-      </defs><circle cx="22" cy="20" r="18" fill="url(#${u}a)"/>
+    'Kristallkugel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="70%"><stop offset="0%" stop-color="#b080f0"/><stop offset="35%" stop-color="#3010a0"/><stop offset="70%" stop-color="#140460"/><stop offset="100%" stop-color="#04010e"/></radialGradient>
+      <radialGradient id="${u}b" cx="28%" cy="20%" r="45%"><stop offset="0%" stop-color="rgba(230,210,255,0.55)"/><stop offset="100%" stop-color="rgba(230,210,255,0)"/></radialGradient>
+      </defs><circle cx="22" cy="20" r="18" fill="url(#${u}a)" filter="url(#${u}f)"/>
       <circle cx="22" cy="20" r="18" fill="url(#${u}b)"/>
-      <ellipse cx="22" cy="20" rx="14" ry="6" fill="none" stroke="#c080ff" stroke-width="0.6" opacity="0.4"/>
-      <ellipse cx="22" cy="20" rx="6" ry="14" fill="none" stroke="#c080ff" stroke-width="0.6" opacity="0.4"/>
-      <rect x="14" y="37" width="16" height="5" rx="2" fill="#3a2060"/></svg>`,
+      <ellipse cx="22" cy="20" rx="14" ry="5.5" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>
+      <ellipse cx="22" cy="20" rx="5.5" ry="14" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>
+      <ellipse cx="15" cy="13" rx="6" ry="3" fill="white" opacity="0.45" transform="rotate(-25 15 13)"/>
+      <rect x="14" y="37" width="16" height="5" rx="2.5" fill="#28104a"/></svg>`,
 
-    'Zauberbuch': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#5a1880"/><stop offset="100%" stop-color="#1a0430"/></linearGradient>
-      </defs><rect x="8" y="6" width="28" height="34" rx="2" fill="url(#${u}a)" stroke="#8040c0" stroke-width="0.8"/>
-      <rect x="8" y="6" width="5" height="34" rx="2" fill="#2a0848"/>
-      <ellipse cx="14" cy="20" rx="2" ry="5" fill="rgba(200,160,255,0.18)"/>
-      <polygon points="26,14 28,20 26,26 24,20" fill="#f0c040" opacity="0.85" stroke="#f0c040" stroke-width="0.3"/>
-      <circle cx="26" cy="20" r="2" fill="#f0c040" opacity="0.5"/>
-      <ellipse cx="30" cy="26" rx="4" ry="2" fill="white" opacity="0.12" transform="rotate(-15 30 26)"/></svg>`,
+    'Zauberbuch': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6a1e90"/><stop offset="100%" stop-color="#1a0430"/></linearGradient>
+      </defs><rect x="8" y="6" width="28" height="34" rx="2.5" fill="url(#${u}a)" stroke="#9050c8" stroke-width="1" filter="url(#${u}f)"/>
+      <rect x="8" y="6" width="6" height="34" rx="2.5" fill="#1c0438" stroke="#6030a0" stroke-width="0.5"/>
+      <polygon points="25,13 27,20 25,27 23,20" fill="#f0c040" opacity="0.9" stroke="#ffd050" stroke-width="0.4"/>
+      <circle cx="25" cy="20" r="2.5" fill="#ffe050" opacity="0.6"/>
+      <line x1="15" y1="18" x2="34" y2="18" stroke="#d080ff" stroke-width="0.6" opacity="0.3"/>
+      <line x1="15" y1="24" x2="34" y2="24" stroke="#d080ff" stroke-width="0.6" opacity="0.3"/>
+      <ellipse cx="12" cy="10" rx="3" ry="1.5" fill="white" opacity="0.25" transform="rotate(-10 12 10)"/></svg>`,
 
-    'Amulett': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffe090"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#704000"/></radialGradient>
-      <radialGradient id="${u}b" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#e090ff"/><stop offset="100%" stop-color="#4010a0"/></radialGradient>
-      </defs><polygon points="22,4 25,14 35,14 27,20 30,30 22,24 14,30 17,20 9,14 19,14" fill="url(#${u}a)"/>
-      <circle cx="22" cy="19" r="6" fill="url(#${u}b)" stroke="#e090ff" stroke-width="0.5"/>
-      <ellipse cx="20" cy="17" rx="2.5" ry="1.5" fill="white" opacity="0.4"/></svg>`,
+    'Amulett': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(60,30,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="20%" r="68%"><stop offset="0%" stop-color="#ffe8a0"/><stop offset="35%" stop-color="#d4a030"/><stop offset="70%" stop-color="#9a6808"/><stop offset="100%" stop-color="#4a2c00"/></radialGradient>
+      <radialGradient id="${u}b" cx="35%" cy="25%" r="60%"><stop offset="0%" stop-color="#f0a8ff"/><stop offset="55%" stop-color="#6818c8"/><stop offset="100%" stop-color="#20085a"/></radialGradient>
+      </defs><polygon points="22,4 25,14 35,14 27,20 30,30 22,24 14,30 17,20 9,14 19,14" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <circle cx="22" cy="19" r="6.5" fill="url(#${u}b)" stroke="#d070ff" stroke-width="0.7"/>
+      <ellipse cx="19" cy="16" rx="3" ry="1.8" fill="white" opacity="0.45"/>
+      <ellipse cx="10" cy="11" rx="3.5" ry="2" fill="white" opacity="0.25" transform="rotate(-15 10 11)"/></svg>`,
 
-    'Drachenschuppe': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#60e090"/><stop offset="55%" stop-color="#0a7030"/><stop offset="100%" stop-color="#022010"/></radialGradient>
-      </defs><ellipse cx="22" cy="24" rx="16" ry="18" fill="url(#${u}a)" stroke="#20a050" stroke-width="0.8"/>
-      <path d="M22 6 L18 16 L22 14 L26 16 Z" fill="#10a040"/>
-      <ellipse cx="16" cy="18" rx="5" ry="3" fill="white" opacity="0.2" transform="rotate(-10 16 18)"/>
-      <line x1="22" y1="8" x2="22" y2="40" stroke="rgba(0,255,80,0.15)" stroke-width="1.5"/></svg>`,
+    'Drachenschuppe': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#80ffa0"/><stop offset="35%" stop-color="#0ea058"/><stop offset="70%" stop-color="#046030"/><stop offset="100%" stop-color="#011810"/></radialGradient>
+      </defs><ellipse cx="22" cy="24" rx="16" ry="18" fill="url(#${u}a)" stroke="#1aaa58" stroke-width="1" filter="url(#${u}f)"/>
+      <path d="M22 6 L18 16 L22 14 L26 16 Z" fill="#20c850" opacity="0.8"/>
+      <line x1="22" y1="8" x2="22" y2="40" stroke="rgba(0,255,80,0.15)" stroke-width="2"/>
+      <ellipse cx="15" cy="17" rx="5.5" ry="3" fill="white" opacity="0.35" transform="rotate(-10 15 17)"/></svg>`,
 
-    'Ritterschild': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a3090"/><stop offset="100%" stop-color="#0a0e3a"/></linearGradient>
-      </defs><path d="M6 6 L38 6 L38 26 Q38 40 22 42 Q6 40 6 26 Z" fill="url(#${u}a)" stroke="#c4a030" stroke-width="1.5"/>
-      <line x1="22" y1="6" x2="22" y2="42" stroke="#c4a030" stroke-width="1.2"/>
-      <line x1="6" y1="20" x2="38" y2="20" stroke="#c4a030" stroke-width="1.2"/>
-      <polygon points="22,14 25,18 22,22 19,18" fill="#c4a030" opacity="0.9"/>
-      <ellipse cx="14" cy="10" rx="5" ry="3" fill="white" opacity="0.12" transform="rotate(-20 14 10)"/></svg>`,
+    'Ritterschild': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0%" stop-color="#3a40b0"/><stop offset="50%" stop-color="#1a1e6a"/><stop offset="100%" stop-color="#060830"/></linearGradient>
+      </defs><path d="M6 6 L38 6 L38 26 Q38 40 22 42 Q6 40 6 26 Z" fill="url(#${u}a)" stroke="#d4b040" stroke-width="2" filter="url(#${u}f)"/>
+      <line x1="22" y1="6" x2="22" y2="42" stroke="#d4b040" stroke-width="1.5"/>
+      <line x1="6" y1="20" x2="38" y2="20" stroke="#d4b040" stroke-width="1.5"/>
+      <polygon points="22,14 26,18 22,22 18,18" fill="#d4b040"/>
+      <ellipse cx="13" cy="10" rx="5.5" ry="3" fill="white" opacity="0.25" transform="rotate(-20 13 10)"/></svg>`,
 
-    'Königskrone': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe080"/><stop offset="55%" stop-color="#c49020"/><stop offset="100%" stop-color="#7a5008"/></linearGradient>
-      </defs><path d="M4 30 L4 14 L14 22 L22 8 L30 22 L40 14 L40 30 Z" fill="url(#${u}a)" stroke="#f0d040" stroke-width="0.8"/>
-      <rect x="4" y="30" width="36" height="8" rx="2" fill="url(#${u}a)"/>
-      <circle cx="14" cy="26" r="3" fill="#e03040"/>
-      <circle cx="22" cy="26" r="3" fill="#2060ff"/>
-      <circle cx="30" cy="26" r="3" fill="#10a040"/>
-      <ellipse cx="10" cy="16" rx="4" ry="2" fill="white" opacity="0.25" transform="rotate(-20 10 16)"/></svg>`,
+    'Königskrone': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.65)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="45%" stop-color="#c89820"/><stop offset="100%" stop-color="#7a4e08"/></linearGradient>
+      </defs><path d="M4 30 L4 14 L14 22 L22 8 L30 22 L40 14 L40 30 Z" fill="url(#${u}a)" stroke="#ffd050" stroke-width="1" filter="url(#${u}f)"/>
+      <rect x="4" y="30" width="36" height="8" rx="2" fill="url(#${u}a)" stroke="#ffd050" stroke-width="1"/>
+      <circle cx="14" cy="26" r="3.5" fill="#e02838" stroke="#ff8090" stroke-width="0.5"/>
+      <circle cx="22" cy="26" r="3.5" fill="#2060ff" stroke="#80a8ff" stroke-width="0.5"/>
+      <circle cx="30" cy="26" r="3.5" fill="#10a840" stroke="#60ff90" stroke-width="0.5"/>
+      <ellipse cx="9" cy="16" rx="4" ry="2.2" fill="white" opacity="0.3" transform="rotate(-25 9 16)"/></svg>`,
 
-    'Pergament': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e0c890"/><stop offset="100%" stop-color="#a88040"/></linearGradient>
-      </defs><rect x="6" y="10" width="32" height="28" rx="1" fill="url(#${u}a)"/>
-      <ellipse cx="22" cy="10" rx="16" ry="4" fill="#b89050"/>
-      <ellipse cx="22" cy="38" rx="16" ry="4" fill="#b89050"/>
-      <line x1="10" y1="16" x2="34" y2="16" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
-      <line x1="10" y1="21" x2="34" y2="21" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
-      <line x1="10" y1="26" x2="34" y2="26" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/>
-      <line x1="10" y1="31" x2="28" y2="31" stroke="#8a6020" stroke-width="0.7" opacity="0.5"/></svg>`,
+    'Pergament': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(40,20,0,0.6)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e8d090"/><stop offset="50%" stop-color="#c8a848"/><stop offset="100%" stop-color="#9a7828"/></linearGradient>
+      </defs><rect x="6" y="10" width="32" height="28" rx="1.5" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <ellipse cx="22" cy="10" rx="16" ry="4.5" fill="#b89050"/>
+      <ellipse cx="22" cy="38" rx="16" ry="4.5" fill="#b89050"/>
+      <line x1="11" y1="17" x2="33" y2="17" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
+      <line x1="11" y1="22" x2="33" y2="22" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
+      <line x1="11" y1="27" x2="33" y2="27" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
+      <line x1="11" y1="32" x2="26" y2="32" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
+      <ellipse cx="10" cy="13" rx="4" ry="2" fill="white" opacity="0.25" transform="rotate(-15 10 13)"/></svg>`,
 
-    'Schlüssel': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#8a6010"/></linearGradient>
-      </defs><circle cx="14" cy="14" r="9" fill="none" stroke="url(#${u}a)" stroke-width="3.5"/>
-      <circle cx="14" cy="14" r="5" fill="none" stroke="url(#${u}a)" stroke-width="1.8"/>
-      <line x1="21" y1="20" x2="38" y2="36" stroke="url(#${u}a)" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="30" y1="30" x2="34" y2="26" stroke="url(#${u}a)" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="34" y1="34" x2="38" y2="30" stroke="url(#${u}a)" stroke-width="2.5" stroke-linecap="round"/>
-      <ellipse cx="10" cy="10" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-30 10 10)"/></svg>`,
+    'Schlüssel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(40,20,0,0.7)"/></filter>
+      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="50%" stop-color="#c89820"/><stop offset="100%" stop-color="#7a4e08"/></linearGradient>
+      </defs><circle cx="14" cy="14" r="9.5" fill="none" stroke="url(#${u}a)" stroke-width="4" filter="url(#${u}f)"/>
+      <circle cx="14" cy="14" r="5" fill="none" stroke="url(#${u}a)" stroke-width="2"/>
+      <line x1="21" y1="20" x2="38" y2="36" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round" filter="url(#${u}f)"/>
+      <line x1="30" y1="30" x2="34" y2="26" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="34" y1="34" x2="38" y2="30" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="10" cy="10" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-30 10 10)"/></svg>`,
 
-    'Drachenzahn': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0e8d0"/><stop offset="55%" stop-color="#c8b890"/><stop offset="100%" stop-color="#8a7850"/></linearGradient>
-      </defs><path d="M22 4 Q28 10 30 22 Q32 34 22 40 Q12 34 14 22 Q16 10 22 4Z" fill="url(#${u}a)" stroke="#a08860" stroke-width="0.8"/>
-      <line x1="22" y1="6" x2="22" y2="38" stroke="rgba(255,255,220,0.3)" stroke-width="1"/>
-      <ellipse cx="17" cy="14" rx="4" ry="2.5" fill="white" opacity="0.35" transform="rotate(-20 17 14)"/></svg>`,
+    'Drachenzahn': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(40,30,0,0.65)"/></filter>
+      <linearGradient id="${u}a" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#f4ecd8"/><stop offset="40%" stop-color="#d0b880"/><stop offset="75%" stop-color="#9a7848"/><stop offset="100%" stop-color="#5a4220"/></linearGradient>
+      </defs><path d="M22 4 Q28 10 30 22 Q32 34 22 40 Q12 34 14 22 Q16 10 22 4Z" fill="url(#${u}a)" stroke="#a88850" stroke-width="1" filter="url(#${u}f)"/>
+      <line x1="22" y1="6" x2="22" y2="38" stroke="rgba(255,255,220,0.3)" stroke-width="1.5"/>
+      <ellipse cx="16" cy="14" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-20 16 14)"/></svg>`,
 
-    'Goldmünze': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#fff0a0"/><stop offset="55%" stop-color="#d4a030"/><stop offset="100%" stop-color="#7a5008"/></radialGradient>
-      </defs><circle cx="22" cy="22" r="18" fill="url(#${u}a)" stroke="#c49030" stroke-width="1"/>
-      <circle cx="22" cy="22" r="13" fill="none" stroke="#c49030" stroke-width="0.6" opacity="0.5"/>
-      <text x="22" y="27" text-anchor="middle" font-size="14" fill="#8a5800" opacity="0.85">✦</text>
-      <ellipse cx="16" cy="15" rx="5" ry="3" fill="white" opacity="0.3" transform="rotate(-30 16 15)"/></svg>`,
+    'Goldmünze': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#fffab0"/><stop offset="30%" stop-color="#e4b030"/><stop offset="65%" stop-color="#a07010"/><stop offset="100%" stop-color="#503808"/></radialGradient>
+      </defs><circle cx="22" cy="22" r="18" fill="url(#${u}a)" stroke="#c89030" stroke-width="1.5" filter="url(#${u}f)"/>
+      <circle cx="22" cy="22" r="13" fill="none" stroke="#c89030" stroke-width="0.8" opacity="0.5"/>
+      <text x="22" y="27" text-anchor="middle" font-size="13" fill="#8a5800" opacity="0.9">✦</text>
+      <ellipse cx="14" cy="14" rx="6" ry="3.5" fill="white" opacity="0.4" transform="rotate(-30 14 14)"/></svg>`,
 
-    'Feenstaub': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.9)"/><stop offset="40%" stop-color="rgba(240,192,64,0.4)"/><stop offset="100%" stop-color="rgba(240,192,64,0)"/></radialGradient>
-      </defs><circle cx="22" cy="22" r="12" fill="url(#${u}a)"/>
-      <text x="10" y="15" font-size="8" fill="#f0c040">✦</text>
-      <text x="30" y="13" font-size="6" fill="#c080ff">✧</text>
-      <text x="35" y="27" font-size="7" fill="#80c0ff">✦</text>
-      <text x="27" y="37" font-size="7" fill="#f0c040">✧</text>
-      <text x="10" y="36" font-size="6" fill="#c080ff">✦</text>
-      <text x="4" y="24" font-size="7" fill="#80c0ff">✧</text>
-      <text x="18" y="10" font-size="5" fill="#f0e4c0">✦</text>
-      <circle cx="22" cy="22" r="3" fill="white" opacity="0.9"/></svg>`,
+    'Feenstaub': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="rgba(200,140,255,0.5)"/></filter>
+      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.95)"/><stop offset="40%" stop-color="rgba(245,200,80,0.5)"/><stop offset="100%" stop-color="rgba(245,200,80,0)"/></radialGradient>
+      </defs><circle cx="22" cy="22" r="13" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <text x="10" y="15" font-size="9" fill="#f0c040">✦</text>
+      <text x="30" y="13" font-size="7" fill="#c080ff">✧</text>
+      <text x="35" y="27" font-size="8" fill="#80c0ff">✦</text>
+      <text x="27" y="38" font-size="8" fill="#f0c040">✧</text>
+      <text x="10" y="36" font-size="7" fill="#c080ff">✦</text>
+      <text x="4" y="25" font-size="8" fill="#80c0ff">✧</text>
+      <text x="18" y="9" font-size="6" fill="#f0e4c0">✦</text>
+      <circle cx="22" cy="22" r="3.5" fill="white" opacity="0.95" filter="url(#${u}f)"/></svg>`,
 
-    'Phönixfeder': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe060"/><stop offset="55%" stop-color="#f06010"/><stop offset="100%" stop-color="#800010"/></linearGradient>
-      </defs><path d="M22 4 Q30 10 34 18 Q38 26 32 32 Q28 36 22 38 Q18 36 16 32 Q12 26 14 18 Q16 10 22 4Z" fill="url(#${u}a)"/>
-      <line x1="22" y1="6" x2="22" y2="36" stroke="#ffe080" stroke-width="1" opacity="0.5"/>
-      <ellipse cx="17" cy="12" rx="4" ry="2.5" fill="white" opacity="0.35" transform="rotate(-30 17 12)"/></svg>`,
+    'Phönixfeder': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(80,0,0,0.65)"/></filter>
+      <linearGradient id="${u}a" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#ffe878"/><stop offset="35%" stop-color="#f06818"/><stop offset="70%" stop-color="#c02010"/><stop offset="100%" stop-color="#600008"/></linearGradient>
+      </defs><path d="M22 4 Q30 10 34 18 Q38 26 32 32 Q28 36 22 38 Q18 36 16 32 Q12 26 14 18 Q16 10 22 4Z" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <line x1="22" y1="6" x2="22" y2="36" stroke="#ffe890" stroke-width="1.2" opacity="0.5"/>
+      <line x1="22" y1="12" x2="14" y2="22" stroke="#ffe890" stroke-width="0.8" opacity="0.3"/>
+      <line x1="22" y1="16" x2="30" y2="24" stroke="#ffe890" stroke-width="0.8" opacity="0.3"/>
+      <ellipse cx="16" cy="11" rx="5" ry="2.5" fill="white" opacity="0.42" transform="rotate(-30 16 11)"/></svg>`,
 
-    'Mondstein': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="28%" r="65%"><stop offset="0%" stop-color="#f0f0ff"/><stop offset="55%" stop-color="#b0b8d8"/><stop offset="100%" stop-color="#6068a0"/></radialGradient>
-      </defs><ellipse cx="22" cy="22" rx="17" ry="20" fill="url(#${u}a)" stroke="#9090c0" stroke-width="0.8"/>
-      <ellipse cx="16" cy="16" rx="6" ry="3" fill="white" opacity="0.3"/>
-      <ellipse cx="20" cy="28" rx="5" ry="2.5" fill="white" opacity="0.2"/>
-      <ellipse cx="27" cy="20" rx="4" ry="2" fill="rgba(80,80,140,0.3)"/></svg>`,
+    'Mondstein': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(20,20,60,0.65)"/></filter>
+      <radialGradient id="${u}a" cx="32%" cy="22%" r="70%"><stop offset="0%" stop-color="#f4f4ff"/><stop offset="30%" stop-color="#c0c8e8"/><stop offset="65%" stop-color="#8088b8"/><stop offset="100%" stop-color="#404870"/></radialGradient>
+      </defs><ellipse cx="22" cy="22" rx="17" ry="20" fill="url(#${u}a)" stroke="#a0a8c8" stroke-width="1" filter="url(#${u}f)"/>
+      <ellipse cx="17" cy="16" rx="6" ry="3" fill="white" opacity="0.4"/>
+      <ellipse cx="21" cy="28" rx="5" ry="2.5" fill="white" opacity="0.25"/>
+      <ellipse cx="28" cy="20" rx="4" ry="2" fill="rgba(90,90,160,0.35)"/>
+      <ellipse cx="13" cy="11" rx="4.5" ry="2.5" fill="white" opacity="0.45" transform="rotate(-15 13 11)"/></svg>`,
 
-    'Drachenkristall': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="#ff8090"/><stop offset="55%" stop-color="#c01020"/><stop offset="100%" stop-color="#400008"/></radialGradient>
-      </defs><polygon points="22,2 26,8 34,6 30,14 38,18 30,20 34,28 26,26 22,34 18,26 10,28 14,20 6,18 14,14 10,6 18,8" fill="url(#${u}a)"/>
-      <circle cx="22" cy="18" r="5" fill="#ff2040" opacity="0.7"/>
-      <ellipse cx="16" cy="10" rx="4" ry="2.5" fill="white" opacity="0.3" transform="rotate(-10 16 10)"/></svg>`,
+    'Drachenkristall': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,0,0,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="22%" r="70%"><stop offset="0%" stop-color="#ff90a0"/><stop offset="30%" stop-color="#d01030"/><stop offset="65%" stop-color="#880010"/><stop offset="100%" stop-color="#300006"/></radialGradient>
+      </defs><polygon points="22,2 26,8 34,6 30,14 38,18 30,20 34,28 26,26 22,34 18,26 10,28 14,20 6,18 14,14 10,6 18,8" fill="url(#${u}a)" filter="url(#${u}f)"/>
+      <circle cx="22" cy="18" r="5.5" fill="#ff2040" opacity="0.65"/>
+      <ellipse cx="15" cy="10" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-10 15 10)"/></svg>`,
 
-    'Mystische Essenz': () =>
-      `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <radialGradient id="${u}a" cx="38%" cy="30%" r="65%"><stop offset="0%" stop-color="#80b0ff"/><stop offset="55%" stop-color="#1828b0"/><stop offset="100%" stop-color="#040828"/></radialGradient>
-      <radialGradient id="${u}b" cx="35%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(180,210,255,0.55)"/><stop offset="100%" stop-color="rgba(180,210,255,0)"/></radialGradient>
-      </defs><ellipse cx="22" cy="26" rx="12" ry="14" fill="url(#${u}a)" stroke="#4060d0" stroke-width="0.8"/>
-      <ellipse cx="22" cy="26" rx="12" ry="14" fill="url(#${u}b)"/>
-      <path d="M18 12 Q18 8 22 6 Q26 8 26 12" fill="none" stroke="#4060d0" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="22" y1="6" x2="22" y2="12" stroke="#4060d0" stroke-width="1.2"/></svg>`,
+    'Mystische Essenz': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
+      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(20,10,60,0.7)"/></filter>
+      <radialGradient id="${u}a" cx="30%" cy="22%" r="68%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="30%" stop-color="#2038c0"/><stop offset="65%" stop-color="#0a16a0"/><stop offset="100%" stop-color="#020618"/></radialGradient>
+      <radialGradient id="${u}b" cx="30%" cy="20%" r="45%"><stop offset="0%" stop-color="rgba(180,210,255,0.6)"/><stop offset="100%" stop-color="rgba(180,210,255,0)"/></radialGradient>
+      </defs><ellipse cx="22" cy="27" rx="12" ry="14" fill="url(#${u}a)" stroke="#3858d8" stroke-width="1" filter="url(#${u}f)"/>
+      <ellipse cx="22" cy="27" rx="12" ry="14" fill="url(#${u}b)"/>
+      <path d="M18 13 Q18 9 22 7 Q26 9 26 13" fill="none" stroke="#4870e0" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="22" y1="7" x2="22" y2="13" stroke="#4870e0" stroke-width="1.4"/>
+      <ellipse cx="15" cy="20" rx="5" ry="2.5" fill="white" opacity="0.38" transform="rotate(-15 15 20)"/></svg>`,
   };
   const fn = icons[name];
   if (!fn) {
@@ -2545,8 +2557,56 @@ function _ruckRatingLabel(type, rating) {
   }[rating] || rating;
 }
 
+// === TRUHE & QUESTLOG UPDATE – PUNKT 5: Kerzen-Setting ===
+function _injectQuestlogCandles() {
+  const view = document.getElementById('rucksack-view-questlog');
+  if (!view) return;
+  const old = view.querySelector('.ruck-candle-row');
+  if (old) old.remove();
+  const row = document.createElement('div');
+  row.className = 'ruck-candle-row';
+  const delays = ['0s', '0.5s', '1.2s', '0.8s'];
+  const count  = 3 + Math.floor(Math.random() * 2);
+  for (let i = 0; i < count; i++) {
+    const d   = delays[i] || '0s';
+    const wH  = 28 + Math.floor(Math.random() * 10);
+    const svgH = 16 + wH;
+    const cid  = 'cv' + (++_ruckIconSeq);
+    const wrap = document.createElement('div');
+    wrap.className = 'ruck-candle-wrap';
+    wrap.innerHTML = `
+      <div class="ruck-candle-light candle-glow" style="animation-delay:${d}"></div>
+      <svg width="18" height="${svgH}" viewBox="0 0 18 ${svgH}" aria-hidden="true">
+        <defs>
+          <linearGradient id="${cid}w" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#dac8a0"/>
+            <stop offset="45%"  stop-color="#f4ead0"/>
+            <stop offset="100%" stop-color="#b89860"/>
+          </linearGradient>
+          <radialGradient id="${cid}f" cx="50%" cy="80%" r="65%">
+            <stop offset="0%"   stop-color="#ffffd0"/>
+            <stop offset="38%"  stop-color="#f0a820"/>
+            <stop offset="100%" stop-color="#e04808" stop-opacity="0.3"/>
+          </radialGradient>
+        </defs>
+        <rect x="4" y="16" width="10" height="${wH}" rx="1.5" fill="url(#${cid}w)" stroke="#b89860" stroke-width="0.6"/>
+        <path d="M4 22 Q2 26 4 29" fill="#dac8a0" opacity="0.6"/>
+        <line x1="9" y1="16" x2="9" y2="12" stroke="#2a1808" stroke-width="1.5" stroke-linecap="round"/>
+        <g class="candle-flame" style="animation-delay:${d}">
+          <ellipse cx="9" cy="9"  rx="3.5" ry="5.5" fill="url(#${cid}f)" opacity="0.92"/>
+          <ellipse cx="9" cy="10" rx="1.8" ry="3"   fill="#ffe8a0"        opacity="0.85"/>
+        </g>
+      </svg>`;
+    row.appendChild(wrap);
+  }
+  const scrollArea = document.getElementById('ruck-log-scroll');
+  if (scrollArea) view.insertBefore(row, scrollArea);
+  else view.appendChild(row);
+}
+
 // === FIX: PUNKT 2 – Questlog Pergament mit Tag-Gruppierung ===
 function _ruckPopQuestlog() {
+  _injectQuestlogCandles();
   const scrollArea = $('ruck-log-scroll');
   const logs       = loadLogs();
   const ratings    = loadDayRatings();
@@ -2671,17 +2731,15 @@ function _ruckSpawnParticles() {
   setTimeout(() => { wrap.innerHTML = ''; }, 2200);
 }
 
-// === FIX: PUNKT 3 – Schatztruhe mit Deckel-Animation, Glitzer, gestaffelten Schätzen ===
+// === TRUHE & QUESTLOG UPDATE – PUNKT 1+2+3: kein Scrollen, Münzregen, voller Boden ===
 function _ruckPopTreasure() {
-  // Cancel any pending timers from previous opening
   _ruckChestTimers.forEach(clearTimeout);
   _ruckChestTimers = [];
 
-  const container       = $('ruck-treasure-entries');
-  const particleWrap    = $('ruck-chest-particles');
-  const scrollArea      = particleWrap.parentNode;
+  const container    = $('ruck-treasure-entries');
+  const particleWrap = $('ruck-chest-particles');
+  const scrollArea   = particleWrap.parentNode;
 
-  // Remove old hero wrap, create fresh one for re-animation
   const oldHero = document.getElementById('ruck-chest-hero-wrap');
   if (oldHero) oldHero.remove();
   const heroWrap = document.createElement('div');
@@ -2698,26 +2756,18 @@ function _ruckPopTreasure() {
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <!-- Körper -->
         <rect x="8" y="54" width="164" height="40" rx="4" fill="#3a1a08" stroke="#e8b840" stroke-width="2.5" filter="url(#chest-glow)"/>
-        <!-- Unteres Band -->
         <rect x="8" y="86" width="164" height="8" rx="3" fill="#e8b840"/>
-        <!-- Holzmaserung -->
         <rect x="46" y="57" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.45"/>
         <rect x="126" y="57" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.45"/>
-        <!-- 4 Eckbeschläge -->
         <rect x="8"   y="54" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
         <rect x="154" y="54" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
         <rect x="8"   y="76" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
         <rect x="154" y="76" width="18" height="18" rx="2" fill="#e8b840" opacity="0.78"/>
-        <!-- Schlossplatte (Mitte, größer) -->
         <rect x="72" y="58" width="36" height="26" rx="5" fill="#e8b840" stroke="#ffe090" stroke-width="2"/>
-        <!-- Schloss-Bügel -->
         <path d="M80 58 Q80 46 90 46 Q100 46 100 58" fill="none" stroke="#c49030" stroke-width="4.5"/>
-        <!-- Schlüsselloch -->
         <circle cx="90" cy="68" r="4.5" fill="#2a1008"/>
         <rect x="88" y="70" width="4" height="7" rx="1.5" fill="#2a1008"/>
-        <!-- Deckel (animiert) -->
         <g class="ruck-chest-lid-g">
           <path d="M8 54 L8 28 Q8 16 90 12 Q172 16 172 28 L172 54 Z" fill="#4a2010" stroke="#e8b840" stroke-width="2.5"/>
           <rect x="46" y="18" width="8" height="36" rx="1.5" fill="#e8b840" opacity="0.38"/>
@@ -2731,13 +2781,7 @@ function _ruckPopTreasure() {
     </div>
     <div class="ruck-chest-glitter-wrap" id="ruck-chest-glitter-wrap"></div>`;
 
-  // 1. Trigger lid animation after first paint
-  requestAnimationFrame(() => {
-    const lid = heroWrap.querySelector('.ruck-chest-lid-g');
-    if (lid) { void lid.offsetWidth; lid.classList.add('ruck-lid-open'); }
-  });
-
-  // Collect item data
+  // Collect items
   const stored = rucksackLoadTreasures();
   const today  = todayStr();
   const extra  = [];
@@ -2751,19 +2795,54 @@ function _ruckPopTreasure() {
 
   if (all.length === 0) {
     container.innerHTML = '<div class="ruck-chest-empty">Die Truhe wartet auf deine Heldentaten...</div>';
+    requestAnimationFrame(() => {
+      const lid = heroWrap.querySelector('.ruck-chest-lid-g');
+      if (lid) { void lid.offsetWidth; lid.classList.add('ruck-lid-open'); }
+    });
     return;
   }
 
-  container.innerHTML = ''; // Clear while lid animation plays
+  // Build floor structure immediately (coin rain needs container)
+  container.innerHTML = `<div class="ruck-chest-floor">
+    <div class="ruck-chest-bg-layer" id="ruck-bg-layer"></div>
+    <div class="ruck-scattered-wrap" id="ruck-scattered-wrap"></div>
+  </div>`;
 
-  // 2. Goldglitzer-Partikel nach Deckel-Animation (0.6s) + 0.3s Delay = 0.9s
+  // 1. Lid animation
+  requestAnimationFrame(() => {
+    const lid = heroWrap.querySelector('.ruck-chest-lid-g');
+    if (lid) { void lid.offsetWidth; lid.classList.add('ruck-lid-open'); }
+  });
+
+  // 2. Münzregen (0.3s nach Öffnen)
+  _ruckChestTimers.push(setTimeout(() => {
+    const floor = container.querySelector('.ruck-chest-floor');
+    if (!floor) return;
+    const coinCount = 20 + Math.floor(Math.random() * 6);
+    for (let i = 0; i < coinCount; i++) {
+      const coin = document.createElement('div');
+      coin.className = 'ruck-rain-coin';
+      const sz      = 14 + Math.floor(Math.random() * 14);
+      const leftPct = (5 + Math.random() * 86).toFixed(1);
+      const fallDist = (100 + Math.random() * 80).toFixed(0);
+      const rotation = (180 + Math.random() * 540).toFixed(0);
+      const dur   = (0.7 + Math.random() * 0.55).toFixed(2);
+      const delay = (Math.random() * 0.45).toFixed(2);
+      coin.style.cssText = `left:${leftPct}%;--fall-distance:${fallDist}px;--rotation:${rotation}deg;--rain-dur:${dur}s;--rain-delay:${delay}s`;
+      const cid = 'rc' + (++_ruckIconSeq);
+      coin.innerHTML = `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><defs><radialGradient id="${cid}" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffab0"/><stop offset="55%" stop-color="#d4a020"/><stop offset="100%" stop-color="#7a4e08"/></radialGradient></defs><circle cx="10" cy="10" r="9" fill="url(#${cid})" stroke="#c49020" stroke-width="1"/><ellipse cx="7" cy="7" rx="3" ry="1.8" fill="white" opacity="0.4" transform="rotate(-30 7 7)"/></svg>`;
+      floor.appendChild(coin);
+    }
+  }, 300));
+
+  // 3. Glitzer (0.9s)
   _ruckChestTimers.push(setTimeout(() => {
     const gw = document.getElementById('ruck-chest-glitter-wrap');
     if (!gw) return;
     const glyphs = ['✦', '✧', '★', '✦', '✧', '⭐', '✦', '✧'];
     glyphs.forEach((g, i) => {
       const el = document.createElement('span');
-      el.className = 'ruck-chest-glitter-item';
+      el.className  = 'ruck-chest-glitter-item';
       el.textContent = g;
       el.style.left = `${8 + Math.random() * 84}%`;
       el.style.top  = `${-(15 + Math.random() * 10)}px`;
@@ -2772,54 +2851,85 @@ function _ruckPopTreasure() {
     });
   }, 900));
 
-  // 3. BG-Münzen/Edelsteine einblenden (1.0s) + Reward-Icons mit 0.4s Versatz (ab 1.4s)
+  // 4. BG-Schätze (1.0s): 13 Münzen, 4 Stapel, 9 Edelsteine, 3 Goldbarren
   _ruckChestTimers.push(setTimeout(() => {
-    const PER_ROW = 3;
-    const rows    = Math.ceil(all.length / PER_ROW);
-    const minH    = rows * 120 + 70;
-    const COL_ANCHORS = [10, 40, 70];
-
-    // Statische Münzen im Hintergrund
+    const bgL = document.getElementById('ruck-bg-layer');
+    if (!bgL) return;
     let bgHtml = '';
-    const coinData = [
-      {l:6,t:18,s:22},{l:18,t:52,s:18},{l:28,t:28,s:25},{l:42,t:62,s:20},
-      {l:55,t:15,s:24},{l:65,t:48,s:19},{l:78,t:32,s:22},{l:88,t:68,s:18},
-    ];
-    coinData.forEach((c, i) => {
-      const jl = Math.max(2, Math.min(88, c.l + (Math.random()-0.5)*8));
-      const jt = Math.max(4, c.t + (Math.random()-0.5)*10);
-      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl.toFixed(1)}%;top:${jt.toFixed(0)}px;width:${c.s}px;height:${c.s}px" viewBox="0 0 20 20" aria-hidden="true"><defs><radialGradient id="bcg${i}" cx="38%" cy="32%" r="62%"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs><circle cx="10" cy="10" r="9" fill="url(#bcg${i})" stroke="#b08010" stroke-width="1"/></svg>`;
-    });
-    // Statische Edelsteine im Hintergrund
-    const gemData = [
-      {l:10,t:38,s:15,c:'#e83030',sc:'#ff9090'},{l:22,t:72,s:13,c:'#2060e8',sc:'#80b0ff'},
-      {l:38,t:44,s:17,c:'#20b840',sc:'#80ff90'},{l:52,t:76,s:14,c:'#a030d8',sc:'#d888ff'},
-      {l:70,t:22,s:16,c:'#e85030',sc:'#ff9868'},{l:84,t:55,s:13,c:'#1890e0',sc:'#70d8ff'},
-    ];
-    gemData.forEach((g, i) => {
-      const jl = Math.max(2, Math.min(88, g.l + (Math.random()-0.5)*8));
-      const jt = Math.max(4, g.t + (Math.random()-0.5)*10);
-      bgHtml += `<svg class="ruck-chest-bg-gem" style="left:${jl.toFixed(1)}%;top:${jt.toFixed(0)}px;width:${g.s}px;height:${g.s}px" viewBox="0 0 20 20" aria-hidden="true"><polygon points="10,1 18,7 15,19 5,19 2,7" fill="${g.c}" stroke="${g.sc}" stroke-width="1.2" opacity="0.9"/></svg>`;
+
+    // 13 Münzen
+    const coinPts = [[4,8],[12,55],[20,22],[30,72],[38,38],[48,10],[56,62],[64,30],[72,78],[80,18],[88,50],[25,85],[70,88]];
+    coinPts.forEach(([l, t], i) => {
+      const jl = Math.max(2, Math.min(90, l + (Math.random()-0.5)*8)).toFixed(1);
+      const jt = Math.max(2, Math.min(88, t + (Math.random()-0.5)*8)).toFixed(1);
+      const sz = 16 + Math.floor(Math.random() * 10);
+      const cid = 'bc' + i;
+      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:${sz}px;height:${sz}px" viewBox="0 0 20 20"><defs><radialGradient id="${cid}" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffab0"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs><circle cx="10" cy="10" r="9" fill="url(#${cid})" stroke="#b08010" stroke-width="1"/></svg>`;
     });
 
+    // 4 Münzstapel
+    [[15,40],[45,25],[68,55],[85,20]].forEach(([l, t], i) => {
+      const jl = (l + (Math.random()-0.5)*6).toFixed(1);
+      const jt = Math.max(2, t + (Math.random()-0.5)*6).toFixed(1);
+      const sid = 'bs' + i;
+      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:22px;height:26px" viewBox="0 0 22 26"><defs><radialGradient id="${sid}" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffab0"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs>
+        <ellipse cx="11" cy="22" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
+        <ellipse cx="11" cy="18" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
+        <ellipse cx="11" cy="14" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
+        <ellipse cx="11" cy="10" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
+        <ellipse cx="11" cy="7"  rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/></svg>`;
+    });
+
+    // 9 Edelsteine
+    [{l:8,t:35,c:'#e03030',sc:'#ff9090'},{l:22,t:68,c:'#2060e0',sc:'#80b0ff'},
+     {l:36,t:48,c:'#20b040',sc:'#80ff90'},{l:50,t:80,c:'#a030d0',sc:'#d888ff'},
+     {l:62,t:25,c:'#e84030',sc:'#ff9868'},{l:76,t:58,c:'#1890e0',sc:'#70d8ff'},
+     {l:40,t:15,c:'#d0a030',sc:'#ffe088'},{l:88,t:75,c:'#e03060',sc:'#ff90b0'},
+     {l:14,t:88,c:'#30c090',sc:'#80ffc0'}].forEach((g, i) => {
+      const jl = Math.max(2, Math.min(90, g.l + (Math.random()-0.5)*8)).toFixed(1);
+      const jt = Math.max(2, Math.min(88, g.t + (Math.random()-0.5)*8)).toFixed(1);
+      const sz = 12 + Math.floor(Math.random() * 8);
+      bgHtml += `<svg class="ruck-chest-bg-gem" style="left:${jl}%;top:${jt}%;width:${sz}px;height:${sz}px" viewBox="0 0 20 20"><polygon points="10,1 18,7 15,19 5,19 2,7" fill="${g.c}" stroke="${g.sc}" stroke-width="1.2" opacity="0.9"/></svg>`;
+    });
+
+    // 3 Goldbarren
+    [[30,60],[58,40],[78,85]].forEach(([l, t], i) => {
+      const jl = (l + (Math.random()-0.5)*6).toFixed(1);
+      const jt = Math.max(2, t + (Math.random()-0.5)*6).toFixed(1);
+      const bid = 'gb' + i;
+      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:32px;height:16px" viewBox="0 0 32 16"><defs><linearGradient id="${bid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="100%" stop-color="#9a6808"/></linearGradient></defs>
+        <rect x="2" y="2" width="28" height="12" rx="2" fill="url(#${bid})" stroke="#c49020" stroke-width="1.2"/>
+        <line x1="8" y1="2" x2="8" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
+        <line x1="16" y1="2" x2="16" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
+        <line x1="24" y1="2" x2="24" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
+        <ellipse cx="8" cy="6" rx="4" ry="1.8" fill="white" opacity="0.2"/></svg>`;
+    });
+
+    bgL.innerHTML = bgHtml;
+    requestAnimationFrame(() => bgL.classList.add('bg-fade-in'));
+  }, 1000));
+
+  // 5. Belohnungs-Icons (1.4s) – prozentuale Positionen, kein Scrollen
+  _ruckChestTimers.push(setTimeout(() => {
+    const sw = document.getElementById('ruck-scattered-wrap');
+    if (!sw) return;
+    const PER_ROW  = 3;
+    const COL_PCT  = [8, 40, 72];
+    const ROW_PCT  = [8, 42, 72];
     let scatterHtml = '';
     all.forEach((t, i) => {
       const col     = i % PER_ROW;
       const row     = Math.floor(i / PER_ROW);
-      const leftPct = Math.max(-12, Math.min(84, COL_ANCHORS[col] + (Math.random() - 0.5) * 44));
-      const topPx   = Math.max(0, row * 118 + (Math.random() - 0.5) * 55);
-      const rot     = -25 + Math.random() * 50;
+      const leftPct = Math.max(0, Math.min(80, COL_PCT[col] + (Math.random()-0.5) * 20));
+      const baseTop = row < ROW_PCT.length ? ROW_PCT[row] : ROW_PCT[2] + (row - 2) * 28;
+      const topPct  = Math.max(0, Math.min(84, baseTop + (Math.random()-0.5) * 10));
+      const rot     = -22 + Math.random() * 44;
       const zIdx    = 2 + Math.floor(Math.random() * 7);
-      const delay   = (i * 0.08 + 0.4).toFixed(2);
-      scatterHtml += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPx.toFixed(0)}px;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
+      const delay   = (i * 0.08 + 0.1).toFixed(2);
+      scatterHtml += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPct.toFixed(1)}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
-
-    container.innerHTML = `<div class="ruck-chest-floor"><div class="ruck-chest-bg-layer" id="ruck-bg-layer">${bgHtml}</div><div class="ruck-scattered-wrap" style="min-height:${minH}px">${scatterHtml}</div></div>`;
-    requestAnimationFrame(() => {
-      const bgL = document.getElementById('ruck-bg-layer');
-      if (bgL) bgL.classList.add('bg-fade-in');
-    });
-  }, 1000));
+    sw.innerHTML = scatterHtml;
+  }, 1400));
 }
 
 // ── Drag to close ─────────────────────────────────────────────────
