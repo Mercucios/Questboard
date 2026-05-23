@@ -715,8 +715,7 @@ function renderBoard() {
   renderSidequests();
 }
 
-// === MANA & QUEST UPDATE === P7/P8: Tag-Kategorien mit Badge-Stil
-// === MANA & REMINDER UPDATE === PUNKT 4: Emotes ergänzt
+// === FIX: TAGS & FARBEN === PUNKT 2: Alle Kategorien als Tag-Badge
 const TAG_CAT_STYLE = {
   'Körperpflege': { bg:'#1a4060', text:'#60c0ff', border:'#2060a0', emoji:'💧' },
   'Küche':        { bg:'#3a1a00', text:'#ff8040', border:'#804020', emoji:'🔥' },
@@ -724,6 +723,13 @@ const TAG_CAT_STYLE = {
   'Wäsche':       { bg:'#2a1a3a', text:'#c080ff', border:'#6030a0', emoji:'👕' },
   'Sport':        { bg:'#3a1a1a', text:'#ff6060', border:'#a02020', emoji:'⚡' },
   'Arbeit':       { bg:'#3a2a00', text:'#d4a030', border:'#806010', emoji:'💼' },
+  'Outdoor':      { bg:'#0a2a10', text:'#5aaa6a', border:'#205030', emoji:'🌿' },
+  'WC':           { bg:'#0a2828', text:'#50c0a0', border:'#205048', emoji:'🚿' },
+  'Schlafzimmer': { bg:'#1a1030', text:'#9080d0', border:'#4a3080', emoji:'🛏️' },
+  'Vorraum':      { bg:'#2a1800', text:'#c09040', border:'#604020', emoji:'🚪' },
+  'Wohnzimmer':   { bg:'#2a1000', text:'#c08040', border:'#603018', emoji:'🛋️' },
+  'Bad':          { bg:'#0a2030', text:'#4ab0c8', border:'#205080', emoji:'🛁' },
+  'Catze Hort':   { bg:'#2a0818', text:'#c07098', border:'#602848', emoji:'🐱' },
 };
 
 // === MANA & REMINDER UPDATE === PUNKT 4: Kompakt-Modus (nur Emoji, kein Text)
@@ -748,17 +754,12 @@ function makeQuestCard(q, mana) {
     ? `<span class="quest-cost-runes">${manaSymbols(q.mana)}</span>`
     : `<span class="quest-rest-tag">🌙 Rast</span>`;
 
-  // === MANA & QUEST UPDATE === P7: Rast-Quests ohne Kategorie-Text
-  // === MANA & QUEST UPDATE === P8: Tag-Kategorien als farbige Badge
-  // === MANA & REMINDER UPDATE === PUNKT 4: Emote vor Text, Klick → Kompakt-Modus
+  // === FIX: TAGS & FARBEN === PUNKT 2: Nur Tag-Badge, kein Kategorie-Text
   let catHtml = '';
   if (!q.rest) {
     const tagStyle = TAG_CAT_STYLE[q.category];
     if (tagStyle) {
-      const label = _catTagCompact ? tagStyle.emoji : `${tagStyle.emoji} ${q.category}`;
-      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}" title="${q.category}">${label}</span>`;
-    } else {
-      catHtml = `<span class="quest-cat-row">${catIconHtml(q.category)}</span>`;
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}" title="${q.category}">${tagStyle.emoji} ${q.category}</span>`;
     }
   }
 

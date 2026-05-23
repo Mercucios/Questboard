@@ -3313,10 +3313,11 @@ h1 {
 .mana-topup-popup { padding: 8px 8px 6px; }
 .mana-topup-row { display: flex; gap: 5px; margin-bottom: 4px; }
 .mana-topup-row:last-child { margin-bottom: 0; }
+/* === FIX: TAGS & FARBEN === PUNKT 1: Gold & Silber Mana-Buttons */
 .mana-plus-btn {
-  background: #0a3a1a !important;
-  border: 1px solid #20c040 !important;
-  color: #40e060 !important;
+  background: #2a1e00 !important;
+  border: 1px solid #c4a030 !important;
+  color: #ffe080 !important;
   border-radius: 8px;
   padding: 6px 10px;
   min-width: 38px;
@@ -3326,12 +3327,12 @@ h1 {
   cursor: pointer;
   transition: background 0.15s, transform 0.12s;
 }
-.mana-plus-btn:hover  { background: #124a24 !important; transform: scale(1.08); }
+.mana-plus-btn:hover  { background: #3a2a00 !important; transform: scale(1.08); }
 .mana-plus-btn:active { transform: scale(0.95); }
 .mana-minus-btn {
-  background: #3a0a0a !important;
-  border: 1px solid #c02020 !important;
-  color: #ff4040 !important;
+  background: #1a1a28 !important;
+  border: 1px solid #a0a8c0 !important;
+  color: #d0d8f0 !important;
   border-radius: 8px;
   padding: 6px 10px;
   min-width: 38px;
@@ -3341,7 +3342,7 @@ h1 {
   cursor: pointer;
   transition: background 0.15s, transform 0.12s;
 }
-.mana-minus-btn:hover  { background: #4a1010 !important; transform: scale(1.08); }
+.mana-minus-btn:hover  { background: #22223a !important; transform: scale(1.08); }
 .mana-minus-btn:active { transform: scale(0.95); }
 
 /* === SIDEQUEST & MANA UPDATE === PUNKT 2: Orb links, Titel absolut zentriert */
@@ -3442,3 +3443,26 @@ h1 {
 
 /* === SIDEQUEST & MANA UPDATE === PUNKT 7: Tag-Schrift größer */
 .quest-cat-tag { font-size: clamp(13px, 3.2vw, 16px) !important; }
+
+/* === FIX: TAGS & FARBEN === PUNKT 3: Alle Badges gleich groß */
+.quest-cat-tag,
+.quest-rest-tag {
+  font-size: clamp(13px, 3.2vw, 16px) !important;
+  padding: 3px 10px !important;
+  border-radius: 12px !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* === FIX: TAGS & FARBEN === PUNKT 4: Quest-Titel ohne Glanz */
+.quest-name {
+  text-shadow: none !important;
+  filter: none !important;
+  -webkit-text-stroke: unset !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  color: #f0c040 !important;
+}
