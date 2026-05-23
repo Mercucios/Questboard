@@ -716,21 +716,22 @@ function renderBoard() {
 }
 
 // === KATEGORIE MODAL & SPIRALS === PUNKT 1: Kategorie-Modal Daten & Funktionen
+// === STYLE UPDATE === PUNKT 1: rgba 20% bg + full-color border + light text
 const CAT_MODAL_ITEMS = [
-  { value: 'koerperpflege', name: 'Körperpflege', emoji: '💧', bg: '#4080ff', color: '#001a4a' },
-  { value: 'kueche',        name: 'Küche',         emoji: '🔥', bg: '#ff8040', color: '#3a1000' },
-  { value: 'ordnung',       name: 'Ordnung',       emoji: '✨', bg: '#40d0d0', color: '#003030' },
-  { value: 'waesche',       name: 'Wäsche',        emoji: '👕', bg: '#c080ff', color: '#1a0838' },
-  { value: 'sport',         name: 'Sport',         emoji: '⚡', bg: '#ff6060', color: '#3a0808' },
-  { value: 'arbeit',        name: 'Arbeit',        emoji: '💼', bg: '#d4a030', color: '#2a2000' },
-  { value: 'rast',          name: 'Rast',          emoji: '🌙', bg: '#4080c0', color: '#0a1428' },
-  { value: 'ausflug',       name: 'Ausflug',       emoji: '🗺️', bg: '#80c040', color: '#0a2a00' },
-  { value: 'soziales',      name: 'Soziales',      emoji: '👥', bg: '#ff80c0', color: '#3a0828' },
-  { value: 'gesundheit',    name: 'Gesundheit',    emoji: '🏥', bg: '#80d080', color: '#0a2a0a' },
-  { value: 'besorgung',     name: 'Besorgung',     emoji: '🛒', bg: '#d0c050', color: '#282800' },
-  { value: 'event',         name: 'Event',         emoji: '🎉', bg: '#ffcc00', color: '#2a1a00' },
-  { value: 'notfall',       name: 'Notfall',       emoji: '🆘', bg: '#ff8080', color: '#2a0808' },
-  { value: 'selbstfuersorge', name: 'Selbstfürsorge', emoji: '🌿', bg: '#a0d0a0', color: '#0a200a' },
+  { value: 'koerperpflege', name: 'Körperpflege', emoji: '💧', bg: 'rgba(64,128,255,0.2)',  borderColor: 'rgba(64,128,255,1)',  color: '#80b0ff' },
+  { value: 'kueche',        name: 'Küche',         emoji: '🔥', bg: 'rgba(255,128,64,0.2)', borderColor: 'rgba(255,128,64,1)',  color: '#ffb080' },
+  { value: 'ordnung',       name: 'Ordnung',       emoji: '✨', bg: 'rgba(64,208,208,0.2)', borderColor: 'rgba(64,208,208,1)',  color: '#80d8d8' },
+  { value: 'waesche',       name: 'Wäsche',        emoji: '👕', bg: 'rgba(192,128,255,0.2)',borderColor: 'rgba(192,128,255,1)', color: '#c090ff' },
+  { value: 'sport',         name: 'Sport',         emoji: '⚡', bg: 'rgba(255,96,96,0.2)',  borderColor: 'rgba(255,96,96,1)',   color: '#ff9090' },
+  { value: 'arbeit',        name: 'Arbeit',        emoji: '💼', bg: 'rgba(212,160,48,0.2)', borderColor: 'rgba(212,160,48,1)',  color: '#d4b060' },
+  { value: 'rast',          name: 'Rast',          emoji: '🌙', bg: 'rgba(64,128,192,0.2)', borderColor: 'rgba(64,128,192,1)',  color: '#80b0e0' },
+  { value: 'ausflug',       name: 'Ausflug',       emoji: '🗺️', bg: 'rgba(128,192,64,0.2)', borderColor: 'rgba(128,192,64,1)', color: '#a0d080' },
+  { value: 'soziales',      name: 'Soziales',      emoji: '👥', bg: 'rgba(255,128,192,0.2)',borderColor: 'rgba(255,128,192,1)', color: '#ff90c8' },
+  { value: 'gesundheit',    name: 'Gesundheit',    emoji: '🏥', bg: 'rgba(128,208,128,0.2)',borderColor: 'rgba(128,208,128,1)', color: '#90d090' },
+  { value: 'besorgung',     name: 'Besorgung',     emoji: '🛒', bg: 'rgba(212,192,80,0.2)', borderColor: 'rgba(212,192,80,1)',  color: '#d4c860' },
+  { value: 'event',         name: 'Event',         emoji: '🎉', bg: 'rgba(255,204,0,0.2)',  borderColor: 'rgba(255,204,0,1)',   color: '#ffd840' },
+  { value: 'notfall',       name: 'Notfall',       emoji: '🆘', bg: 'rgba(255,128,128,0.2)',borderColor: 'rgba(255,128,128,1)', color: '#ff9090' },
+  { value: 'selbstfuersorge', name: 'Selbstfürsorge', emoji: '🌿', bg: 'rgba(160,208,160,0.2)', borderColor: 'rgba(160,208,160,1)', color: '#b0d8b0' },
 ];
 
 function openCategoryModal() {
@@ -747,20 +748,21 @@ function closeCategoryModal() {
 const CATZE_HORT_ICON = '<svg width="18" height="18" viewBox="0 0 36 32" style="overflow:visible;vertical-align:middle"><ellipse cx="16" cy="20" rx="8" ry="6" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="24" cy="14" rx="5" ry="4" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="28" cy="15" rx="3" ry="2" fill="#2a2a2a"/><circle cx="25" cy="12" r="1.5" fill="#ff4000"/><circle cx="25" cy="12" r="0.7" fill="#ff8000"/><path d="M10 18 C4 12 2 8 6 6 C8 10 10 14 12 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M18 16 C20 10 24 8 26 10 C22 12 20 14 18 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M8 22 C4 24 2 28 4 30 C6 28 8 26 10 24Z" fill="#1a1a1a"/><path d="M29 14 C32 12 34 10 32 8 C31 10 30 11 29 12 C31 8 30 5 28 6 C29 9 28 11 27 13Z" fill="#ff6000" opacity="0.9"/><path d="M30 13 C32 11 32 9 30 9 C31 10 30 12 29 13Z" fill="#ffcc00" opacity="0.8"/></svg>';
 
 // === TAG & RAST UPDATE === PUNKT 6+7: Tag-Farben hell/dunkel, Drache für Catze Hort
+// === STYLE UPDATE === PUNKT 1: rgba 20% bg + full-color border + light text
 const TAG_CAT_STYLE = {
-  'Körperpflege': { bg:'#4080ff', text:'#001a4a', emoji:'💧' },
-  'Küche':        { bg:'#ff8040', text:'#3a1000', emoji:'🔥' },
-  'Ordnung':      { bg:'#40d0d0', text:'#003030', emoji:'✨' },
-  'Wäsche':       { bg:'#c080ff', text:'#1a0838', emoji:'👕' },
-  'Sport':        { bg:'#ff6060', text:'#3a0808', emoji:'⚡' },
-  'Arbeit':       { bg:'#d4a030', text:'#2a2000', emoji:'💼' },
-  'Outdoor':      { bg:'#80c040', text:'#0a2a00', emoji:'🌿' },
-  'WC':           { bg:'#0a2828', text:'#50c0a0', emoji:'🚿' },
-  'Schlafzimmer': { bg:'#1a1030', text:'#9080d0', emoji:'🛏️' },
-  'Vorraum':      { bg:'#2a1800', text:'#c09040', emoji:'🚪' },
-  'Wohnzimmer':   { bg:'#2a1000', text:'#c08040', emoji:'🛋️' },
-  'Bad':          { bg:'#0a2030', text:'#4ab0c8', emoji:'🛁' },
-  'Catze Hort':   { bg:'#2a0818', text:'#c07098', icon: CATZE_HORT_ICON, emoji:'🐱' },
+  'Körperpflege': { bg:'rgba(64,128,255,0.2)',  border:'rgba(64,128,255,1)',  text:'#80b0ff', emoji:'💧' },
+  'Küche':        { bg:'rgba(255,128,64,0.2)',  border:'rgba(255,128,64,1)',  text:'#ffb080', emoji:'🔥' },
+  'Ordnung':      { bg:'rgba(64,208,208,0.2)',  border:'rgba(64,208,208,1)',  text:'#80d8d8', emoji:'✨' },
+  'Wäsche':       { bg:'rgba(192,128,255,0.2)', border:'rgba(192,128,255,1)', text:'#c090ff', emoji:'👕' },
+  'Sport':        { bg:'rgba(255,96,96,0.2)',   border:'rgba(255,96,96,1)',   text:'#ff9090', emoji:'⚡' },
+  'Arbeit':       { bg:'rgba(212,160,48,0.2)',  border:'rgba(212,160,48,1)',  text:'#d4b060', emoji:'💼' },
+  'Outdoor':      { bg:'rgba(128,192,64,0.2)',  border:'rgba(128,192,64,1)',  text:'#a0d080', emoji:'🌿' },
+  'WC':           { bg:'rgba(80,192,160,0.2)',  border:'rgba(80,192,160,1)',  text:'#50c0a0', emoji:'🚿' },
+  'Schlafzimmer': { bg:'rgba(144,128,208,0.2)', border:'rgba(144,128,208,1)', text:'#a090d8', emoji:'🛏️' },
+  'Vorraum':      { bg:'rgba(192,144,64,0.2)',  border:'rgba(192,144,64,1)',  text:'#c09040', emoji:'🚪' },
+  'Wohnzimmer':   { bg:'rgba(192,128,64,0.2)',  border:'rgba(192,128,64,1)',  text:'#c08040', emoji:'🛋️' },
+  'Bad':          { bg:'rgba(74,176,200,0.2)',  border:'rgba(74,176,200,1)',  text:'#4ab0c8', emoji:'🛁' },
+  'Catze Hort':   { bg:'rgba(192,112,152,0.2)', border:'rgba(192,112,152,1)', text:'#c07098', icon: CATZE_HORT_ICON, emoji:'🐱' },
 };
 
 // === MANA & REMINDER UPDATE === PUNKT 4: Kompakt-Modus (nur Emoji, kein Text)
@@ -790,7 +792,7 @@ function makeQuestCard(q, mana) {
   if (!q.rest) {
     const tagStyle = TAG_CAT_STYLE[q.category];
     if (tagStyle) {
-      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text}" title="${q.category}">${tagStyle.icon || tagStyle.emoji} ${q.category}</span>`;
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border:1.5px solid ${tagStyle.border}" title="${q.category}">${tagStyle.icon || tagStyle.emoji} ${q.category}</span>`;
     }
   }
 
@@ -2078,6 +2080,7 @@ function initSqCreateModal() {
       card.dataset.value = cat.value;
       card.style.background = cat.bg;
       card.style.color = cat.color;
+      card.style.border = `1.5px solid ${cat.borderColor}`;
       card.innerHTML = `<span class="cat-card-icon">${cat.emoji}</span><span class="cat-card-name">${cat.name}</span>`;
       card.addEventListener('click', () => {
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));

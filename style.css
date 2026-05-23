@@ -414,16 +414,15 @@ h1 {
 }
 
 /* ── Board Scroll ─────────────────────────────────────────── */
+/* === STYLE UPDATE === PUNKT 8: Scrollbar verstecken */
 .board-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 1rem 1.1rem 2.5rem;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-
-.board-scroll::-webkit-scrollbar { width: 3px; }
-.board-scroll::-webkit-scrollbar-track { background: transparent; }
-.board-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.board-scroll::-webkit-scrollbar { display: none; }
 
 /* ── Quest Cards ──────────────────────────────────────────── */
 .quest-list,
@@ -1155,7 +1154,8 @@ h1 {
 /* ═══════════════════════════════════════════════════════════
    FEATURE 2 – Sidequests
    ═══════════════════════════════════════════════════════════ */
-.sidequest-section { margin-top: 1.4rem; }
+/* === STYLE UPDATE === PUNKT 8: Sidequest margin-top clamp */
+.sidequest-section { margin-top: clamp(16px, 4vh, 28px); }
 
 .sidequest-heading {
   display: flex;
@@ -1257,7 +1257,8 @@ h1 {
 
 .sq-create-title {
   font-family: 'Star2', serif;
-  font-size: 1.2rem;
+  font-size: clamp(25px, 6.5vw, 33px);
+  font-weight: 700;
   color: #f0c040;
   margin-bottom: 1rem;
   text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(240,192,64,0.4);
@@ -3361,12 +3362,16 @@ h1 {
 }
 
 /* === SIDEQUEST & MANA UPDATE === PUNKT 3: Tagesstimmung als Pill */
+/* === STYLE UPDATE === PUNKT 6: Pill-Höhe = Mana-Flasche (58px) */
 .mood-pill {
   background: #1a0838 !important;
   border: 1px solid #c4a030 !important;
   border-radius: 20px !important;
   padding: 5px 12px !important;
-  font-size: clamp(13px, 3.5vw, 17px) !important;
+  height: 58px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: clamp(18px, 5vw, 26px) !important;
   font-weight: 700 !important;
   color: #f0c040 !important;
   white-space: nowrap !important;
@@ -3377,15 +3382,17 @@ h1 {
 
 /* === SIDEQUEST & MANA UPDATE === PUNKT 4: Formular-Schriften */
 /* === KATEGORIE MODAL & SPIRALS === PUNKT 2: Labels größer */
+/* === STYLE UPDATE === PUNKT 3: Labels Star2 gold, Inputs größer */
 .sq-field-label {
   font-size: clamp(17px, 4.5vw, 22px) !important;
-  color: #f0c040 !important;
+  color: #c4a030 !important;
+  font-family: 'Star2', serif !important;
   font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
 .sq-input {
-  font-size: clamp(15px, 4vw, 19px) !important;
+  font-size: clamp(17px, 4.5vw, 22px) !important;
   color: #c8a8ff !important;
 }
 .sq-input::placeholder { color: rgba(200,168,255,0.3) !important; }
@@ -3423,18 +3430,22 @@ h1 {
 .category-select:focus { border-color: #c080ff; box-shadow: 0 0 0 2px rgba(180,100,255,0.2); }
 .category-select option { background: #1a0638; color: #d0a8ff; }
 
+/* === STYLE UPDATE === PUNKT 3: Quest-annehmen mit Gradient+Goldrand, Abbrechen #ff8080 */
 .sq-save-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100%;
   margin-bottom: 8px;
-  font-size: clamp(15px, 4vw, 19px) !important;
+  font-size: clamp(17px, 4.5vw, 22px) !important;
+  background: radial-gradient(ellipse at 50% 0%, rgba(196,160,48,0.35) 0%, rgba(8,4,28,0.9) 70%) !important;
+  border: 2px solid #c4a030 !important;
 }
 .sq-cancel-btn {
-  font-size: clamp(15px, 4vw, 19px) !important;
-  color: #ff6060 !important;
-  border: 1px solid #ff4040 !important;
+  font-size: clamp(17px, 4.5vw, 22px) !important;
+  color: #ff8080 !important;
+  background: rgba(255,128,128,0.1) !important;
+  border: 1px solid rgba(255,128,128,0.6) !important;
   border-radius: 20px !important;
   padding: 6px 20px !important;
   display: inline-block !important;
@@ -3506,16 +3517,11 @@ h1 {
   transform: scale(1.3);
 }
 
-/* === TAG & RAST UPDATE === PUNKT 6: Kategorie-Tags ohne Border */
-.quest-cat-tag {
-  border: none !important;
-}
-
-/* === TAG & RAST UPDATE === PUNKT 6: Rast-Tag hell */
+/* === STYLE UPDATE === PUNKT 1: Rast-Tag rgba 20% bg + full border + light text */
 .quest-rest-tag {
-  background: #4080c0 !important;
-  color: #0a1428 !important;
-  border: none !important;
+  background: rgba(64,128,192,0.2) !important;
+  color: #80b0e0 !important;
+  border: 1.5px solid rgba(64,128,192,1) !important;
 }
 
 /* === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Popup */
@@ -3596,7 +3602,8 @@ h1 {
   border-radius: 20px 20px 0 0;
   padding: 16px 14px 32px;
   width: 100%;
-  max-height: 85vh;
+  height: 90dvh;
+  max-height: 90dvh;
   overflow-y: auto;
   transform: translateY(100%);
   transition: transform 0.35s ease-out;
@@ -3620,20 +3627,20 @@ h1 {
 }
 
 /* === KATEGORIE MODAL & SPIRALS === PUNKT 1: Kategorie-Grid */
+/* === STYLE UPDATE === PUNKT 2: Größere Tiles, rgba bg + full border */
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 .cat-card {
-  border-radius: 10px;
-  padding: 10px 6px;
+  border-radius: 14px;
+  padding: 18px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.1);
   transition: transform 0.15s, box-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -3642,10 +3649,10 @@ h1 {
   box-shadow: 0 0 0 2px #f0c040;
   transform: scale(1.03);
 }
-.cat-card-icon { font-size: 22px; line-height: 1; }
+.cat-card-icon { font-size: 36px; line-height: 1; }
 .cat-card-name {
-  font-size: clamp(10px, 2.5vw, 13px);
-  font-weight: 600;
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 700;
   text-align: center;
   line-height: 1.2;
 }
@@ -3665,17 +3672,34 @@ h1 {
 }
 
 /* === KATEGORIE MODAL & SPIRALS === PUNKT 4: 4 Wirbel im SQ-Formular */
+/* === STYLE UPDATE === PUNKT 4: spiralPulse animations, 28px, gap 20px */
+@keyframes spiralPulse1 {
+  0%,100% { transform: rotate(0deg)   scale(1);    opacity: 0.15; }
+  50%      { transform: rotate(180deg) scale(1.18); opacity: 0.3;  }
+}
+@keyframes spiralPulse2 {
+  0%,100% { transform: rotate(0deg)    scale(1.1);  opacity: 0.2;  }
+  50%      { transform: rotate(-180deg) scale(0.88); opacity: 0.28; }
+}
+@keyframes spiralPulse3 {
+  0%,100% { transform: rotate(0deg)   scale(0.95); opacity: 0.18; }
+  50%      { transform: rotate(180deg) scale(1.2);  opacity: 0.3;  }
+}
+@keyframes spiralPulse4 {
+  0%,100% { transform: rotate(0deg)    scale(1.05); opacity: 0.15; }
+  50%      { transform: rotate(-180deg) scale(0.9);  opacity: 0.25; }
+}
 .form-spirals {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: 20px;
+  margin-bottom: 10px;
 }
 .spiral {
-  font-size: 24px;
+  font-size: 28px;
   display: inline-block;
 }
-.spiral-blue   { animation: spinCW  3s   linear infinite; filter: hue-rotate(200deg) saturate(2); }
-.spiral-violet { animation: spinCCW 4s   linear infinite; filter: hue-rotate(270deg) saturate(2); }
-.spiral-gold   { animation: spinCW  5s   linear infinite; filter: hue-rotate(30deg) saturate(3) brightness(1.2); }
-.spiral-teal   { animation: spinCCW 3.5s linear infinite; filter: hue-rotate(160deg) saturate(2); }
+.spiral-blue   { animation: spiralPulse1 3s   ease-in-out infinite; filter: hue-rotate(200deg) saturate(2); }
+.spiral-violet { animation: spiralPulse2 4s   ease-in-out infinite; filter: hue-rotate(270deg) saturate(2); }
+.spiral-gold   { animation: spiralPulse3 5s   ease-in-out infinite; filter: hue-rotate(30deg) saturate(3) brightness(1.2); }
+.spiral-teal   { animation: spiralPulse4 3.5s ease-in-out infinite; filter: hue-rotate(160deg) saturate(2); }
