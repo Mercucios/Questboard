@@ -247,7 +247,7 @@
       <div id="sidequest-section" class="sidequest-section">
         <!-- === SIDEQUEST & MANA UPDATE === PUNKT 5: Rune-Pulse Emotes -->
         <div class="sidequest-heading">
-          <button id="sq-vortex-btn" class="sq-vortex-btn rune-pulse" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">🌀</button><span class="sq-heading-text">Unerwartete Pfade</span><span class="rune-pulse" style="animation-delay:0.8s">✦</span><span class="rune-pulse" style="animation-delay:1.6s">🔮</span><span class="rune-pulse" style="animation-delay:2.4s">⚗️</span>
+          <button id="sq-vortex-btn" class="sq-vortex-btn" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">🌀</button><span class="sq-heading-text">Unerwartete Pfade</span>
         </div>
         <div id="sidequest-list" class="sidequest-list"></div>
       </div>
@@ -360,10 +360,11 @@
   <!-- === SIDEQUEST & MANA UPDATE === PUNKT 4: Dropdown, Mana-Label, neue Buttons -->
   <div id="popup-sq-create" class="overlay hidden" role="dialog" aria-modal="true">
     <div class="popup sq-create-popup">
-      <div class="popup-sparkle">💫 ✦ 💫</div>
+      <div class="popup-sparkle"><span class="rune-pulse">🌀</span> <span class="rune-pulse" style="animation-delay:0.6s">✦</span> <span class="rune-pulse" style="animation-delay:1.2s">🔮</span> <span class="rune-pulse" style="animation-delay:1.8s">⚗️</span></div>
       <h3 class="sq-create-title">Unerwarteter Pfad</h3>
       <div class="sq-field">
-        <div class="sq-field-label">Kategorie <span class="sq-req">*</span></div>
+        <div class="sq-field-label">Kategorie</div>
+        <div class="select-wrapper">
         <select id="sq-cat-select" class="category-select">
           <option value="" disabled selected>Kategorie wählen…</option>
           <option value="koerperpflege">💧 Körperpflege</option>
@@ -381,20 +382,20 @@
           <option value="notfall">🆘 Notfall</option>
           <option value="selbstfuersorge">🌿 Selbstfürsorge</option>
         </select>
+        </div>
       </div>
       <div class="sq-field">
-        <div class="sq-field-label">Name der Quest <span class="sq-req">*</span></div>
+        <div class="sq-field-label">Name der Quest</div>
         <input id="sq-title-input" class="sq-input" type="text" placeholder="Was erwartet dich?" maxlength="60">
       </div>
       <div class="sq-field">
         <div class="sq-field-label">
-          ⚗ Mana
+          Mana
           <svg width="10" height="18" viewBox="0 0 14 38" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-left:4px;opacity:0.85" aria-hidden="true">
             <rect x="4" y="0" width="6" height="5" rx="2" fill="#c49030"/>
             <rect x="2" y="4" width="10" height="30" rx="5" fill="#4090ff" opacity="0.9"/>
             <ellipse cx="4.5" cy="15" rx="1.5" ry="5" fill="white" opacity="0.3"/>
           </svg>
-          <span class="sq-req">*</span>
         </div>
         <div class="sq-ap-picker">
           <button class="sq-ap-btn" data-ap="10">10</button>
@@ -442,6 +443,22 @@
       <p id="log-view-note" class="log-view-note-text"></p>
       <button id="btn-log-view-close" class="btn-action log-action-btn">Schließen ✦</button>
       <div class="scroll-ornament">⊕ ✦ ⊕</div>
+    </div>
+  </div>
+
+  <!-- === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Popup -->
+  <div id="popup-rest-mana" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup rest-mana-popup">
+      <div class="popup-sparkle">🌙 ✦ 🌙</div>
+      <h3 class="rest-mana-title">Rast abgeschlossen!</h3>
+      <p class="rest-mana-sub">Wie viel Mana hat dir diese Rast gebracht?</p>
+      <div class="rest-mana-btns">
+        <button class="mana-topup-btn mana-plus-btn rest-mana-gain-btn" data-gain="10">+10</button>
+        <button class="mana-topup-btn mana-plus-btn rest-mana-gain-btn" data-gain="20">+20</button>
+        <button class="mana-topup-btn mana-plus-btn rest-mana-gain-btn" data-gain="30">+30</button>
+        <button class="mana-topup-btn mana-plus-btn rest-mana-gain-btn" data-gain="40">+40</button>
+        <button class="mana-topup-btn mana-plus-btn rest-mana-gain-btn" data-gain="50">+50</button>
+      </div>
     </div>
   </div>
 

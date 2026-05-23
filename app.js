@@ -715,21 +715,24 @@ function renderBoard() {
   renderSidequests();
 }
 
-// === FIX: TAGS & FARBEN === PUNKT 2: Alle Kategorien als Tag-Badge
+// === TAG & RAST UPDATE === PUNKT 7: Drachen-Icon für Catze Hort
+const CATZE_HORT_ICON = '<svg width="18" height="18" viewBox="0 0 36 32" style="overflow:visible;vertical-align:middle"><ellipse cx="16" cy="20" rx="8" ry="6" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="24" cy="14" rx="5" ry="4" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="28" cy="15" rx="3" ry="2" fill="#2a2a2a"/><circle cx="25" cy="12" r="1.5" fill="#ff4000"/><circle cx="25" cy="12" r="0.7" fill="#ff8000"/><path d="M10 18 C4 12 2 8 6 6 C8 10 10 14 12 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M18 16 C20 10 24 8 26 10 C22 12 20 14 18 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M8 22 C4 24 2 28 4 30 C6 28 8 26 10 24Z" fill="#1a1a1a"/><path d="M29 14 C32 12 34 10 32 8 C31 10 30 11 29 12 C31 8 30 5 28 6 C29 9 28 11 27 13Z" fill="#ff6000" opacity="0.9"/><path d="M30 13 C32 11 32 9 30 9 C31 10 30 12 29 13Z" fill="#ffcc00" opacity="0.8"/></svg>';
+
+// === TAG & RAST UPDATE === PUNKT 6+7: Tag-Farben hell/dunkel, Drache für Catze Hort
 const TAG_CAT_STYLE = {
-  'Körperpflege': { bg:'#1a4060', text:'#60c0ff', border:'#2060a0', emoji:'💧' },
-  'Küche':        { bg:'#3a1a00', text:'#ff8040', border:'#804020', emoji:'🔥' },
-  'Ordnung':      { bg:'#1a3a1a', text:'#60d060', border:'#206020', emoji:'✨' },
-  'Wäsche':       { bg:'#2a1a3a', text:'#c080ff', border:'#6030a0', emoji:'👕' },
-  'Sport':        { bg:'#3a1a1a', text:'#ff6060', border:'#a02020', emoji:'⚡' },
-  'Arbeit':       { bg:'#3a2a00', text:'#d4a030', border:'#806010', emoji:'💼' },
-  'Outdoor':      { bg:'#0a2a10', text:'#5aaa6a', border:'#205030', emoji:'🌿' },
-  'WC':           { bg:'#0a2828', text:'#50c0a0', border:'#205048', emoji:'🚿' },
-  'Schlafzimmer': { bg:'#1a1030', text:'#9080d0', border:'#4a3080', emoji:'🛏️' },
-  'Vorraum':      { bg:'#2a1800', text:'#c09040', border:'#604020', emoji:'🚪' },
-  'Wohnzimmer':   { bg:'#2a1000', text:'#c08040', border:'#603018', emoji:'🛋️' },
-  'Bad':          { bg:'#0a2030', text:'#4ab0c8', border:'#205080', emoji:'🛁' },
-  'Catze Hort':   { bg:'#2a0818', text:'#c07098', border:'#602848', emoji:'🐱' },
+  'Körperpflege': { bg:'#4080ff', text:'#001a4a', emoji:'💧' },
+  'Küche':        { bg:'#ff8040', text:'#3a1000', emoji:'🔥' },
+  'Ordnung':      { bg:'#40d0d0', text:'#003030', emoji:'✨' },
+  'Wäsche':       { bg:'#c080ff', text:'#1a0838', emoji:'👕' },
+  'Sport':        { bg:'#ff6060', text:'#3a0808', emoji:'⚡' },
+  'Arbeit':       { bg:'#d4a030', text:'#2a2000', emoji:'💼' },
+  'Outdoor':      { bg:'#80c040', text:'#0a2a00', emoji:'🌿' },
+  'WC':           { bg:'#0a2828', text:'#50c0a0', emoji:'🚿' },
+  'Schlafzimmer': { bg:'#1a1030', text:'#9080d0', emoji:'🛏️' },
+  'Vorraum':      { bg:'#2a1800', text:'#c09040', emoji:'🚪' },
+  'Wohnzimmer':   { bg:'#2a1000', text:'#c08040', emoji:'🛋️' },
+  'Bad':          { bg:'#0a2030', text:'#4ab0c8', emoji:'🛁' },
+  'Catze Hort':   { bg:'#2a0818', text:'#c07098', icon: CATZE_HORT_ICON, emoji:'🐱' },
 };
 
 // === MANA & REMINDER UPDATE === PUNKT 4: Kompakt-Modus (nur Emoji, kein Text)
@@ -759,7 +762,7 @@ function makeQuestCard(q, mana) {
   if (!q.rest) {
     const tagStyle = TAG_CAT_STYLE[q.category];
     if (tagStyle) {
-      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border-color:${tagStyle.border}" title="${q.category}">${tagStyle.emoji} ${q.category}</span>`;
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text}" title="${q.category}">${tagStyle.icon || tagStyle.emoji} ${q.category}</span>`;
     }
   }
 
@@ -842,6 +845,11 @@ function swapQuest(name) {
 function completeQuest(name) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
+  // === TAG & RAST UPDATE === PUNKT 8: Rast-Quests direkt zum Mana-Popup
+  if (quest.rest) {
+    showRestManaPopup(quest);
+    return;
+  }
   _pendingCompletion = { type: 'quest', id: name, questTitle: name };
   openLogPopup(name, name);
 }
@@ -893,6 +901,44 @@ function _finalizeQuestCompletion(name) {
   if (totalDone >= 2 && !appState.starAwarded) {
     setTimeout(awardStar, 1800);
   }
+}
+
+// === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Popup
+function showRestManaPopup(quest) {
+  _pendingCompletion = { type: 'rest-quest', id: quest.name, questTitle: quest.name };
+  $('popup-rest-mana').classList.remove('hidden');
+}
+
+function _finalizeRestQuestCompletion(name, manaGain) {
+  const quest = appState.quests.find(q => q.name === name && !q.done);
+  if (!quest) return;
+
+  quest.done     = true;
+  quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+
+  if (!appState.maxMana) appState.maxMana = MAX_MANA;
+  appState.maxMana += manaGain;
+  appState.mana    = Math.min(appState.mana + manaGain, appState.maxMana);
+
+  $('popup-rest-mana').classList.add('hidden');
+
+  // Shooting-star animation
+  const _cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
+  if (_cardEl) {
+    const _rect = _cardEl.getBoundingClientRect();
+    const _star = document.createElement('div');
+    _star.className  = 'shooting-star-fx';
+    _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
+    _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
+    document.body.appendChild(_star);
+    requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
+    setTimeout(() => _star.remove(), 800);
+  }
+
+  _lastMiniBottleCount = -1;
+  saveDayState(appState);
+  renderBoard();
+  _pendingCompletion = null;
 }
 
 // ── Popups ────────────────────────────────────────────────────────────────────
@@ -1417,6 +1463,16 @@ function init() {
   $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
   $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
   $('btn-rest-close').addEventListener('click',   () => $('popup-rest').classList.add('hidden'));
+
+  // === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Gain Buttons
+  document.querySelectorAll('.rest-mana-gain-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const gain = parseInt(btn.dataset.gain, 10);
+      if (_pendingCompletion?.type === 'rest-quest') {
+        _finalizeRestQuestCompletion(_pendingCompletion.id, gain);
+      }
+    });
+  });
   $('btn-starmap-close').addEventListener('click', () => {
     if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
     $('popup-starmap').classList.add('hidden');
