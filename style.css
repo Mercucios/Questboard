@@ -3993,3 +3993,115 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   transform: scale(0.98) !important;
   animation: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* SESSION 4                                                   */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* PUNKT 1: Alle Tags – gleiche Schrift & Größe */
+.quest-cat-tag,
+.quest-rest-tag {
+  font-family: 'Star2', serif !important;
+  font-variant: normal !important;
+  font-size: clamp(13px, 3.2vw, 16px) !important;
+  font-weight: 600 !important;
+}
+
+/* PUNKT 2: Partikel – Wirbel-Palette, doppelte Animationsdauer */
+.sparkle-particle {
+  animation: sparkleTwinkle 5s ease-in-out infinite !important;
+}
+.sparkle-particle::before,
+.sparkle-particle::after { background: #f0c040 !important; }
+.sparkle-particle:nth-child(3n)::before,
+.sparkle-particle:nth-child(3n)::after { background: #9040ff !important; }
+.sparkle-particle:nth-child(5n)::before,
+.sparkle-particle:nth-child(5n)::after { background: #4090ff !important; }
+.sparkle-particle:nth-child(7n)::before,
+.sparkle-particle:nth-child(7n)::after { background: #40d0d0 !important; }
+.glow-particle {
+  background: radial-gradient(circle, #f0c040, transparent) !important;
+  animation: glowPulse 6s ease-in-out infinite !important;
+}
+.glow-particle:nth-child(2n) { background: radial-gradient(circle, #9040ff, transparent) !important; }
+.glow-particle:nth-child(3n) { background: radial-gradient(circle, #4090ff, transparent) !important; }
+.glow-particle:nth-child(5n) { background: radial-gradient(circle, #40d0d0, transparent) !important; }
+
+/* PUNKT 3: Wirbel – farbiges Glühen */
+@keyframes spiralGlowBlue {
+  0%,100% { transform: rotate(0deg)    scale(1);    opacity: 0.2;  filter: hue-rotate(200deg) saturate(2) drop-shadow(0 0  4px #4090ff); }
+  50%      { transform: rotate(180deg)  scale(1.18); opacity: 0.55; filter: hue-rotate(200deg) saturate(3) drop-shadow(0 0 18px #4090ff) drop-shadow(0 0 35px rgba(64,144,255,0.5)); }
+}
+@keyframes spiralGlowViolet {
+  0%,100% { transform: rotate(0deg)    scale(1.1);  opacity: 0.2;  filter: hue-rotate(270deg) saturate(2) drop-shadow(0 0  4px #9040ff); }
+  50%      { transform: rotate(-180deg) scale(0.88); opacity: 0.5;  filter: hue-rotate(270deg) saturate(3) drop-shadow(0 0 18px #9040ff) drop-shadow(0 0 35px rgba(144,64,255,0.5)); }
+}
+@keyframes spiralGlowGold {
+  0%,100% { transform: rotate(0deg)    scale(0.95); opacity: 0.2;  filter: hue-rotate(30deg) saturate(3) brightness(1.2) drop-shadow(0 0  4px #f0c040); }
+  50%      { transform: rotate(180deg)  scale(1.2);  opacity: 0.55; filter: hue-rotate(30deg) saturate(4) brightness(1.5) drop-shadow(0 0 18px #f0c040) drop-shadow(0 0 35px rgba(240,192,64,0.5)); }
+}
+@keyframes spiralGlowTeal {
+  0%,100% { transform: rotate(0deg)    scale(1.05); opacity: 0.18; filter: hue-rotate(160deg) saturate(2) drop-shadow(0 0  4px #40d0d0); }
+  50%      { transform: rotate(-180deg) scale(0.9);  opacity: 0.48; filter: hue-rotate(160deg) saturate(3) drop-shadow(0 0 18px #40d0d0) drop-shadow(0 0 35px rgba(64,208,208,0.5)); }
+}
+.spiral-blue   { animation: spiralGlowBlue   6s  ease-in-out infinite !important; }
+.spiral-violet { animation: spiralGlowViolet 8s  ease-in-out infinite !important; }
+.spiral-gold   { animation: spiralGlowGold   10s ease-in-out infinite !important; }
+.spiral-teal   { animation: spiralGlowTeal   7s  ease-in-out infinite !important; }
+
+/* PUNKT 4: Rucksack-Drawer vollbild */
+.rucksack-drawer {
+  height: 100dvh !important;
+  border-radius: 0 !important;
+  border-top: none !important;
+}
+.rucksack-drawer .rucksack-handle-wrap {
+  display: none !important;
+}
+
+/* PUNKT 5: "Dein Inventar" doppelt so groß */
+.rucksack-title {
+  font-size: 2.6rem !important;
+  padding-top: 1.5rem !important;
+}
+
+/* PUNKT 6: Inventar-Kacheln – gleich groß, Text doppelt */
+.rucksack-inv-card {
+  aspect-ratio: 1 !important;
+  min-height: unset !important;
+}
+.inv-card-wide {
+  aspect-ratio: 2 / 1 !important;
+  max-width: none !important;
+  min-height: unset !important;
+}
+.inv-card-icon { font-size: 5rem !important; }
+.inv-card-name { font-size: 2rem !important; }
+.inv-card-sub  { font-size: 1.44rem !important; }
+
+/* PUNKT 7: Schließen-Button in der Inventar-Übersicht */
+#rucksack-view-cards { position: relative; }
+.rucksack-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(240,192,64,0.12);
+  border: 1px solid rgba(240,192,64,0.35);
+  color: #f0c040;
+  font-size: 1.4rem;
+  line-height: 1;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.15s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.rucksack-close-btn:active {
+  background: rgba(240,192,64,0.28);
+  transform: scale(0.88);
+}

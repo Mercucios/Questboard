@@ -2786,6 +2786,10 @@ function initRucksack() {
   $('btn-rucksack').addEventListener('click', openRucksack);
   $('rucksack-overlay').addEventListener('click', closeRucksack);
 
+  // Close button (inventory overview)
+  const _ruckCloseBtn = $('rucksack-close-btn-cards');
+  if (_ruckCloseBtn) _ruckCloseBtn.addEventListener('click', closeRucksack);
+
   // Back buttons
   document.querySelectorAll('.rucksack-back-btn').forEach(btn => {
     btn.addEventListener('click', () => _ruckSetView('cards', true));
