@@ -3703,3 +3703,85 @@ h1 {
 .spiral-violet { animation: spiralPulse2 4s   ease-in-out infinite; filter: hue-rotate(270deg) saturate(2); }
 .spiral-gold   { animation: spiralPulse3 5s   ease-in-out infinite; filter: hue-rotate(30deg) saturate(3) brightness(1.2); }
 .spiral-teal   { animation: spiralPulse4 3.5s ease-in-out infinite; filter: hue-rotate(160deg) saturate(2); }
+
+/* === RAST & FORMULAR UPDATE === */
+
+/* PUNKT 1: Fantasy-Schrift (Star2) für alle Sidequest-Formular-Elemente */
+.sq-input::placeholder       { font-family: 'Star2', serif !important; }
+.path-label                  { font-family: 'Star2', serif !important; }
+.sq-ap-btn                   { font-family: 'Star2', serif !important; }
+.cat-modal-title             { font-family: 'Star2', serif !important; }
+.sq-create-popup .btn-action { font-family: 'Star2', serif !important; }
+.sq-cancel-btn               { font-family: 'Star2', serif !important; }
+
+/* PUNKT 2: "Welchen Pfad wirst du beschreiten?" größer & fett */
+.path-trigger-btn,
+.path-label-heading {
+  font-size: clamp(20px, 5.5vw, 28px) !important;
+  font-weight: 700 !important;
+  font-family: 'Star2', serif !important;
+  color: #c4a030 !important;
+}
+
+/* PUNKT 3: Sidequest-Sektion ans untere Ende */
+.board-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+}
+#sidequest-section,
+.sidequest-section {
+  margin-top: auto !important;
+  position: sticky;
+  bottom: 0;
+  padding-top: 12px;
+  padding-bottom: 32px;
+  background: linear-gradient(to top, rgba(6,6,20,0.98) 60%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+/* PUNKT 4: Kategorien in normaler Schreibweise – kein uppercase */
+.sidequest-heading            { text-transform: none !important; }
+.sidequest-heading .sq-heading-text { text-transform: none !important; }
+.quest-cat-tag                { text-transform: none !important; }
+.quest-rest-tag               { text-transform: none !important; }
+.cat-card-name                { text-transform: none !important; }
+.quest-cat-label              { text-transform: none !important; }
+
+/* PUNKT 5: Rast-Quest Sternenhimmel (Option E) */
+.quest-card.rast-quest {
+  background: linear-gradient(
+    135deg,
+    #06020f 0%,
+    #0a1828 40%,
+    #060e1a 100%
+  ) !important;
+  background-image: none !important;
+  border: 1px solid rgba(64,128,192,0.5) !important;
+  position: relative;
+  overflow: hidden;
+}
+.quest-card.rast-quest::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);
+  background-size:
+    120px 80px, 90px 60px, 150px 100px,
+    80px 50px, 200px 120px, 110px 70px;
+  background-position:
+    15% 20%, 40% 40%, 65% 15%,
+    80% 60%, 25% 75%, 90% 30%;
+  pointer-events: none;
+  z-index: 0;
+}
+.quest-card.rast-quest > * {
+  position: relative;
+  z-index: 1;
+}

@@ -777,7 +777,8 @@ function makeQuestCard(q, mana) {
   const diffCount = q.mana > 0
     ? (q.mana >= 10 ? Math.min(5, Math.ceil(q.mana / 10)) : Math.min(5, q.mana))
     : 0;
-  card.className       = `quest-card${q.rest ? ' rest-card' : ''}${diffCount > 0 ? ` difficulty-${diffCount}` : ''}`;
+  // === RAST & FORMULAR UPDATE === PUNKT 5: rast-quest Klasse für Sternenhimmel
+  card.className       = `quest-card${q.rest ? ' rest-card rast-quest' : ''}${diffCount > 0 ? ` difficulty-${diffCount}` : ''}`;
   card.dataset.name     = q.name;
   card.dataset.category = q.category || '';
 
