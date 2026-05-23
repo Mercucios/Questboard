@@ -247,7 +247,7 @@
       <div id="sidequest-section" class="sidequest-section">
         <!-- === SIDEQUEST & MANA UPDATE === PUNKT 5: Rune-Pulse Emotes -->
         <div class="sidequest-heading">
-          <button id="sq-vortex-btn" class="sq-vortex-btn" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen">🌀</button><span class="sq-heading-text">Unerwartete Pfade</span>
+          <button id="sq-vortex-btn" class="sq-vortex-btn" aria-label="Sidequest hinzufügen" title="Spontane Quest hinzufügen"><span class="sidequest-spiral">🌀</span></button><span class="sq-heading-text">Unerwartete Pfade</span>
         </div>
         <div id="sidequest-list" class="sidequest-list"></div>
       </div>
@@ -360,29 +360,40 @@
   <!-- === SIDEQUEST & MANA UPDATE === PUNKT 4: Dropdown, Mana-Label, neue Buttons -->
   <div id="popup-sq-create" class="overlay hidden" role="dialog" aria-modal="true">
     <div class="popup sq-create-popup">
-      <div class="popup-sparkle"><span class="rune-pulse">🌀</span> <span class="rune-pulse" style="animation-delay:0.6s">✦</span> <span class="rune-pulse" style="animation-delay:1.2s">🔮</span> <span class="rune-pulse" style="animation-delay:1.8s">⚗️</span></div>
+      <!-- === KATEGORIE MODAL & SPIRALS === PUNKT 4: 4 rotierende Wirbel -->
+      <div class="form-spirals">
+        <span class="spiral spiral-blue">🌀</span>
+        <span class="spiral spiral-violet">🌀</span>
+        <span class="spiral spiral-gold">🌀</span>
+        <span class="spiral spiral-teal">🌀</span>
+      </div>
       <h3 class="sq-create-title">Unerwarteter Pfad</h3>
+      <!-- === KATEGORIE MODAL & SPIRALS === PUNKT 1: Pfad-Trigger statt Dropdown -->
       <div class="sq-field">
-        <div class="sq-field-label">Kategorie</div>
-        <div class="select-wrapper">
-        <select id="sq-cat-select" class="category-select">
-          <option value="" disabled selected>Kategorie wählen…</option>
-          <option value="koerperpflege">💧 Körperpflege</option>
-          <option value="kueche">🔥 Küche</option>
-          <option value="ordnung">✨ Ordnung</option>
-          <option value="waesche">👕 Wäsche</option>
-          <option value="sport">⚡ Sport</option>
-          <option value="arbeit">💼 Arbeit</option>
-          <option value="rast">🌙 Rast</option>
-          <option value="ausflug">🗺️ Ausflug</option>
-          <option value="soziales">👥 Soziales</option>
-          <option value="gesundheit">🏥 Gesundheit</option>
-          <option value="besorgung">🛒 Besorgung</option>
-          <option value="event">🎉 Event</option>
-          <option value="notfall">🆘 Notfall</option>
-          <option value="selbstfuersorge">🌿 Selbstfürsorge</option>
-        </select>
+        <div class="path-select-wrap">
+          <div class="path-label">Pfad der Quest</div>
+          <button class="path-trigger-btn" id="path-trigger-btn" type="button">
+            <span id="selectedCatDisplay">Welchen Pfad wirst du beschreiten?</span>
+            <span class="path-arrow">ᛟ</span>
+          </button>
         </div>
+        <select id="sq-cat-select" style="display:none" aria-hidden="true">
+          <option value="" disabled selected></option>
+          <option value="koerperpflege">Körperpflege</option>
+          <option value="kueche">Küche</option>
+          <option value="ordnung">Ordnung</option>
+          <option value="waesche">Wäsche</option>
+          <option value="sport">Sport</option>
+          <option value="arbeit">Arbeit</option>
+          <option value="rast">Rast</option>
+          <option value="ausflug">Ausflug</option>
+          <option value="soziales">Soziales</option>
+          <option value="gesundheit">Gesundheit</option>
+          <option value="besorgung">Besorgung</option>
+          <option value="event">Event</option>
+          <option value="notfall">Notfall</option>
+          <option value="selbstfuersorge">Selbstfürsorge</option>
+        </select>
       </div>
       <div class="sq-field">
         <div class="sq-field-label">Name der Quest</div>
@@ -390,7 +401,7 @@
       </div>
       <div class="sq-field">
         <div class="sq-field-label">
-          Mana
+          Manaverbrauch
           <svg width="10" height="18" viewBox="0 0 14 38" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-left:4px;opacity:0.85" aria-hidden="true">
             <rect x="4" y="0" width="6" height="5" rx="2" fill="#c49030"/>
             <rect x="2" y="4" width="10" height="30" rx="5" fill="#4090ff" opacity="0.9"/>
@@ -406,7 +417,7 @@
         </div>
       </div>
       <div class="sq-field">
-        <div class="sq-field-label">Beschreibung <span class="sq-opt">(optional)</span></div>
+        <div class="sq-field-label">Details der Quest <span class="sq-opt">(optional)</span></div>
         <textarea id="sq-desc-input" class="sq-input sq-textarea" placeholder="Details..." maxlength="200" rows="2"></textarea>
       </div>
       <button id="btn-sq-save" class="btn-action sq-save-btn" disabled>
@@ -627,6 +638,15 @@
       <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-30">−30</button>
       <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-40">−40</button>
       <button class="mana-topup-btn mana-minus-btn" data-mana-delta="-50">−50</button>
+    </div>
+  </div>
+
+  <!-- === KATEGORIE MODAL & SPIRALS === PUNKT 1: Kategorie-Auswahl Modal -->
+  <div class="cat-modal-overlay" id="catModalOverlay">
+    <div class="cat-modal">
+      <div class="cat-modal-handle"></div>
+      <div class="cat-modal-title">✦ Welchen Pfad wirst du beschreiten? ✦</div>
+      <div class="cat-grid" id="cat-grid"></div>
     </div>
   </div>
 

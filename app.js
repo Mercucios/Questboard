@@ -715,6 +715,34 @@ function renderBoard() {
   renderSidequests();
 }
 
+// === KATEGORIE MODAL & SPIRALS === PUNKT 1: Kategorie-Modal Daten & Funktionen
+const CAT_MODAL_ITEMS = [
+  { value: 'koerperpflege', name: 'Körperpflege', emoji: '💧', bg: '#4080ff', color: '#001a4a' },
+  { value: 'kueche',        name: 'Küche',         emoji: '🔥', bg: '#ff8040', color: '#3a1000' },
+  { value: 'ordnung',       name: 'Ordnung',       emoji: '✨', bg: '#40d0d0', color: '#003030' },
+  { value: 'waesche',       name: 'Wäsche',        emoji: '👕', bg: '#c080ff', color: '#1a0838' },
+  { value: 'sport',         name: 'Sport',         emoji: '⚡', bg: '#ff6060', color: '#3a0808' },
+  { value: 'arbeit',        name: 'Arbeit',        emoji: '💼', bg: '#d4a030', color: '#2a2000' },
+  { value: 'rast',          name: 'Rast',          emoji: '🌙', bg: '#4080c0', color: '#0a1428' },
+  { value: 'ausflug',       name: 'Ausflug',       emoji: '🗺️', bg: '#80c040', color: '#0a2a00' },
+  { value: 'soziales',      name: 'Soziales',      emoji: '👥', bg: '#ff80c0', color: '#3a0828' },
+  { value: 'gesundheit',    name: 'Gesundheit',    emoji: '🏥', bg: '#80d080', color: '#0a2a0a' },
+  { value: 'besorgung',     name: 'Besorgung',     emoji: '🛒', bg: '#d0c050', color: '#282800' },
+  { value: 'event',         name: 'Event',         emoji: '🎉', bg: '#ffcc00', color: '#2a1a00' },
+  { value: 'notfall',       name: 'Notfall',       emoji: '🆘', bg: '#ff8080', color: '#2a0808' },
+  { value: 'selbstfuersorge', name: 'Selbstfürsorge', emoji: '🌿', bg: '#a0d0a0', color: '#0a200a' },
+];
+
+function openCategoryModal() {
+  const overlay = document.getElementById('catModalOverlay');
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeCategoryModal() {
+  const overlay = document.getElementById('catModalOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
 // === TAG & RAST UPDATE === PUNKT 7: Drachen-Icon für Catze Hort
 const CATZE_HORT_ICON = '<svg width="18" height="18" viewBox="0 0 36 32" style="overflow:visible;vertical-align:middle"><ellipse cx="16" cy="20" rx="8" ry="6" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="24" cy="14" rx="5" ry="4" fill="#1a1a1a" stroke="#444" stroke-width="0.8"/><ellipse cx="28" cy="15" rx="3" ry="2" fill="#2a2a2a"/><circle cx="25" cy="12" r="1.5" fill="#ff4000"/><circle cx="25" cy="12" r="0.7" fill="#ff8000"/><path d="M10 18 C4 12 2 8 6 6 C8 10 10 14 12 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M18 16 C20 10 24 8 26 10 C22 12 20 14 18 16Z" fill="#222" stroke="#444" stroke-width="0.6"/><path d="M8 22 C4 24 2 28 4 30 C6 28 8 26 10 24Z" fill="#1a1a1a"/><path d="M29 14 C32 12 34 10 32 8 C31 10 30 11 29 12 C31 8 30 5 28 6 C29 9 28 11 27 13Z" fill="#ff6000" opacity="0.9"/><path d="M30 13 C32 11 32 9 30 9 C31 10 30 12 29 13Z" fill="#ffcc00" opacity="0.8"/></svg>';
 
@@ -2020,9 +2048,12 @@ function makeSidequestCard(sq) {
 function showSqCreateModal() {
   $('sq-title-input').value  = '';
   $('sq-desc-input').value   = '';
-  // === SIDEQUEST & MANA UPDATE === PUNKT 4: Select statt Grid
   const sel = $('sq-cat-select');
   if (sel) sel.value = '';
+  // === KATEGORIE MODAL & SPIRALS === PUNKT 1: Display zurücksetzen
+  const display = $('selectedCatDisplay');
+  if (display) { display.textContent = 'Welchen Pfad wirst du beschreiten?'; display.style.color = ''; }
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
   document.querySelectorAll('.sq-ap-btn').forEach(b => b.classList.remove('selected'));
   $('btn-sq-save').disabled  = true;
   $('popup-sq-create').classList.remove('hidden');
@@ -2038,9 +2069,37 @@ function _updateSqSaveState() {
 }
 
 function initSqCreateModal() {
-  // === SIDEQUEST & MANA UPDATE === PUNKT 4: Dropdown statt Grid
-  const catSel = $('sq-cat-select');
-  if (catSel) catSel.addEventListener('change', _updateSqSaveState);
+  // === KATEGORIE MODAL & SPIRALS === PUNKT 1: Kategorie-Grid aufbauen
+  const grid = $('cat-grid');
+  if (grid) {
+    CAT_MODAL_ITEMS.forEach(cat => {
+      const card = document.createElement('div');
+      card.className = 'cat-card';
+      card.dataset.value = cat.value;
+      card.style.background = cat.bg;
+      card.style.color = cat.color;
+      card.innerHTML = `<span class="cat-card-icon">${cat.emoji}</span><span class="cat-card-name">${cat.name}</span>`;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        const display = $('selectedCatDisplay');
+        if (display) { display.textContent = cat.emoji + ' ' + cat.name; display.style.color = '#f0c040'; }
+        const sel = $('sq-cat-select');
+        if (sel) sel.value = cat.value;
+        _updateSqSaveState();
+        setTimeout(() => closeCategoryModal(), 300);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // Path-Trigger-Button öffnet Modal
+  const pathBtn = $('path-trigger-btn');
+  if (pathBtn) pathBtn.addEventListener('click', openCategoryModal);
+
+  // Klick auf Overlay-Hintergrund schließt Modal
+  const overlay = $('catModalOverlay');
+  if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) closeCategoryModal(); });
 
   document.querySelectorAll('.sq-ap-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2326,7 +2385,8 @@ function _ruckPopTelescope() {
       icon = '⭐'; name = c.name;
       badgeCls = 'badge-done'; badgeTxt = 'Entdeckt ✦';
     } else if (isCurrent) {
-      icon = '🔭'; name = c.name;
+      // === KATEGORIE MODAL & SPIRALS === PUNKT 5: Name verbergen bis freigeschaltet
+      icon = '🔭'; name = '???';
       badgeCls = 'badge-active'; badgeTxt = `${info.earned}/${c.starsNeeded}`;
     } else {
       icon = '🔒'; name = '???';
