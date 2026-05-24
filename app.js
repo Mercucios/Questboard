@@ -947,9 +947,19 @@ function swapQuest(name) {
 
 // === VICTORY & REWARDS UPDATE === PUNKT 1+5: Victory-Flow + Belohnung vorbestimmen
 function completeQuest(name) {
+  // === FIX: QUEST COMPLETE === A) Doppel-Tipp verhindern – Button sofort sperren
+  const btn = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"] .quest-complete-btn`);
+  if (btn && btn.disabled) return;
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
   if (quest.rest) { showRestManaPopup(quest); return; }
+
+  // === FIX: QUEST COMPLETE === B) Mana SOFORT abziehen – synchron, vor allen Animationen
+  appState.mana = Math.max(0, appState.mana - quest.mana);
+  saveDayState(appState);
+  updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
 
   const reward = getRandomReward(quest.rest ? 'rast' : 'quest');
   _pendingCompletion = { type: 'quest', id: name, questTitle: name, reward };
@@ -999,6 +1009,7 @@ function showVictoryScreen(quest, reward) {
   vs.classList.add('active');
   vs.querySelectorAll('.victory-banner, .victory-trumpet').forEach(el => el.classList.add('anim'));
 
+  // === FIX: QUEST COMPLETE === C) { once: true } + manuelle Cleanup verhindert Doppel-Listener
   const onTap = (e) => {
     e.stopPropagation();
     vs.classList.remove('active');
@@ -1008,8 +1019,8 @@ function showVictoryScreen(quest, reward) {
     vs.removeEventListener('touchend', onTap);
     openLogPopup(quest.name, quest.name);
   };
-  vs.addEventListener('click',    onTap);
-  vs.addEventListener('touchend', onTap);
+  vs.addEventListener('click',    onTap, { once: true });
+  vs.addEventListener('touchend', onTap, { once: true });
 }
 
 function _finalizeQuestCompletion(name, preReward) {
@@ -1026,13 +1037,11 @@ function _finalizeQuestCompletion(name, preReward) {
     quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
   }
 
-  // === BUGFIX & UI UPDATE === PUNKT 1: Mana korrekt abziehen + updateManaBottle explizit aufrufen
+  // === FIX: QUEST COMPLETE === B) Mana wurde bereits in completeQuest() abgezogen – kein Doppelabzug
   if (quest.rest) {
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
     appState.maxMana = Math.min(appState.maxMana + 10, 60);
     appState.mana    = Math.min(appState.mana + 10, appState.maxMana);
-  } else {
-    appState.mana = Math.max(0, appState.mana - quest.mana);
   }
   updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
 
