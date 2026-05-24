@@ -135,15 +135,24 @@ const REWARD_MSGS = [
   'Die Horde wächst — genau wie du.',
 ];
 
-// === VICTORY & REWARDS UPDATE === PUNKT 5: Zufällige Belohnungen
+// === BUGFIX & UI UPDATE === PUNKT 2: Zufällige Belohnungen (lowercase keys)
 const REWARDS = [
-  'Rubin', 'Smaragd', 'Saphir', 'Amethyst', 'Goldnugget',
-  'Zaubertrank', 'Zauberstab', 'Hexenkessel', 'Kristallkugel', 'Zauberbuch',
-  'Amulett', 'Drachenschuppe', 'Ritterschild', 'Königskrone', 'Drachenzahn', 'Phönixfeder',
+  'rubin', 'smaragd', 'saphir', 'amethyst', 'geode',
+  'goldnugget', 'zaubertrank', 'drachenschuppe', 'phoenixfeder',
+  'mondstein', 'krone', 'drachenzahn', 'goldmuenze',
+  'schluessel', 'kristallkugel', 'zauberstab'
 ];
-
-function getRandomReward() {
-  return { name: REWARDS[Math.floor(Math.random() * REWARDS.length)] };
+const REWARD_ICON_MAP = {
+  'rubin': 'Rubin', 'smaragd': 'Smaragd', 'saphir': 'Saphir', 'amethyst': 'Amethyst',
+  'geode': 'Geode', 'goldnugget': 'Goldnugget', 'zaubertrank': 'Zaubertrank',
+  'drachenschuppe': 'Drachenschuppe', 'phoenixfeder': 'Phönixfeder',
+  'mondstein': 'Mondstein', 'krone': 'Königskrone', 'drachenzahn': 'Drachenzahn',
+  'goldmuenze': 'Goldmünze', 'schluessel': 'Schlüssel', 'kristallkugel': 'Kristallkugel',
+  'zauberstab': 'Zauberstab'
+};
+function getRandomReward(questType) {
+  if (questType === 'rast') return null;
+  return REWARDS[Math.floor(Math.random() * REWARDS.length)];
 }
 
 // === VICTORY & REWARDS UPDATE === PUNKT 2: Stern-Reaktionen
@@ -942,7 +951,7 @@ function completeQuest(name) {
   if (!quest) return;
   if (quest.rest) { showRestManaPopup(quest); return; }
 
-  const reward = getRandomReward();
+  const reward = getRandomReward(quest.rest ? 'rast' : 'quest');
   _pendingCompletion = { type: 'quest', id: name, questTitle: name, reward };
 
   // Golden glow on quest card
@@ -968,9 +977,11 @@ function showVictoryScreen(quest, reward) {
   const vs = document.getElementById('victory-screen');
   if (!vs) { openLogPopup(quest.name, quest.name); return; }
 
+  // === BUGFIX & UI UPDATE === PUNKT 2: reward ist jetzt ein String (lowercase key)
+  const _rewardDisplayName = (reward && REWARD_ICON_MAP[reward]) || reward || '???';
   document.getElementById('victory-quest-name').textContent  = quest.name;
-  document.getElementById('victory-reward-name').textContent = reward.name;
-  document.getElementById('victory-reward-icon').innerHTML   = _ruckTreasureIcon(reward.name, 72);
+  document.getElementById('victory-reward-name').textContent = _rewardDisplayName;
+  document.getElementById('victory-reward-icon').innerHTML   = _ruckTreasureIcon(_rewardDisplayName, 72);
 
   // Confetti
   const wrap   = document.getElementById('victory-confetti-wrap');
@@ -1005,10 +1016,17 @@ function _finalizeQuestCompletion(name, preReward) {
   const quest = appState.quests.find(q => q.name === name && !q.done);
   if (!quest) return;
 
-  quest.done     = true;
-  quest.treasure = preReward || TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  quest.done = true;
+  // === BUGFIX & UI UPDATE === PUNKT 2: reward ist jetzt ein String (lowercase key)
+  if (preReward && typeof preReward === 'string') {
+    quest.treasure = { name: REWARD_ICON_MAP[preReward] || preReward };
+  } else if (preReward && typeof preReward === 'object') {
+    quest.treasure = preReward;
+  } else {
+    quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  }
 
-  // === MANA-SYSTEM ===
+  // === BUGFIX & UI UPDATE === PUNKT 1: Mana korrekt abziehen + updateManaBottle explizit aufrufen
   if (quest.rest) {
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
     appState.maxMana = Math.min(appState.maxMana + 10, 60);
@@ -1016,6 +1034,7 @@ function _finalizeQuestCompletion(name, preReward) {
   } else {
     appState.mana = Math.max(0, appState.mana - quest.mana);
   }
+  updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
 
   if (!quest.rest) {
     const rhythm = loadRhythm();
@@ -1026,17 +1045,31 @@ function _finalizeQuestCompletion(name, preReward) {
   rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
   saveDayState(appState);
 
-  // === QUEST-BOARD UPDATE === P10: Shooting-Star-Animation
+  // === BUGFIX & UI UPDATE === PUNKT 3: Karte fliegt heraus (animationend), dann renderBoard
   const _cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
   if (_cardEl) {
     const _rect = _cardEl.getBoundingClientRect();
     const _star = document.createElement('div');
-    _star.className  = 'shooting-star-fx';
+    _star.className = 'shooting-star-fx';
     _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
     _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
     document.body.appendChild(_star);
     requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
     setTimeout(() => _star.remove(), 800);
+
+    _cardEl.classList.add('quest-card--fly-off');
+    let _flyRendered = false;
+    const _doRender = () => {
+      if (_flyRendered) return;
+      _flyRendered = true;
+      renderBoard();
+      if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+      const totalDone = appState.quests.filter(q => q.done).length;
+      if (totalDone >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
+    };
+    _cardEl.addEventListener('animationend', _doRender, { once: true });
+    setTimeout(_doRender, 550);
+    return;
   }
 
   renderBoard();
@@ -1585,6 +1618,34 @@ function initSkyCanvas() {
   requestAnimationFrame(skyFrame);
 }
 
+// === BUGFIX & UI UPDATE === PUNKT 7B: Tages-Zitat & Wetter-Stimmung für Inventar
+const DAILY_QUOTES = [
+  'Jeder Schritt vorwärts zählt, egal wie klein.',
+  'Du bist tapferer als du glaubst.',
+  'Ruhe ist auch eine Form der Stärke.',
+  'Kein Berg ist zu hoch, wenn du einen Schritt nach dem anderen gehst.',
+  'Du verdienst Fürsorge – auch von dir selbst.',
+  'Kleines Licht, große Wirkung. Das bist du.',
+  'Der heutige Tag gehört dir.',
+  'Atme. Du schaffst das.',
+  'Selbst die Sterne brauchen die Nacht.',
+  'Dein Drachen-Herz leuchtet.',
+  'Alles, was du heute schaffst, ist genug.',
+  'Du bist nicht allein auf diesem Weg.',
+  'Manchmal ist Pause das Mutigste.',
+  'Deine Stärke wächst mit jedem Tag.',
+  'Sei sanft mit dir – du kämpfst täglich.',
+];
+const WEATHER_MOODS = ['☀️ Sonnig', '🌤️ Aufheiternd', '⛅ Leicht bewölkt', '🌧️ Regnerisch', '🌈 Nach dem Sturm', '⭐ Sternenklar', '🌙 Mondschein'];
+function getDailyQuote() {
+  const idx = Math.floor(Date.now() / 86400000) % DAILY_QUOTES.length;
+  return DAILY_QUOTES[idx];
+}
+function getDailyMoodWeather() {
+  const idx = Math.floor(Date.now() / 86400000) % WEATHER_MOODS.length;
+  return WEATHER_MOODS[idx];
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function init() {
@@ -1594,6 +1655,12 @@ function init() {
     timeZone: 'Europe/Vienna', weekday: 'long', day: 'numeric', month: 'long',
   });
   $('date-display').innerHTML = `<span>${dateStr}</span>${getDailySymbol()}`;
+
+  // === BUGFIX & UI UPDATE === PUNKT 7B: Tages-Zitat + Wetter befüllen
+  const _quoteEl = $('inv-daily-quote');
+  if (_quoteEl) _quoteEl.textContent = '✦ ' + getDailyQuote();
+  const _weatherEl = $('inv-daily-weather');
+  if (_weatherEl) _weatherEl.textContent = getDailyMoodWeather();
 
   const allQuests = QUESTS_DATA;
   const saved     = loadDayState();
@@ -2260,10 +2327,11 @@ function initSqCreateModal() {
 
   $('sq-title-input').addEventListener('input', _updateSqSaveState);
 
-  $('btn-sq-save').addEventListener('click', () => {
-    const catSel = $('sq-cat-select');
-    const apBtn  = document.querySelector('.sq-ap-btn.selected');
-    const title  = $('sq-title-input').value.trim();
+  // === BUGFIX & UI UPDATE === PUNKT 4: Sidequest-Speichern (click + touchend für mobil)
+  const _sqDoSave = () => {
+    const catSel   = $('sq-cat-select');
+    const apBtn    = document.querySelector('.sq-ap-btn.selected');
+    const title    = $('sq-title-input').value.trim();
     const catValue = catSel?.value || '';
     if (!catValue || !apBtn || !title) return;
 
@@ -2273,7 +2341,7 @@ function initSqCreateModal() {
       category:    catValue,
       emoji:       SQ_CAT_EMOJIS[catValue] || '⚡',
       title,
-      mana:        parseInt(apBtn.dataset.ap, 10),
+      mana:        parseInt(apBtn.dataset.ap, 10) || 10,
       description: $('sq-desc-input').value.trim() || null,
       done:        false,
       treasure:    null,
@@ -2281,7 +2349,10 @@ function initSqCreateModal() {
     saveSidequest(sq);
     $('popup-sq-create').classList.add('hidden');
     renderSidequests();
-  });
+  };
+  const _sqSaveBtn = $('btn-sq-save');
+  _sqSaveBtn.addEventListener('click', _sqDoSave);
+  _sqSaveBtn.addEventListener('touchend', e => { e.preventDefault(); _sqDoSave(); });
 
   $('btn-sq-cancel').addEventListener('click', () => $('popup-sq-create').classList.add('hidden'));
 }
@@ -2500,9 +2571,21 @@ function _ruckPopulate(name) {
   if (name === 'treasure')  _ruckPopTreasure();
 }
 
-// === STERNENKARTE UPDATE === PUNKT 5: Mini-SVG-Vorschau für Sternbilder
+// === BUGFIX & UI UPDATE === PUNKT 9: Sternbild-SVG – 'faint' zeigt nur Nebel
 function _makeConstSvg(c, state) {
   const vw = 80, vh = 64;
+
+  // Gesperrte Sternbilder (außer isCurrent=active): nur dichter Nebel
+  if (state === 'faint') {
+    return `<svg viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" class="ci-svg ci-svg-nebula">
+      <ellipse cx="40" cy="32" rx="34" ry="26" fill="rgba(100,40,200,0.38)"/>
+      <ellipse cx="28" cy="26" rx="20" ry="15" fill="rgba(70,20,180,0.28)"/>
+      <ellipse cx="52" cy="40" rx="18" ry="13" fill="rgba(50,10,150,0.22)"/>
+      <ellipse cx="45" cy="18" rx="14" ry="10" fill="rgba(80,30,200,0.18)"/>
+      <ellipse cx="22" cy="44" rx="12" ry="9"  fill="rgba(60,20,160,0.15)"/>
+    </svg>`;
+  }
+
   const pts = c.stars.map(s => ({ x: s.x * vw, y: s.y * vh }));
 
   let linesHtml = '';
@@ -2517,10 +2600,8 @@ function _makeConstSvg(c, state) {
 
   let dotsHtml = '';
   pts.forEach(p => {
-    const r    = state === 'done' ? 2.5 : state === 'active' ? 2.2 : 1.5;
-    const fill = state === 'done'
-      ? '#fff9d5'
-      : state === 'active' ? 'rgba(200,225,255,0.85)' : 'rgba(150,170,210,0.4)';
+    const r    = state === 'done' ? 2.5 : 2.2;
+    const fill = state === 'done' ? '#fff9d5' : 'rgba(200,225,255,0.85)';
     dotsHtml += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${fill}"/>`;
   });
 
@@ -2563,17 +2644,17 @@ function _ruckPopTelescope() {
           </div>
         </div>`;
     } else if (isCurrent) {
-      // === STERNENKARTE UPDATE === PUNKT 5A: Erstes gesperrtes – Punkte + gestrichelte Linien
+      // === BUGFIX & UI UPDATE === PUNKT 9A: Erstes entsperrbares – Nebel + animiertes ??? + 🔒 + Sternzahl
       el.className = 'ruck-const-item ci-active';
       el.innerHTML = `
-        <div class="ci-svg-wrap">${_makeConstSvg(c, 'active')}</div>
+        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
         <div class="ci-info">
-          <span class="ruck-const-name">❓ ❓ ❓</span>
+          <span class="ruck-const-name const-name-anim">❓ ❓ ❓</span>
           <span class="ruck-const-badge badge-active">🔒</span>
           <span class="badge-star-count">⭐ ${info.earned} / ${c.starsNeeded}</span>
         </div>`;
     } else if (isNext1 || isNext2) {
-      // === STERNENKARTE UPDATE === PUNKT 5B: 2. + 3. gesperrtes – nur schwache Punkte
+      // === BUGFIX & UI UPDATE === PUNKT 9B: Nur dichter Nebel, keine Sterne/Linien
       el.className = 'ruck-const-item ci-locked';
       el.innerHTML = `
         <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
@@ -2582,7 +2663,7 @@ function _ruckPopTelescope() {
           <span class="ruck-const-badge badge-locked">🔒</span>
         </div>`;
     } else {
-      // === STERNENKARTE UPDATE === PUNKT 5C: Alle weiteren – blur + Nebel
+      // === BUGFIX & UI UPDATE === PUNKT 9C: Alle weiteren – nur Nebel
       el.className = 'ruck-const-item ci-far';
       el.innerHTML = `
         <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
@@ -2639,6 +2720,7 @@ function _ruckPopTelescope() {
     const delay = flyInEnd + idx * 300;
     setTimeout(async () => {
       loreBox.classList.remove('hidden');
+      if (loreLoading) loreLoading.style.display = '';
       const text = await generateConstellationText(constName);
       if (loreLoading) loreLoading.style.display = 'none';
       if (text) _typewriter(loreTxt, text);
@@ -2665,26 +2747,29 @@ function _ruckRatingLabel(type, rating) {
   }[rating] || rating;
 }
 
-// === TRUHE & QUESTLOG UPDATE – PUNKT 5: Kerzen-Setting ===
+// === BUGFIX & UI UPDATE === PUNKT 8: Kerzen absolut positioniert, 4 Flammenfarben
 function _injectQuestlogCandles() {
   const view = document.getElementById('rucksack-view-questlog');
   if (!view) return;
-  const old = view.querySelector('.ruck-candle-row');
-  if (old) old.remove();
-  const row = document.createElement('div');
-  row.className = 'ruck-candle-row';
-  const delays = ['0s', '0.5s', '1.2s', '0.8s'];
-  const count  = 3 + Math.floor(Math.random() * 2);
-  for (let i = 0; i < count; i++) {
-    const d   = delays[i] || '0s';
-    const wH  = 28 + Math.floor(Math.random() * 10);
-    const svgH = 16 + wH;
-    const cid  = 'cv' + (++_ruckIconSeq);
-    const wrap = document.createElement('div');
-    wrap.className = 'ruck-candle-wrap';
+  view.querySelectorAll('.ruck-candle-abs').forEach(el => el.remove());
+
+  const CFG = [
+    { left: '5%',  bottom: 0, h: 44, fc: ['#ffffd0','#f0a820','#e04808'], flkCls: 'flicker1', glow: 'rgba(255,200,60,0.28)' },
+    { left: '16%', bottom: 0, h: 58, fc: ['#d0f8ff','#20c0e0','#0058c0'], flkCls: 'flicker2', glow: 'rgba(30,200,255,0.22)' },
+    { right:'16%', bottom: 0, h: 50, fc: ['#ffd0ff','#e040a0','#800060'], flkCls: 'flicker3', glow: 'rgba(255,60,200,0.22)' },
+    { right:'5%',  bottom: 0, h: 38, fc: ['#d0ffd0','#30e060','#006020'], flkCls: 'flicker4', glow: 'rgba(60,255,100,0.22)' },
+  ];
+
+  CFG.forEach((cfg, i) => {
+    const cid   = 'cabs' + (++_ruckIconSeq);
+    const totalH = cfg.h + 20;
+    const pos   = cfg.left ? `left:${cfg.left}` : `right:${cfg.right}`;
+    const wrap  = document.createElement('div');
+    wrap.className = 'ruck-candle-abs';
+    wrap.style.cssText = `position:absolute;bottom:0;${pos};z-index:2;pointer-events:none;`;
     wrap.innerHTML = `
-      <div class="ruck-candle-light candle-glow" style="animation-delay:${d}"></div>
-      <svg width="18" height="${svgH}" viewBox="0 0 18 ${svgH}" aria-hidden="true">
+      <div class="ruck-candle-light" style="background:radial-gradient(ellipse at 50% 50%,${cfg.glow} 0%,transparent 70%);animation-delay:${(i * 0.35).toFixed(2)}s"></div>
+      <svg width="18" height="${totalH}" viewBox="0 0 18 ${totalH}" aria-hidden="true">
         <defs>
           <linearGradient id="${cid}w" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%"   stop-color="#dac8a0"/>
@@ -2692,24 +2777,21 @@ function _injectQuestlogCandles() {
             <stop offset="100%" stop-color="#b89860"/>
           </linearGradient>
           <radialGradient id="${cid}f" cx="50%" cy="80%" r="65%">
-            <stop offset="0%"   stop-color="#ffffd0"/>
-            <stop offset="38%"  stop-color="#f0a820"/>
-            <stop offset="100%" stop-color="#e04808" stop-opacity="0.3"/>
+            <stop offset="0%"   stop-color="${cfg.fc[0]}"/>
+            <stop offset="38%"  stop-color="${cfg.fc[1]}"/>
+            <stop offset="100%" stop-color="${cfg.fc[2]}" stop-opacity="0.3"/>
           </radialGradient>
         </defs>
-        <rect x="4" y="16" width="10" height="${wH}" rx="1.5" fill="url(#${cid}w)" stroke="#b89860" stroke-width="0.6"/>
-        <path d="M4 22 Q2 26 4 29" fill="#dac8a0" opacity="0.6"/>
-        <line x1="9" y1="16" x2="9" y2="12" stroke="#2a1808" stroke-width="1.5" stroke-linecap="round"/>
-        <g class="candle-flame" style="animation-delay:${d}">
-          <ellipse cx="9" cy="9"  rx="3.5" ry="5.5" fill="url(#${cid}f)" opacity="0.92"/>
-          <ellipse cx="9" cy="10" rx="1.8" ry="3"   fill="#ffe8a0"        opacity="0.85"/>
+        <rect x="4" y="20" width="10" height="${cfg.h}" rx="1.5" fill="url(#${cid}w)" stroke="#b89860" stroke-width="0.6"/>
+        <path d="M4 26 Q2 30 4 33" fill="#dac8a0" opacity="0.6"/>
+        <line x1="9" y1="20" x2="9" y2="16" stroke="#2a1808" stroke-width="1.5" stroke-linecap="round"/>
+        <g class="candle-flame ${cfg.flkCls}" style="animation-delay:${(i * 0.35).toFixed(2)}s">
+          <ellipse cx="9" cy="10" rx="3.5" ry="5.5" fill="url(#${cid}f)" opacity="0.92"/>
+          <ellipse cx="9" cy="11" rx="1.8" ry="3"   fill="${cfg.fc[0]}"   opacity="0.85"/>
         </g>
       </svg>`;
-    row.appendChild(wrap);
-  }
-  const scrollArea = document.getElementById('ruck-log-scroll');
-  if (scrollArea) view.insertBefore(row, scrollArea);
-  else view.appendChild(row);
+    view.appendChild(wrap);
+  });
 }
 
 // === FIX: PUNKT 2 – Questlog Pergament mit Tag-Gruppierung ===
@@ -3217,15 +3299,19 @@ function _initManaTopUp() {
   document.addEventListener('click', () => popup.classList.add('hidden'));
 }
 
-// === STERNENKARTE UPDATE === PUNKT 6: Anthropic API – Sternbild-Lore
+// === BUGFIX & UI UPDATE === PUNKT 10: Sternbild-Lore mit Loading-Indikator + Fallback
 
 async function generateConstellationText(constellationName) {
-  const cacheKey = 'constellation_text_' + constellationName;
-  const saved = localStorage.getItem(cacheKey);
-  if (saved) return saved;
+  const cacheKey = 'qb_lore_' + constellationName.replace(/\s+/g, '_');
+  try {
+    const saved = localStorage.getItem(cacheKey);
+    if (saved) return saved;
+  } catch {}
 
   const apiKey = localStorage.getItem('qb_api_key');
-  if (!apiKey) return null;
+  if (!apiKey) {
+    return '✦ Hinterlege einen API-Schlüssel (qb_api_key) in den Einstellungen, um Sternbild-Legenden zu entdecken.';
+  }
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -3237,22 +3323,28 @@ async function generateConstellationText(constellationName) {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5-20251001',
         max_tokens: 300,
-        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das Sternbild [STERNBILD-NAME] einen mittelgroßen Text (1 Absatz Lore + 1-2 Sätze persönlicher Bezug zur Userin). Der Lore-Teil soll mythisch und episch sein – orientiere dich an realen und fiktiven Mythen (griechisch, nordisch, keltisch, fantasy). Der persönliche Teil soll die Userin direkt ansprechen (\"du\") und lobend sowie ermutigend sein. Antworte nur mit dem Text, keine Einleitung.',
+        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das Sternbild einen mittelgroßen Text (1 Absatz Lore + 1-2 Sätze persönlicher Bezug zur Userin). Der Lore-Teil soll mythisch und episch sein. Der persönliche Teil spricht die Userin direkt an (\"du\") und ist ermutigend. Antworte nur mit dem Text, ohne Einleitung.',
         messages: [{
           role: 'user',
-          content: 'Erstelle einen mythischen und persönlichen Text für das Sternbild: ' + constellationName,
+          content: 'Sternbild: ' + constellationName,
         }],
       }),
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      const errText = `✦ Verbindungsfehler (${response.status}). Bitte versuche es später erneut.`;
+      return errText;
+    }
     const data = await response.json();
     const text = data.content?.[0]?.text?.trim() || null;
-    if (text) localStorage.setItem(cacheKey, text);
-    return text;
-  } catch {
-    return null;
+    if (text) {
+      try { localStorage.setItem(cacheKey, text); } catch {}
+      return text;
+    }
+    return '✦ Keine Antwort erhalten. Versuche es erneut.';
+  } catch (e) {
+    return '✦ Netzwerkfehler. Prüfe deine Verbindung.';
   }
 }
 

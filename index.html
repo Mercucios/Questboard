@@ -530,7 +530,7 @@
 
       <!-- Karten-Übersicht -->
       <div id="rucksack-view-cards" class="rucksack-view rucksack-view-active">
-        <button class="rucksack-close-btn" id="rucksack-close-btn-cards" aria-label="Schließen">✕</button>
+        <button class="rucksack-close-btn nav-btn" id="rucksack-close-btn-cards" aria-label="Schließen">✕</button>
         <h2 class="rucksack-title">
           <svg class="rucksack-title-icon" width="24" height="28" viewBox="0 0 110 150" aria-hidden="true">
             <defs>
@@ -621,6 +621,12 @@
             <span class="inv-card-sub">Deine Belohnungen</span>
           </button>
 
+        </div>
+
+        <!-- BUGFIX & UI UPDATE PUNKT 7B: Tages-Zitat & Wetter-Stimmung -->
+        <div class="inventory-bottom" id="inventory-bottom">
+          <div class="inv-bottom-quote" id="inv-daily-quote">✦ Lade...</div>
+          <div class="inv-bottom-weather" id="inv-daily-weather"></div>
         </div>
       </div>
 

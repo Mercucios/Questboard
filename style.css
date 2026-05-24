@@ -4495,3 +4495,226 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   100% { transform: translateY(0)   scale(1);      opacity: 1; }
 }
 #popup-star.active-star .star-burst { animation: starFallIn 0.75s cubic-bezier(0.2, 0.8, 0.4, 1) both; }
+
+/* ═══════════════════════════════════════════════════════════
+   BUGFIX & UI UPDATE SESSION – 12 Punkte
+   ═══════════════════════════════════════════════════════════ */
+
+/* PUNKT 3 – Quest-Karte fliegt heraus (animationend) */
+@keyframes questCardFlyOff {
+  0%   { transform: translateX(0) scale(1); opacity: 1; }
+  30%  { transform: translateX(8px) scale(1.04); opacity: 1; }
+  100% { transform: translateX(110vw) scale(0.7) rotate(12deg); opacity: 0; }
+}
+.quest-card--fly-off {
+  animation: questCardFlyOff 0.5s cubic-bezier(0.4, 0, 1, 0.6) forwards !important;
+  pointer-events: none !important;
+}
+
+/* PUNKT 5 – .nav-btn: Alias für .back-btn (oben-links, 52px-Kreis, Gold-Rand) */
+.nav-btn {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838) !important;
+  border: 2px solid #c4a030 !important;
+  border-radius: 50% !important;
+  width: 52px !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #f0c040 !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  z-index: 100 !important;
+  touch-action: manipulation !important;
+  padding: 0 !important;
+  transition: box-shadow 0.2s, transform 0.15s !important;
+  box-shadow: 0 0 10px rgba(196,160,48,0.25) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.nav-btn:active {
+  transform: scale(0.9) !important;
+  box-shadow: 0 0 20px rgba(196,160,48,0.5) !important;
+}
+
+/* PUNKT 5 – Rucksack-Schließen-Button oben-links (wie back-btn) */
+.rucksack-close-btn {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  right: auto !important;
+  background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838) !important;
+  border: 2px solid #c4a030 !important;
+  border-radius: 50% !important;
+  width: 52px !important;
+  height: 52px !important;
+  font-size: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #f0c040 !important;
+  cursor: pointer !important;
+  z-index: 100 !important;
+  transition: transform 0.15s, box-shadow 0.2s !important;
+  box-shadow: 0 0 10px rgba(196,160,48,0.25) !important;
+}
+.rucksack-close-btn:active {
+  transform: scale(0.9) !important;
+  box-shadow: 0 0 20px rgba(196,160,48,0.5) !important;
+}
+
+/* PUNKT 5 – Rucksack-Header mit mehr Platz für Schließen-Button */
+#rucksack-view-cards { position: relative !important; padding-top: 72px !important; }
+
+/* PUNKT 6 – Rucksack-Titel-Icon auf Schriftgröße des Titels */
+.rucksack-title-icon {
+  width: auto !important;
+  height: 1.6em !important;
+}
+
+/* PUNKT 7A – Inventar-Kacheln gleichgroß */
+.rucksack-cards-grid {
+  grid-template-rows: auto auto !important;
+  align-items: stretch !important;
+}
+.rucksack-inv-card {
+  aspect-ratio: 1 !important;
+  min-height: unset !important;
+}
+.inv-card-wide {
+  aspect-ratio: 2 / 1 !important;
+  max-width: none !important;
+  min-height: unset !important;
+  grid-column: 1 / -1 !important;
+}
+
+/* PUNKT 7B – Inventar-Bottom: Tages-Zitat + Wetter-Stimmung */
+.inventory-bottom {
+  padding: 0.7rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid rgba(201,162,39,0.15);
+  flex-shrink: 0;
+}
+.inv-bottom-quote {
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.88rem;
+  color: #c8b08a;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.45;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+}
+.inv-bottom-weather {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: #f0c040;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* PUNKT 8 – Kerzen absolut, 4 Flammenfarben */
+.ruck-candle-abs {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.ruck-candle-abs .ruck-candle-light {
+  width: 70px;
+  height: 80px;
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  animation: flickerGlow 2.2s ease-in-out infinite;
+}
+@keyframes flicker1 {
+  0%,100% { transform: scaleX(1)    scaleY(1)    rotate(-1deg); opacity: 1;    }
+  25%     { transform: scaleX(0.86) scaleY(1.14) rotate(2deg);  opacity: 0.88; }
+  50%     { transform: scaleX(1.1)  scaleY(0.9)  rotate(-2deg); opacity: 0.95; }
+  75%     { transform: scaleX(0.9)  scaleY(1.06) rotate(1deg);  opacity: 0.82; }
+}
+@keyframes flicker2 {
+  0%,100% { transform: scaleX(1.05) scaleY(0.95) rotate(2deg);  opacity: 0.9; }
+  33%     { transform: scaleX(0.9)  scaleY(1.15) rotate(-3deg); opacity: 1;   }
+  66%     { transform: scaleX(1.12) scaleY(0.88) rotate(1deg);  opacity: 0.85; }
+}
+@keyframes flicker3 {
+  0%,100% { transform: scaleX(1)    scaleY(1)    rotate(0deg);  opacity: 0.95; }
+  20%     { transform: scaleX(1.14) scaleY(0.88) rotate(-2deg); opacity: 0.8; }
+  55%     { transform: scaleX(0.88) scaleY(1.12) rotate(3deg);  opacity: 1;   }
+  80%     { transform: scaleX(1.05) scaleY(0.94) rotate(-1deg); opacity: 0.88; }
+}
+@keyframes flicker4 {
+  0%,100% { transform: scaleX(0.95) scaleY(1.05) rotate(1deg);  opacity: 0.92; }
+  40%     { transform: scaleX(1.1)  scaleY(0.92) rotate(-2deg); opacity: 0.78; }
+  70%     { transform: scaleX(0.9)  scaleY(1.1)  rotate(2deg);  opacity: 1;   }
+}
+.flicker1 { transform-origin: 50% 100%; animation: flicker1 2.3s ease-in-out infinite; }
+.flicker2 { transform-origin: 50% 100%; animation: flicker2 1.8s ease-in-out infinite; }
+.flicker3 { transform-origin: 50% 100%; animation: flicker3 2.7s ease-in-out infinite; }
+.flicker4 { transform-origin: 50% 100%; animation: flicker4 1.5s ease-in-out infinite; }
+
+/* PUNKT 8 – Questlog-Hintergrund dunkler für Kerzeneffekt */
+#rucksack-view-questlog {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* PUNKT 9 – Nebel-SVG für gesperrte Sternbilder */
+.ci-svg-nebula {
+  filter: blur(5px) !important;
+  opacity: 0.75 !important;
+}
+
+/* PUNKT 9 – Animiertes ??? für erstes entsperrbares Sternbild */
+@keyframes constNamePulse {
+  0%,100% { opacity: 1;   letter-spacing: 0.15em; }
+  50%     { opacity: 0.6; letter-spacing: 0.3em;  }
+}
+.const-name-anim {
+  animation: constNamePulse 2.5s ease-in-out infinite !important;
+  display: inline-block !important;
+}
+
+/* PUNKT 11 – Tagesbewertung: doppelte Schriftgrößen + Vollbild */
+.day-rating-popup {
+  position: fixed !important;
+  inset: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2.5rem 2rem !important;
+}
+.day-rating-title  { font-size: 2.6rem !important; }
+.day-rating-sub    { font-size: 1.84rem !important; }
+.dr-icon           { font-size: 3.5rem !important; }
+.dr-label          { font-size: 1.6rem !important; }
+.dr-desc           { font-size: 1.52rem !important; }
+.day-rating-auto-hint { font-size: 1.76rem !important; }
+.day-rating-options { gap: 1rem !important; }
+.day-rating-opt-btn { padding: 1.2rem 0.8rem !important; }
+
+/* PUNKT 12 – Cinzel-Schrift für alle Zahlen-Elemente */
+.ruck-star-num,
+.mana-text,
+.date-chip,
+.sq-ap-btn,
+.badge-star-count,
+.quest-cost,
+.victory-reward-name,
+.victory-quest-name,
+.log-rating-btn span:first-child,
+.inv-bottom-weather {
+  font-family: 'Cinzel', serif !important;
+}
+.badge-star-count { font-size: 0.78rem; font-weight: 600; color: #f0c040; display: block; margin-top: 0.15rem; }
