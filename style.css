@@ -2569,13 +2569,13 @@ h1 {
 
 /* === FIX: MOOD-SCREEN === */
 h1 {
-  font-size: clamp(42px, 11vw, 58px) !important;
+  font-size: clamp(15px, 4vw, 24px) !important;
   margin: 0 !important;
 }
 
 /* === FIX: MOOD-SCREEN === */
 .logo-sub {
-  font-size: clamp(52px, 14vw, 72px) !important;
+  font-size: clamp(28px, 7vw, 46px) !important;
   margin: 0 !important;
 }
 
@@ -3258,6 +3258,7 @@ h1 {
 
 /* === MANA & REMINDER UPDATE === PUNKT 5A: Undo-Toast mit Countdown-Ring */
 .mana-undo-toast {
+  display: none !important;
   position: fixed;
   bottom: 72px;
   right: 12px;
@@ -4123,13 +4124,13 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838) !important;
   border: 2px solid #c4a030 !important;
   border-radius: 50% !important;
-  width: 52px !important;
-  height: 52px !important;
+  width: 26px !important;
+  height: 26px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   color: #f0c040 !important;
-  font-size: 24px !important;
+  font-size: 13px !important;
   cursor: pointer !important;
   z-index: 100 !important;
   touch-action: manipulation !important;
@@ -4662,7 +4663,9 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 
 /* PUNKT 8 – Questlog-Hintergrund dunkler für Kerzeneffekt */
 #rucksack-view-questlog {
-  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
   overflow: hidden !important;
 }
 
@@ -4745,13 +4748,13 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .mystery-q {
   font-family: 'Cinzel', serif;
   font-size: clamp(20px, 5vw, 28px);
-  font-weight: 300;
+  font-weight: 700;
   color: transparent;
   background: linear-gradient(180deg, #d0d8f0 0%, #8090b0 50%, #d0d8f0 100%);
   -webkit-background-clip: text;
   background-clip: text;
   letter-spacing: 4px;
-  animation: mysteryBob 3s ease-in-out infinite;
+  animation: mysteryBob 6s ease-in-out infinite;
   display: inline-block;
   filter: drop-shadow(0 0 4px rgba(160,170,200,0.4));
 }
@@ -4788,6 +4791,9 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 /* PUNKT 5A – Questlog Container-Fix */
 #ruck-log-scroll {
   background: #03010a !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
 }
 
 .ruck-scroll-outer {

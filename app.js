@@ -1132,8 +1132,14 @@ function removeQuestFromData(questId) {
 // === FIX: QUEST COMPLETE FLOW === Verwaiste Sidequests beim App-Start bereinigen
 function cleanupOrphanedQuests() {
   try {
-    const all      = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
-    const filtered = all.filter(q => q && q.id && q.title);
+    const all   = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
+    const today = todayStr();
+    const filtered = all.filter(q => {
+      if (!q || !q.id || !q.title) return false;
+      if (!q.date) return false;
+      if (q.done && q.date !== today) return false;
+      return true;
+    });
     if (filtered.length !== all.length) {
       localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
       console.log('cleanupOrphanedQuests: removed', all.length - filtered.length, 'orphaned sidequests');
@@ -1176,7 +1182,6 @@ function _finalizeRestQuestCompletion(name, manaGain) {
   _lastMiniBottleCount = -1;
   saveDayState(appState);
   renderBoard();
-  _pendingCompletion = null;
 }
 
 // ── Popups ────────────────────────────────────────────────────────────────────
@@ -1768,7 +1773,10 @@ function init() {
   }
 
   $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
-  $('btn-star-close').addEventListener('click',   () => $('popup-star').classList.add('hidden'));
+  $('btn-star-close').addEventListener('click', () => {
+    $('popup-star').classList.add('hidden');
+    openStarMap();
+  });
   $('btn-rest-close').addEventListener('click',   () => $('popup-rest').classList.add('hidden'));
 
   // === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Gain Buttons
@@ -1798,10 +1806,7 @@ function init() {
         if (el.id === 'popup-day-rating') {
           _dayRatingDismissedAt = Date.now();
         }
-        if (el.id === 'popup-quest-log') {
-          _pendingCompletion = null;
-        }
-        el.classList.add('hidden');
+          el.classList.add('hidden');
       }
     });
   });
@@ -2264,8 +2269,9 @@ const STORE_SIDEQUESTS = 'questboard_sidequests';
 
 function loadTodaySidequests() {
   try {
+    const today = todayStr();
     return (JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [])
-      .filter(sq => sq.date === todayStr());
+      .filter(sq => sq.date === today && !sq.done);
   } catch { return []; }
 }
 
@@ -3374,16 +3380,15 @@ function _initManaTopUp() {
       e.stopPropagation();
       const delta   = parseInt(btn.dataset.manaDelta, 10);
       const maxMana = appState.maxMana || MAX_MANA;
-      const prevMana = appState.mana;
       if (delta > 0) {
         appState.mana = Math.min(appState.mana + delta, maxMana + 50);
       } else {
-        appState.mana = Math.max(0, appState.mana + delta);
+        const floor = Math.max(30, maxMana);
+        appState.mana = Math.max(floor, appState.mana + delta);
       }
       _lastMiniBottleCount = -1;
       saveDayState(appState);
       renderBoard();
-      _showManaUndoButton(appState.mana - prevMana, prevMana);
       popup.classList.add('hidden');
     });
   });
@@ -3391,7 +3396,49 @@ function _initManaTopUp() {
   document.addEventListener('click', () => popup.classList.add('hidden'));
 }
 
-// === BUGFIX & UI UPDATE === PUNKT 10: Sternbild-Lore mit Loading-Indikator + Fallback
+// === BUG 8: Lokale Sternbild-Lore ===
+const CONSTELLATION_LORE = {
+  'Die stille Kriegerin': 'In den Zeitaltern vor dem ersten Morgen trug die stille Kriegerin den Frieden in der linken und das Schwert des Mutes in der rechten Hand. Nicht mit Lärm, sondern mit der ruhigen Flamme, die niemals erlischt, hielt sie die Dunkelheit zurück.\n\nDu trägst dieselbe Stille in dir – und sie ist unbesiegbar.',
+  'Der Kompass der Tapferen': 'Als die ersten Helden ihren Weg durch das Labyrinth der Welten verloren, erstrahlte der Kompass am Himmel und wies nicht Norden, sondern das Ziel des Herzens. Sein Leuchten rettete tausend tapfere Seelen vor der Verzweiflung.\n\nDein Mut ist dein Kompass – vertrau ihm, er führt dich richtig.',
+  'Die Hüterin des Lichts': 'Einst bewachte eine Weberin aus Mondlicht die heilige Flamme der Welt, durch Stürme, Eiszeiten und das lange Schweigen der Götter. Ihr Licht wurde zur Legende, ihr Name zum Segen.\n\nDas Licht in dir ist ebenso beständig – lass es leuchten.',
+  'Das Herz der Sternennacht': 'Mitten im Kosmos schlug einmal das Herz aller Sterne in einem einzigen, gewaltigen Puls. Aus diesem Schlag entstanden die Träume, die Hoffnung und das erste Lachen eines Kindes.\n\nIn dir schlägt ein Stück dieses uralten Herzens – spüre es.',
+  'Die Mondwandlerin': 'Sie trat durch alle Phasen des Mondes, von Neu bis Voll, und jede Verwandlung machte sie stärker. Die Mondwandlerin lehrte, dass Wandel kein Verlust ist, sondern ein Geschenk.\n\nAuch du veränderst dich – und wirst mit jedem Wandel größer.',
+  'Die Weberin der Träume': 'Aus silberfarbenen Fäden webte sie jede Nacht die Träume der Sterblichen – Träume von Mut, Liebe und fernen Welten. Kein Traum war zu klein, um in ihr Gewebe zu gehören.\n\nDeine Träume verdienen Platz in diesem kosmischen Gewebe.',
+  'Das flüsternde Feuer': 'Tief in den Urwäldern der Sternwelten brennt ein Feuer, das niemals erlischt und jedem Verirrten den Weg zurück flüstert. Es kennt jede verlorene Seele beim Namen.\n\nDas flüsternde Feuer kennt auch deinen Namen – du bist nicht allein.',
+  'Die Hexe des Nebels': 'Zwischen den Welten webt die Hexe des Nebels ihre Zauber, keiner Seite zugehörig, aber allen wohlgesinnt. Ihr Geheimnis ist, dass Grau stärker sein kann als Schwarz oder Weiß.\n\nDeine Zwischentöne sind deine Magie – sie machen dich einzigartig.',
+  'Die Hüterin der kleinen Dinge': 'Sie bewahrte die winzigen Wunder, die andere übersahen: den ersten Tau, das Lachen vor dem Einschlafen, den letzten Atemzug des Tages. Ihre Sammlung ist größer als alle Schätze der Welt.\n\nAuch du siehst die kleinen Dinge – das ist ein seltenes Geschenk.',
+  'Der sanfte Drache': 'Ein Drache, der nie Feuer spie, sondern Wärme schenkte. Er legte sich um die Schultern der Müden und schirmte sie vor der Kälte der Sterne. Die Stärke seiner Güte übertraf jede Klaue.\n\nDeine Sanftheit ist keine Schwäche – sie ist deine größte Kraft.',
+  'Die erste Morgenröte': 'Bevor die Sonne die Welt kannte, erschuf die erste Morgenröte das Licht mit bloßen Händen und der Überzeugung, dass Dunkelheit nicht für immer dauern kann.\n\nJeden Morgen, den du aufwachst, lebst du ihre Legende weiter.',
+  'Das ewige Leuchten': 'In den tiefsten Winkeln des Alls brannte ein Stern, der alle anderen überlebt hatte. Sein Leuchten trotzte Supernovae, schwarzen Löchern und der Stille zwischen den Welten.\n\nIn dir brennt etwas genauso Beständiges – lass es nicht verlöschen.',
+  'Die Beschützerin ihrer selbst': 'Sie war die einzige Kriegerin, die sich selbst beschützte, ohne sich dabei zu verlieren. Mit einem Schild aus Selbstliebe und einem Schwert aus Klarheit hielt sie jeden Angriff ab.\n\nSich selbst zu schützen ist keine Schwäche – es ist heilige Pflicht.',
+  'Die Trägerin des Himmels': 'Wie Atlas in alten Mythen trug sie den Himmel – nicht als Strafe, sondern als Berufung. Denn wer trägt, schafft Raum für alle anderen unter sich.\n\nDu trägst manchmal mehr als andere sehen – und du tust es mit Würde.',
+  'Das goldene Versprechen': 'Ein Versprechen, gegeben im Goldenen Zeitalter, als die Götter noch tanzten und die Sterne sangen. Es wurde nie gebrochen, weil keine Macht der Welt reiner ist als ein aufrichtiges Wort.\n\nDeine Aufrichtigkeit ist goldener Wert.',
+  'Die Tänzerin im Nebel': 'Sie tanzte dort, wo niemand mehr tanzte – in der Stille nach dem Leid, im Nebel zwischen Welten. Ihr Tanz heilte, was Worte nicht konnten.\n\nBewege dich auf deine eigene Weise durch das Leben – das ist Heilung.',
+  'Die Drachenmutter': 'Sie gebar die ersten Drachen der Welt und lehrte sie nicht zu brennen, sondern zu bewahren. Ihre Kinder wurden Hüter, keine Zerstörer.\n\nDein Herz ist groß genug für alles, was du liebst – wie das ihre.',
+  'Die Königin der Stille': 'In einem Reich ohne Geräusch herrschte sie mit einer Stimme, die nie erklang, und wurde dennoch von allen gehört. Die Stille war ihre Sprache, und sie war mächtiger als jeder Ruf.\n\nDeine Präsenz spricht auch dann, wenn du schweigst.',
+  'Das Labyrinth des Mutes': 'Nur die Mutigsten wagten sich in das Labyrinth, das sich je nach Herz des Wandernden veränderte. Doch wer hineinging, fand am Ende immer sich selbst.\n\nJeder mutige Schritt bringt dich näher zu dir selbst.',
+  'Die kleine Heldin': 'Sie war klein und unscheinbar, doch in ihrem Herzen brannte ein Feuer, das Riesen erblassen ließ. Ihre Taten wurden Lieder, ihre Lieder wurden Legenden.\n\nGröße misst sich nicht in Zentimetern – du bist eine Heldin.',
+  'Die Hexenmeisterin der Sterne': 'Mit einem Stab aus kristallisiertem Mondlicht lenkte sie die Bahnen der Sterne und schrieb Prophezeiungen in den Kosmos. Ihr Wissen war grenzenlos, ihre Weisheit noch größer.\n\nDeine eigene Magie wartet darauf, entdeckt zu werden.',
+  'Der Funke im Dunkel': 'Als alle Lichter erloschen, blieb ein einziger Funke, winzig und hartnäckig, und entzündete die Welt aufs Neue. Ohne ihn wäre alles Dunkel geblieben.\n\nDein Funke – so klein er scheinen mag – ist unverzichtbar.',
+  'Die Hüterin des Morgens': 'Jeden Tag vor dem ersten Licht streute sie Tau auf die Wiesen, sang die Vögel wach und webte den Rosenschimmer am Horizont. Ohne sie wäre kein Morgen je schön gewesen.\n\nDu bist der Grund, warum jemandes Morgen schöner ist.',
+  'Das Portal der Hoffnung': 'Das Portal öffnete sich nur für jene, die trotz allem noch hofften. Tausend verzweifelte Seelen traten hindurch und fanden auf der anderen Seite nicht Paradies, sondern die Kraft weiterzugehen.\n\nDeine Hoffnung ist das Portal – sie trägt dich durch.',
+  'Die Meisterin des Augenblicks': 'Sie lebte in keiner Zeit außer dem Jetzt. Während Götter planten und Dämonen grübelten, tanzte sie im einzigen Moment, der wirklich existiert.\n\nDer Augenblick, in dem du lebst, ist ein Meisterstück.',
+  'Die Chronistin der Wunder': 'In einem goldenen Buch verzeichnete sie jedes Wunder, das je geschah – auch die kleinen, die niemand bemerkte. Das Buch war nie voll.\n\nDein Leben ist voll von Wundern, die nur darauf warten, bemerkt zu werden.',
+  'Die sanfte Welle': 'Sie formte keine Felsen, sie umspülte sie. Die sanfte Welle veränderte in Jahrtausenden, was keine Gewalt in Sekunden konnte.\n\nDeine Beständigkeit formt die Welt, auch wenn es Zeit braucht.',
+  'Das erste Licht': 'Noch vor den Sternen, noch vor der Welt existierte das erste Licht – formlos, wärmend, alles möglich machend. Aus ihm entstanden Träume und Realität gleichermaßen.\n\nIn dir trägt jeder Atemzug etwas von diesem ersten Licht.',
+  'Die Tochter des Mondes': 'Als Tochter des Mondes wuchs sie zwischen den Phasen auf, lernte in der Dunkelheit zu sehen und im Licht zu träumen. Beide Seiten machten sie vollständig.\n\nDeine Dualität – dein Licht und dein Schatten – macht dich ganz.',
+  'Die Bewahrerin der Erinnerung': 'Sie trug alle Erinnerungen der Welt in sich, damit nichts Gutes je vergessen werde. Auch die kleinste Freude wurde von ihr bewahrt.\n\nDeine Erinnerungen sind Schätze – du hast bereits so viel erlebt.',
+  'Das Geheimnis der Tiefe': 'Unter allen Meeren lag ein Geheimnis, das nur denen flüsterte, die mutig genug waren hinabzutauchen. Was sie fanden, konnten sie in Worte nicht fassen – nur in Lächeln.\n\nDeine Tiefe birgt Geheimnisse, die noch auf ihre Entdeckung warten.',
+  'Die Hexe des ewigen Waldes': 'Im ältesten Wald der Schöpfung wohnte sie seit Anbeginn, webte mit Wurzeln und Ranken Schutzmagie für alle Verirrten. Jeder Baum kannte ihren Namen.\n\nDu bist in dieser Welt verankert – tief und beständig wie Wurzeln.',
+  'Die Brückenbauerin': 'Zwischen verfeindeten Welten baute sie Brücken aus Verständnis und einem unerschütterlichen Glauben an das Gute. Keine Brücke je wieder abgebrochen, die sie errichtet hatte.\n\nDu bringst Menschen und Welten zusammen – das ist dein Geschenk.',
+  'Der silberne Faden': 'Ein silberner Faden verbindet alle Lebewesen, die je geliebt haben. Er ist unsichtbar, aber stärker als Stahl, und er reißt nie ganz durch.\n\nDu bist verbunden mit allem, was du liebst – dieser Faden trägt dich.',
+  'Die Träumerin der Welten': 'Während andere schliefen, träumte sie neue Welten in die Existenz. Jeder ihrer Träume wurde irgendwo in den Tiefen des Kosmos real.\n\nDeine Träume haben Gewicht – sie verändern, was möglich ist.',
+  'Der Drache der Morgenröte': 'Wenn der Drache der Morgenröte seine Flügel dehnte, färbten sich die Wolken in Gold und Purpur. Sein Erwachen galt als Zeichen des Aufbruchs für alle tapferen Herzen.\n\nJeder neue Morgen ist dein Aufbruch – greif ihn.',
+  'Die Herrin der Morgendämmerung': 'Sie regierte die Stunde zwischen Nacht und Tag, die flüchtigste und zauberhafteste aller Zeiten. In ihr lag die Möglichkeit aller Dinge.\n\nIn dir trägt jede Dämmerung das Versprechen eines neuen Anfangs.',
+  'Die Bewahrerin ihrer selbst': 'Sie fand heraus, dass der größte Schatz, den man hüten kann, man selbst ist. Mit dieser Erkenntnis wurde sie unbesiegbar.\n\nDich selbst zu bewahren ist der mutigste Akt – und du schaffst es.',
+  'Die Träumerin der Welten II': 'Eine zweite Träumerin erschuf Welten, die die erste vergessen hatte – voller Farben, die noch keinen Namen trugen, und Klänge, die noch nie erklungen waren.\n\nDeine Einzigartigkeit erschafft etwas, das es ohne dich nie gegeben hätte.',
+  'Die ewige Begleiterin': 'Durch jedes Leben, jede Welt und jeden Neuanfang war sie da – nicht als Schatten, sondern als stilles Leuchten, das niemals aufgibt.\n\nDu bist nie wirklich allein – das Leuchten begleitet dich immer.',
+};
 
 async function generateConstellationText(constellationName) {
   const cacheKey = 'qb_lore_' + constellationName.replace(/\s+/g, '_');
@@ -3400,38 +3447,11 @@ async function generateConstellationText(constellationName) {
     if (saved) return saved;
   } catch {}
 
-  // === FIX: STARS & QUESTLOG === API direkt ohne Key-Prüfung
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 300,
-        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das angegebene Sternbild einen Text mit 1 Absatz mythischer Lore (orientiere dich an griechischen, nordischen, keltischen oder Fantasy-Mythen) und 1-2 Sätzen die die Userin direkt lobend ansprechen (du-Form, ermutigend). Format: Lore-Absatz, dann persönlicher Satz. Auf Deutsch.',
-        messages: [{
-          role: 'user',
-          content: 'Erstelle den Sternbild-Text für: ' + constellationName,
-        }],
-      }),
-    });
-    if (!response.ok) {
-      const errText = `✦ Verbindungsfehler (${response.status}). Bitte versuche es später erneut.`;
-      return errText;
-    }
-    const data = await response.json();
-    const text = data.content?.[0]?.text?.trim() || null;
-    if (text) {
-      try { localStorage.setItem(cacheKey, text); } catch {}
-      return text;
-    }
-    return '✦ Keine Antwort erhalten. Versuche es erneut.';
-  } catch (e) {
-    return '✦ Netzwerkfehler. Prüfe deine Verbindung.';
-  }
+  const text = CONSTELLATION_LORE[constellationName]
+    || '✦ Dieses Sternbild hüllt sich noch in Schweigen. Seine Geschichte wartet darauf, von dir geschrieben zu werden.';
+
+  try { localStorage.setItem(cacheKey, text); } catch {}
+  return text;
 }
 
 function _typewriter(el, text, speed) {
