@@ -1895,7 +1895,8 @@ h1 {
   transition: border-color 0.18s;
 }
 
-.ruck-const-item.ci-done   { border-color: rgba(201,162,39,0.28); }
+.ruck-const-item.ci-done   { border-color: rgba(201,162,39,0.28); cursor: pointer; }
+.ruck-const-item.ci-done:active { background: rgba(201,162,39,0.07) !important; }
 .ruck-const-item.ci-active { border-color: rgba(160,100,255,0.3); }
 .ruck-const-item.ci-locked { opacity: 0.45; }
 .ruck-const-item.ci-hidden { opacity: 0.25; }
@@ -2569,7 +2570,8 @@ h1 {
 
 /* === FIX: MOOD-SCREEN === */
 h1 {
-  font-size: clamp(15px, 4vw, 24px) !important;
+  font-size: clamp(45px, 12vw, 72px) !important;
+  font-weight: 700 !important;
   margin: 0 !important;
 }
 
@@ -4255,15 +4257,32 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   display: block;
 }
 
-/* PUNKT 5 lore box */
+/* PUNKT 5 lore box – Akkordeon */
 .const-lore-box {
-  margin-top: 0.55rem;
-  background: rgba(10,4,30,0.8);
-  border: 1px solid rgba(201,162,39,0.3);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0 0.85rem;
+  margin-top: 0;
+  background: rgba(10,4,30,0.85);
+  border: 1px solid transparent;
   border-radius: 10px;
-  padding: 0.75rem 0.85rem;
+  transition: max-height 0.38s ease, opacity 0.28s ease, padding 0.25s ease, margin-top 0.25s ease, border-color 0.25s ease;
 }
-.const-lore-box.hidden { display: none; }
+.const-lore-box.open {
+  max-height: 500px;
+  opacity: 1;
+  padding: 0.65rem 0.85rem 0.75rem;
+  margin-top: 0.55rem;
+  border-color: rgba(201,162,39,0.3);
+}
+.const-lore-divider {
+  text-align: center;
+  color: rgba(201,162,39,0.55);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 0.45rem;
+}
 .const-lore-loading {
   font-family: 'Star2', serif;
   font-size: 0.75rem;
@@ -4395,6 +4414,7 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .victory-banner {
   position: absolute; top: 0; width: 72px; height: 100%;
   opacity: 0; transform: scaleY(0); transform-origin: top center;
+  pointer-events: none;
 }
 .victory-banner-left  { left: 0;  background: linear-gradient(180deg, #cc1010 0%, #880808 50%, #550404 100%); }
 .victory-banner-right { right: 0; background: linear-gradient(180deg, #cc1010 0%, #880808 50%, #550404 100%); }
@@ -4419,7 +4439,7 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 }
 .victory-trumpet {
   position: absolute; font-size: 2.5rem; top: 20%;
-  opacity: 0;
+  opacity: 0; pointer-events: none;
 }
 .victory-trumpet-l { left: 12%; }
 .victory-trumpet-r { right: 12%; }

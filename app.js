@@ -1791,6 +1791,8 @@ function init() {
   $('btn-starmap-close').addEventListener('click', () => {
     if (starMapAnimFrame) { cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null; }
     $('popup-starmap').classList.add('hidden');
+    openRucksack();
+    _ruckSetView('telescope', false);
   });
   $('btn-reset').addEventListener('click', () => {
     localStorage.removeItem(STORE_STATE);
@@ -1806,7 +1808,11 @@ function init() {
         if (el.id === 'popup-day-rating') {
           _dayRatingDismissedAt = Date.now();
         }
-          el.classList.add('hidden');
+        el.classList.add('hidden');
+        if (el.id === 'popup-starmap') {
+          openRucksack();
+          _ruckSetView('telescope', false);
+        }
       }
     });
   });
@@ -2719,7 +2725,8 @@ function _ruckPopTelescope() {
         <div class="ci-info">
           <span class="ruck-const-name">${c.name}</span>
           <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
-          <div class="const-lore-box hidden">
+          <div class="const-lore-box">
+            <div class="const-lore-divider">⚔ ✦ ⚔</div>
             <span class="const-lore-loading">✦ Die Sterne erzählen…</span>
             <p class="const-lore-text"></p>
           </div>
@@ -2801,23 +2808,35 @@ function _ruckPopTelescope() {
     _ruckCountRaf = requestAnimationFrame(countStep);
   }, flyInEnd);
 
-  // === STERNENKARTE UPDATE === PUNKT 6: Lore-Text für abgeschlossene Sternbilder
+  // Akkordeon: abgeschlossene Sternbilder aufklappbar
   const doneItems = list.querySelectorAll('.ci-done');
-  doneItems.forEach((el, idx) => {
+  doneItems.forEach((el) => {
     const constName = el.querySelector('.ruck-const-name')?.textContent?.trim();
     if (!constName) return;
     const loreBox     = el.querySelector('.const-lore-box');
     const loreTxt     = el.querySelector('.const-lore-text');
     const loreLoading = el.querySelector('.const-lore-loading');
     if (!loreBox || !loreTxt) return;
-    const delay = flyInEnd + idx * 300;
-    setTimeout(async () => {
-      loreBox.classList.remove('hidden');
-      if (loreLoading) loreLoading.style.display = '';
-      const text = await generateConstellationText(constName);
-      if (loreLoading) loreLoading.style.display = 'none';
-      if (text) _typewriter(loreTxt, text);
-    }, delay);
+    let textLoaded = false;
+
+    el.addEventListener('click', async () => {
+      const isOpen = loreBox.classList.contains('open');
+      // Alle anderen schließen
+      doneItems.forEach(other => {
+        other.querySelector('.const-lore-box')?.classList.remove('open');
+      });
+      // Aktuelles ein-/ausklappen
+      if (!isOpen) {
+        loreBox.classList.add('open');
+        if (!textLoaded) {
+          textLoaded = true;
+          if (loreLoading) loreLoading.style.display = '';
+          const text = await generateConstellationText(constName);
+          if (loreLoading) loreLoading.style.display = 'none';
+          if (text) _typewriter(loreTxt, text);
+        }
+      }
+    });
   });
 }
 
