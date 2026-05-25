@@ -2673,31 +2673,43 @@ function _ruckPopTelescope() {
           </div>
         </div>`;
     } else if (isCurrent) {
-      // === BUGFIX & UI UPDATE === PUNKT 9A: Erstes entsperrbares – Nebel + animiertes ??? + 🔒 + Sternzahl
+      // === FIX: STARS & QUESTLOG === erstes gesperrtes: Nebel + silberne ??? + 🔒 + Sternzahl
       el.className = 'ruck-const-item ci-active';
       el.innerHTML = `
-        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
+        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
         <div class="ci-info">
-          <span class="ruck-const-name const-name-anim">❓ ❓ ❓</span>
+          <div class="mystery-marks">
+            <span class="mystery-q" style="animation-delay:0s">?</span>
+            <span class="mystery-q" style="animation-delay:0.4s">?</span>
+            <span class="mystery-q" style="animation-delay:0.8s">?</span>
+          </div>
           <span class="ruck-const-badge badge-active">🔒</span>
           <span class="badge-star-count">⭐ ${info.earned} / ${c.starsNeeded}</span>
         </div>`;
     } else if (isNext1 || isNext2) {
-      // === BUGFIX & UI UPDATE === PUNKT 9B: Nur dichter Nebel, keine Sterne/Linien
+      // === FIX: STARS & QUESTLOG === gesperrte Sternbilder: nur Nebel, silberne ???
       el.className = 'ruck-const-item ci-locked';
       el.innerHTML = `
-        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
+        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
         <div class="ci-info">
-          <span class="ruck-const-name">❓ ❓ ❓</span>
+          <div class="mystery-marks">
+            <span class="mystery-q" style="animation-delay:0s">?</span>
+            <span class="mystery-q" style="animation-delay:0.4s">?</span>
+            <span class="mystery-q" style="animation-delay:0.8s">?</span>
+          </div>
           <span class="ruck-const-badge badge-locked">🔒</span>
         </div>`;
     } else {
-      // === BUGFIX & UI UPDATE === PUNKT 9C: Alle weiteren – nur Nebel
+      // === FIX: STARS & QUESTLOG === weit entfernte Sternbilder: nur Nebel + ???
       el.className = 'ruck-const-item ci-far';
       el.innerHTML = `
-        <div class="ci-svg-wrap">${_makeConstSvg(c, 'faint')}</div>
+        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
         <div class="ci-info">
-          <span class="ruck-const-name">❓ ❓ ❓</span>
+          <div class="mystery-marks">
+            <span class="mystery-q" style="animation-delay:0s">?</span>
+            <span class="mystery-q" style="animation-delay:0.4s">?</span>
+            <span class="mystery-q" style="animation-delay:0.8s">?</span>
+          </div>
         </div>`;
     }
 
@@ -2835,20 +2847,22 @@ function _ruckPopQuestlog() {
     ...ratings.map(r => ({ type: 'day', date: r.date, rating: r.rating })),
   ];
 
-  // Empty state
+  // === FIX: STARS & QUESTLOG === Empty state
   if (allEntries.length === 0) {
     scrollArea.innerHTML = `
       <div class="ruck-scroll-outer">
         <div class="ruck-scroll-roll"></div>
         <div class="ruck-scroll-body">
           <div class="ruck-scroll-heading">Quest Log</div>
-          <div class="ruck-perg-empty">Noch keine Abenteuer verzeichnet...</div>
+          <div class="questlog-empty"><span>✦</span><p>Noch keine Abenteuer verzeichnet...</p></div>
         </div>
         <div class="ruck-scroll-roll-bot"></div>
       </div>`;
     requestAnimationFrame(() => {
-      const body = scrollArea.querySelector('.ruck-scroll-body');
-      if (body) body.classList.add('unrolling');
+      requestAnimationFrame(() => {
+        const body = scrollArea.querySelector('.ruck-scroll-body');
+        if (body) body.classList.add('unrolling');
+      });
     });
     return;
   }
@@ -2923,11 +2937,14 @@ function _ruckPopQuestlog() {
       <div class="ruck-scroll-roll-bot"></div>
     </div>`;
 
+  // === FIX: STARS & QUESTLOG === double-rAF sichert DOM-Layout vor Animationsstart
   requestAnimationFrame(() => {
-    const body = scrollArea.querySelector('.ruck-scroll-body');
-    if (body) body.classList.add('unrolling');
-    scrollArea.querySelectorAll('.ruck-perg-entry').forEach(el => {
-      requestAnimationFrame(() => el.classList.add('perg-in'));
+    requestAnimationFrame(() => {
+      const body = scrollArea.querySelector('.ruck-scroll-body');
+      if (body) body.classList.add('unrolling');
+      scrollArea.querySelectorAll('.ruck-perg-entry').forEach(el => {
+        requestAnimationFrame(() => el.classList.add('perg-in'));
+      });
     });
   });
 }
@@ -3337,27 +3354,21 @@ async function generateConstellationText(constellationName) {
     if (saved) return saved;
   } catch {}
 
-  const apiKey = localStorage.getItem('qb_api_key');
-  if (!apiKey) {
-    return '✦ Hinterlege einen API-Schlüssel (qb_api_key) in den Einstellungen, um Sternbild-Legenden zu entdecken.';
-  }
-
+  // === FIX: STARS & QUESTLOG === API direkt ohne Key-Prüfung
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 300,
-        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das Sternbild einen mittelgroßen Text (1 Absatz Lore + 1-2 Sätze persönlicher Bezug zur Userin). Der Lore-Teil soll mythisch und episch sein. Der persönliche Teil spricht die Userin direkt an (\"du\") und ist ermutigend. Antworte nur mit dem Text, ohne Einleitung.',
+        system: 'Du bist ein epischer Fantasy-Erzähler. Erstelle für das angegebene Sternbild einen Text mit 1 Absatz mythischer Lore (orientiere dich an griechischen, nordischen, keltischen oder Fantasy-Mythen) und 1-2 Sätzen die die Userin direkt lobend ansprechen (du-Form, ermutigend). Format: Lore-Absatz, dann persönlicher Satz. Auf Deutsch.',
         messages: [{
           role: 'user',
-          content: 'Sternbild: ' + constellationName,
+          content: 'Erstelle den Sternbild-Text für: ' + constellationName,
         }],
       }),
     });

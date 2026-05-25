@@ -4718,3 +4718,111 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   font-family: 'Cinzel', serif !important;
 }
 .badge-star-count { font-size: 0.78rem; font-weight: 600; color: #f0c040; display: block; margin-top: 0.15rem; }
+
+/* === FIX: STARS & QUESTLOG === */
+
+/* PUNKT 1 – Back-Button SVG zentrieren */
+.rucksack-back-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.starmap-back-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* PUNKT 3 – Silberne Mystery-Fragezeichen mit Auf-ab-Animation */
+.mystery-marks {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mystery-q {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 300;
+  color: transparent;
+  background: linear-gradient(180deg, #d0d8f0 0%, #8090b0 50%, #d0d8f0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: 4px;
+  animation: mysteryBob 3s ease-in-out infinite;
+  display: inline-block;
+  filter: drop-shadow(0 0 4px rgba(160,170,200,0.4));
+}
+
+@keyframes mysteryBob {
+  0%, 100% { transform: translateY(0px);  opacity: 0.7; }
+  50%      { transform: translateY(-8px); opacity: 1;   }
+}
+
+/* PUNKT 4 – Gesperrte Sternbilder: Nebel-Overlay, keine Sterne/Linien sichtbar */
+.constellation-locked {
+  position: relative;
+  overflow: hidden;
+}
+
+.constellation-locked .stars,
+.constellation-locked .lines,
+.constellation-locked canvas {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.constellation-locked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(40,20,80,0.85) 0%,
+    rgba(10,4,30,0.97) 70%,
+    rgba(4,2,14,1) 100%);
+  z-index: 10;
+}
+
+/* PUNKT 5A – Questlog Container-Fix */
+#ruck-log-scroll {
+  background: #03010a !important;
+}
+
+.ruck-scroll-outer {
+  transform: none !important;
+  top: auto !important;
+  bottom: auto !important;
+  position: relative !important;
+}
+
+/* PUNKT 5C – Scroll-Öffnungsanimation: forwards verhindert unsichtbare Schriftrolle */
+.ruck-scroll-body.unrolling {
+  animation: scroll-unroll-body 0.5s ease-out forwards !important;
+  animation-fill-mode: forwards !important;
+  transform-origin: top center !important;
+}
+
+/* PUNKT 5E – Leer-Zustand Questlog */
+.questlog-empty {
+  text-align: center;
+  font-family: 'Star2', serif;
+  color: #8a6830;
+  font-size: 1.1rem;
+  padding: 3rem 1rem;
+  line-height: 2;
+}
+
+.questlog-empty span {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #c4a030;
+  opacity: 0.7;
+}
+
+.questlog-empty p {
+  margin: 0;
+  font-style: italic;
+}
