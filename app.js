@@ -949,9 +949,9 @@ function swapQuest(name) {
   renderBoard();
 }
 
-// === VICTORY & REWARDS UPDATE === PUNKT 1+5: Victory-Flow + Belohnung vorbestimmen
+// === FIX: QUEST COMPLETE FLOW ===
 function completeQuest(name) {
-  // === FIX: QUEST COMPLETE === A) Doppel-Tipp verhindern – Button sofort sperren
+  // A) Doppel-Tipp verhindern – Button sofort sperren
   const btn = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"] .quest-complete-btn`);
   if (btn && btn.disabled) return;
   if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
@@ -960,20 +960,22 @@ function completeQuest(name) {
   if (!quest) return;
   if (quest.rest) { showRestManaPopup(quest); return; }
 
-  // === FIX: QUEST COMPLETE === B) Mana SOFORT abziehen – synchron, vor allen Animationen
+  // B) Mana SOFORT abziehen
   appState.mana = Math.max(0, appState.mana - quest.mana);
-  saveDayState(appState);
   updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
 
-  const reward = getRandomReward(quest.rest ? 'rast' : 'quest');
-  _pendingCompletion = { type: 'quest', id: name, questTitle: name, reward };
+  const reward = getRandomReward('quest');
+  // questObj-Snapshot mitgeben – wird gebraucht nachdem Quest aus Array entfernt wurde
+  _pendingCompletion = { type: 'quest', id: name, questTitle: name, reward, questObj: { ...quest } };
 
-  // Golden glow on quest card
+  // C) Quest aus Daten SOFORT entfernen (bevor Victory-Screen erscheint)
+  removeQuestFromData(quest.id || quest.name);
+  saveDayState(appState);
+
+  // D) DOM-Animation sofort starten
   const cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
-  if (cardEl) cardEl.classList.add('quest-card--completing');
-
-  // Shooting star from card position
   if (cardEl) {
+    cardEl.classList.add('quest-card--completing');
     const _rect = cardEl.getBoundingClientRect();
     const _star = document.createElement('div');
     _star.className  = 'shooting-star-fx';
@@ -982,14 +984,11 @@ function completeQuest(name) {
     document.body.appendChild(_star);
     requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
     setTimeout(() => _star.remove(), 800);
-  }
-
-  // === FIX: QUEST REMOVE === Quest-Karte sofort beim Victory-Screen entfernen
-  if (cardEl) {
     cardEl.classList.add('shooting-star-exit');
-    setTimeout(() => { if (cardEl.parentNode) cardEl.remove(); }, 1000);
+    setTimeout(() => { if (cardEl.parentNode) cardEl.remove(); }, 600);
   }
 
+  // E) Victory-Screen zeigen
   setTimeout(() => showVictoryScreen(quest, reward), 600);
 }
 
@@ -1033,21 +1032,20 @@ function showVictoryScreen(quest, reward) {
   vs.addEventListener('touchend', onTap, { once: true });
 }
 
-function _finalizeQuestCompletion(name, preReward) {
-  const quest = appState.quests.find(q => q.name === name && !q.done);
+// === FIX: QUEST COMPLETE FLOW === questObj übergeben, da Quest bereits aus appState.quests entfernt
+function _finalizeQuestCompletion(name, preReward, questObj) {
+  const quest = questObj || appState.quests.find(q => q.name === name);
   if (!quest) return;
 
-  quest.done = true;
-  // === BUGFIX & UI UPDATE === PUNKT 2: reward ist jetzt ein String (lowercase key)
+  let treasure;
   if (preReward && typeof preReward === 'string') {
-    quest.treasure = { name: REWARD_ICON_MAP[preReward] || preReward };
+    treasure = { name: REWARD_ICON_MAP[preReward] || preReward };
   } else if (preReward && typeof preReward === 'object') {
-    quest.treasure = preReward;
+    treasure = preReward;
   } else {
-    quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+    treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
   }
 
-  // === FIX: QUEST COMPLETE === B) Mana wurde bereits in completeQuest() abgezogen – kein Doppelabzug
   if (quest.rest) {
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
     appState.maxMana = Math.min(appState.maxMana + 10, 60);
@@ -1061,15 +1059,13 @@ function _finalizeQuestCompletion(name, preReward) {
     saveRhythm(rhythm);
   }
 
-  rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
-  saveDayState(appState);
+  rucksackRecordTreasure(quest.name, treasure, 'quest');
 
-  // === FIX: QUEST REMOVE ===
   appState.completedCount = (appState.completedCount || 0) + 1;
-  removeQuest(quest.id || quest.name, () => {
-    if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
-    if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
-  });
+  saveDayState(appState);
+  renderBoard();
+  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+  if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
 // === FIX: QUEST REMOVE ===
@@ -1113,18 +1109,35 @@ function removeQuest(questId, onDone) {
   }, 1000);
 }
 
-// === FIX: QUEST REMOVE === Entfernt Quest-Daten aus localStorage (normale Quests + Sidequests)
+// === FIX: QUEST COMPLETE FLOW === Entfernt Quest-Daten aus localStorage (normale Quests + Sidequests)
 function removeQuestFromData(questId) {
+  const id = String(questId);
+  // Normale Quests (qb_state via appState.quests)
   if (appState) {
     const before = appState.quests.length;
-    appState.quests = appState.quests.filter(q => q.id !== questId && q.name !== questId);
+    appState.quests = appState.quests.filter(q => String(q.id) !== id && String(q.name) !== id);
+    console.log('Removed from quests:', before - appState.quests.length);
     if (appState.quests.length !== before) saveDayState(appState);
   }
+  // Sidequests (questboard_sidequests)
   try {
     const all      = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
-    const filtered = all.filter(sq => sq.id !== questId);
+    const filtered = all.filter(sq => String(sq.id) !== id);
+    console.log('Removed from sidequests:', all.length - filtered.length);
     if (filtered.length !== all.length)
       localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
+  } catch {}
+}
+
+// === FIX: QUEST COMPLETE FLOW === Verwaiste Sidequests beim App-Start bereinigen
+function cleanupOrphanedQuests() {
+  try {
+    const all      = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
+    const filtered = all.filter(q => q && q.id && q.title);
+    if (filtered.length !== all.length) {
+      localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
+      console.log('cleanupOrphanedQuests: removed', all.length - filtered.length, 'orphaned sidequests');
+    }
   } catch {}
 }
 
@@ -1695,6 +1708,7 @@ function getDailyMoodWeather() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 function init() {
+  cleanupOrphanedQuests(); // === FIX: QUEST COMPLETE FLOW ===
   initSkyCanvas();
 
   const dateStr = new Date().toLocaleDateString('de-AT', {
@@ -2501,7 +2515,8 @@ function initLogPopup() {
     _pendingCompletion = null;
 
     if (pending.type === 'quest') {
-      _finalizeQuestCompletion(pending.id, pending.reward);
+      // === FIX: QUEST COMPLETE FLOW === questObj übergeben (Quest bereits aus Array entfernt)
+      _finalizeQuestCompletion(pending.id, pending.reward, pending.questObj);
     } else {
       _finalizeSidequestCompletion(pending.id);
     }
