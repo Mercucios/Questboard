@@ -984,6 +984,12 @@ function completeQuest(name) {
     setTimeout(() => _star.remove(), 800);
   }
 
+  // === FIX: QUEST REMOVE === Quest-Karte sofort beim Victory-Screen entfernen
+  if (cardEl) {
+    cardEl.classList.add('shooting-star-exit');
+    setTimeout(() => { if (cardEl.parentNode) cardEl.remove(); }, 1000);
+  }
+
   setTimeout(() => showVictoryScreen(quest, reward), 600);
 }
 
@@ -1105,6 +1111,21 @@ function removeQuest(questId, onDone) {
   setTimeout(() => {
     if (element.parentNode) _finish();
   }, 1000);
+}
+
+// === FIX: QUEST REMOVE === Entfernt Quest-Daten aus localStorage (normale Quests + Sidequests)
+function removeQuestFromData(questId) {
+  if (appState) {
+    const before = appState.quests.length;
+    appState.quests = appState.quests.filter(q => q.id !== questId && q.name !== questId);
+    if (appState.quests.length !== before) saveDayState(appState);
+  }
+  try {
+    const all      = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
+    const filtered = all.filter(sq => sq.id !== questId);
+    if (filtered.length !== all.length)
+      localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
+  } catch {}
 }
 
 // === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Popup
@@ -2252,7 +2273,8 @@ function renderSidequests() {
 
 function makeSidequestCard(sq) {
   const card = document.createElement('div');
-  card.className = `sidequest-card${sq.done ? ' sidequest-done' : ''}`;
+  card.className    = `sidequest-card${sq.done ? ' sidequest-done' : ''}`;
+  card.dataset.sqId = sq.id; // === FIX: QUEST REMOVE ===
 
   // === MANA-SYSTEM ===
   const costHtml = sq.mana > 0 ? manaSymbols(sq.mana) : '';
@@ -2391,6 +2413,14 @@ function completeSidequest(sqId) {
   const sq  = sqs.find(s => s.id === sqId && !s.done);
   if (!sq) return;
   _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title };
+
+  // === FIX: QUEST REMOVE === Sidequest-Karte sofort beim Log-Dialog entfernen
+  const sqCard = document.querySelector(`.sidequest-card[data-sq-id="${CSS.escape(sqId)}"]`);
+  if (sqCard) {
+    sqCard.classList.add('shooting-star-exit');
+    setTimeout(() => { if (sqCard.parentNode) sqCard.remove(); }, 1000);
+  }
+
   openLogPopup(sqId, sq.title);
 }
 
@@ -2404,7 +2434,8 @@ function _finalizeSidequestCompletion(sqId) {
   appState.mana = Math.max(0, appState.mana - sq.mana);
 
   rucksackRecordTreasure(sq.title, sq.treasure, 'sidequest');
-  saveSidequest(sq);
+  // === FIX: QUEST REMOVE === Sidequest aus localStorage entfernen statt nur als done markieren
+  removeQuestFromData(sqId);
   saveDayState(appState);
   renderBoard();
   showRewardPopup(sq);
