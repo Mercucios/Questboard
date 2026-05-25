@@ -4375,6 +4375,10 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
       rgba(0,0,0,0.05) 0px, transparent 1px, transparent 32px),
     radial-gradient(ellipse at 50% 0%, rgba(100,60,20,0.25) 0%, transparent 60%),
     linear-gradient(180deg, #1c1008 0%, #0e0703 100%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  overflow: hidden !important;
 }
 .ruck-candle-row {
   display: flex;
@@ -4402,6 +4406,11 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   transform: translateX(-50%);
   pointer-events: none;
   border-radius: 50%;
+  animation: candleGlow 2s ease-in-out infinite;
+}
+@keyframes candleGlow {
+  0%, 100% { opacity: 0.1; }
+  50%       { opacity: 0.45; }
 }
 @keyframes flicker {
   0%,100% { transform: scaleX(1)    scaleY(1)    rotate(-1deg); opacity: 1;    }
@@ -4835,7 +4844,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 #ruck-log-scroll {
   background: #03010a !important;
   flex: 1 !important;
-  overflow-y: auto !important;
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch !important;
   min-height: 0 !important;
 }
 
@@ -4874,4 +4884,201 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .questlog-empty p {
   margin: 0;
   font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* SESSION 6 – FIX 3: Schließen-Buttons einheitlich 36×36px  */
+/* ═══════════════════════════════════════════════════════════ */
+#btn-reward-close,
+#btn-star-close,
+#btn-rest-close,
+#btn-telescope-close,
+#btn-log-view-close {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  border-radius: 50% !important;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* SESSION 6 – FIX 6: Teleskop-Tabs                          */
+/* ═══════════════════════════════════════════════════════════ */
+.tel-tab-bar {
+  display: flex;
+  gap: 0;
+  margin: 0.5rem 0 0.75rem;
+  border-bottom: 2px solid rgba(196,160,48,0.3);
+  flex-shrink: 0;
+}
+.tel-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: rgba(240,192,64,0.5);
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  cursor: pointer;
+  position: relative;
+  letter-spacing: 0.03em;
+  transition: color 0.2s;
+  touch-action: manipulation;
+}
+.tel-tab.active {
+  color: #f0c040;
+}
+.tel-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #f0c040;
+  box-shadow: 0 0 8px rgba(240,192,64,0.6);
+}
+.tel-found-count {
+  display: inline-block;
+  background: rgba(196,160,48,0.18);
+  border: 1px solid rgba(196,160,48,0.4);
+  border-radius: 10px;
+  padding: 0 5px;
+  font-size: 0.75rem;
+  min-width: 18px;
+  text-align: center;
+  vertical-align: middle;
+}
+.tel-tab-pane { width: 100%; }
+.tel-tab-pane.hidden { display: none !important; }
+.tel-all-done {
+  text-align: center;
+  color: #f0c040;
+  font-family: 'Star2', serif;
+  font-size: 1.1rem;
+  padding: 2.5rem 1rem;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 12px rgba(240,192,64,0.5);
+}
+.tel-empty-found {
+  text-align: center;
+  color: rgba(240,192,64,0.45);
+  font-size: 0.9rem;
+  padding: 2.5rem 1rem;
+  line-height: 1.7;
+}
+.tel-found-card {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tel-found-card:active {
+  background: rgba(196,160,48,0.1) !important;
+  border-radius: 10px;
+}
+.tel-found-hint {
+  font-size: 0.72rem;
+  color: rgba(240,192,64,0.4);
+  margin-top: 0.15rem;
+  display: block;
+  letter-spacing: 0.03em;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* SESSION 6 – FIX 6: Sternbild-Detail Bottom-Sheet          */
+/* ═══════════════════════════════════════════════════════════ */
+.const-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(2,0,12,0.82);
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+.const-detail-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.const-detail-sheet {
+  width: 100%;
+  max-height: 88vh;
+  background: linear-gradient(180deg, #14072e 0%, #080215 100%);
+  border-top: 2px solid #c4a030;
+  border-radius: 20px 20px 0 0;
+  padding: 1.5rem 1.25rem 3rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  transform: translateY(40px);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.4, 1);
+  box-shadow: 0 -4px 40px rgba(196,160,48,0.15), 0 -1px 0 rgba(196,160,48,0.3);
+}
+.const-detail-overlay.active .const-detail-sheet {
+  transform: translateY(0);
+}
+.const-detail-close {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838);
+  border: 2px solid #c4a030;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f0c040;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  touch-action: manipulation;
+  padding: 0;
+  box-shadow: 0 0 10px rgba(196,160,48,0.25);
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.const-detail-close:active {
+  transform: scale(0.9);
+  box-shadow: 0 0 20px rgba(196,160,48,0.5);
+}
+.const-detail-svg-wrap {
+  width: 200px;
+  height: 150px;
+  margin: 2.75rem auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.const-detail-svg-wrap .ci-svg {
+  width: 100%;
+  height: 100%;
+}
+.const-detail-name {
+  font-family: 'Star2', serif;
+  color: #f0c040;
+  font-size: 1.4rem;
+  text-align: center;
+  margin: 0 0 1.25rem;
+  text-shadow: 0 0 16px rgba(240,192,64,0.45);
+  letter-spacing: 0.05em;
+}
+.const-detail-lore-wrap {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(196,160,48,0.22);
+  border-radius: 12px;
+  padding: 1rem 1.1rem 1.2rem;
+}
+.const-detail-lore {
+  color: #d4b870;
+  font-size: 0.88rem;
+  line-height: 1.8;
+  margin: 0;
+  white-space: pre-line;
 }

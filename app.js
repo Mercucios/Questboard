@@ -951,18 +951,22 @@ function swapQuest(name) {
 
 // === FIX: QUEST COMPLETE FLOW ===
 function completeQuest(name) {
+  // FIX 1: Mana-Guard VOR allem anderen – Quest suchen und Mana prüfen
+  const quest = appState.quests.find(q => q.name === name && !q.done);
+  if (!quest) return;
+  if (quest.mana > 0 && appState.mana < quest.mana) return;
+
   // A) Doppel-Tipp verhindern – Button sofort sperren
   const btn = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"] .quest-complete-btn`);
   if (btn && btn.disabled) return;
   if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
 
-  const quest = appState.quests.find(q => q.name === name && !q.done);
-  if (!quest) return;
   if (quest.rest) { showRestManaPopup(quest); return; }
 
   // B) Mana SOFORT abziehen
   appState.mana = Math.max(0, appState.mana - quest.mana);
   updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
+  renderBoard(); // FIX 2: alle Button-Zustände sofort aktualisieren
 
   const reward = getRandomReward('quest');
   // questObj-Snapshot mitgeben – wird gebraucht nachdem Quest aus Array entfernt wurde
@@ -2440,6 +2444,7 @@ function completeSidequest(sqId) {
   const sqs = loadTodaySidequests();
   const sq  = sqs.find(s => s.id === sqId && !s.done);
   if (!sq) return;
+  if (sq.mana > 0 && appState.mana < sq.mana) return; // FIX 1: Mana-Guard
   _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title };
 
   // === FIX: QUEST REMOVE === Sidequest-Karte sofort beim Log-Dialog entfernen
@@ -2697,7 +2702,7 @@ function _makeConstSvg(c, state) {
   return `<svg viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" class="ci-svg">${linesHtml}${dotsHtml}</svg>`;
 }
 
-// === FIX: PUNKT 5 – Teleskop Fly-in: ±150px Startposition, 0.05s Stagger, Bounce 1.4, CountUp danach ===
+// === FIX 6: Teleskop mit Aktuell/Entdeckt-Tabs ===
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
   const starCount = loadStars().length;
@@ -2706,76 +2711,108 @@ function _ruckPopTelescope() {
   if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
   numEl.textContent = '0';
 
-  const list = $('ruck-const-list');
+  const list  = $('ruck-const-list');
   list.innerHTML = '';
   const info  = getConstellationInfo(starCount);
   const compN = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
 
-  CONSTELLATIONS.forEach((c, i) => {
-    const isComplete = i < compN;
-    const isCurrent  = !info.allComplete && i === compN;
-    const isNext1    = !isComplete && !isCurrent && i === compN + 1;
-    const isNext2    = !isComplete && !isCurrent && i === compN + 2;
-    const isFar      = !isComplete && !isCurrent && !isNext1 && !isNext2;
+  // Tab-Leiste
+  const tabBar = document.createElement('div');
+  tabBar.className = 'tel-tab-bar';
+  tabBar.innerHTML = `
+    <button class="tel-tab active" data-tab="current">Aktuell</button>
+    <button class="tel-tab" data-tab="found">Entdeckt <span class="tel-found-count">${compN}</span> ✦</button>
+  `;
+  list.appendChild(tabBar);
 
-    const el = document.createElement('div');
+  const paneCurrentEl = document.createElement('div');
+  paneCurrentEl.className = 'tel-tab-pane tel-pane-current';
+  list.appendChild(paneCurrentEl);
 
-    if (isComplete) {
-      el.className = 'ruck-const-item ci-done';
-      el.innerHTML = `
+  const paneFoundEl = document.createElement('div');
+  paneFoundEl.className = 'tel-tab-pane tel-pane-found hidden';
+  list.appendChild(paneFoundEl);
+
+  tabBar.querySelectorAll('.tel-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabBar.querySelectorAll('.tel-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      list.querySelectorAll('.tel-tab-pane').forEach(p => p.classList.add('hidden'));
+      list.querySelector('.tel-pane-' + tab.dataset.tab).classList.remove('hidden');
+    });
+  });
+
+  // Aktuell-Tab: aktives Sternbild + nächste gesperrte
+  if (info.allComplete) {
+    paneCurrentEl.innerHTML = '<div class="tel-all-done">✦ Alle Sternbilder entdeckt! ✦</div>';
+  } else {
+    CONSTELLATIONS.forEach((c, i) => {
+      if (i < compN) return;
+      const isCurrent = i === compN;
+      const isNext1   = i === compN + 1;
+      const isNext2   = i === compN + 2;
+
+      const el = document.createElement('div');
+      if (isCurrent) {
+        el.className = 'ruck-const-item ci-active';
+        el.innerHTML = `
+          <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
+          <div class="ci-info">
+            <div class="mystery-marks">
+              <span class="mystery-q" style="animation-delay:0s">?</span>
+              <span class="mystery-q" style="animation-delay:0.4s">?</span>
+              <span class="mystery-q" style="animation-delay:0.8s">?</span>
+            </div>
+            <span class="ruck-const-badge badge-active">🔒</span>
+            <span class="badge-star-count">⭐ ${info.earned} / ${c.starsNeeded}</span>
+          </div>`;
+      } else if (isNext1 || isNext2) {
+        el.className = 'ruck-const-item ci-locked';
+        el.innerHTML = `
+          <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
+          <div class="ci-info">
+            <div class="mystery-marks">
+              <span class="mystery-q" style="animation-delay:0s">?</span>
+              <span class="mystery-q" style="animation-delay:0.4s">?</span>
+              <span class="mystery-q" style="animation-delay:0.8s">?</span>
+            </div>
+            <span class="ruck-const-badge badge-locked">🔒</span>
+          </div>`;
+      } else {
+        el.className = 'ruck-const-item ci-far';
+        el.innerHTML = `
+          <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
+          <div class="ci-info">
+            <div class="mystery-marks">
+              <span class="mystery-q" style="animation-delay:0s">?</span>
+              <span class="mystery-q" style="animation-delay:0.4s">?</span>
+              <span class="mystery-q" style="animation-delay:0.8s">?</span>
+            </div>
+          </div>`;
+      }
+      paneCurrentEl.appendChild(el);
+    });
+  }
+
+  // Entdeckt-Tab: abgeschlossene Sternbilder als tippbare Karten
+  if (compN === 0) {
+    paneFoundEl.innerHTML = '<div class="tel-empty-found">Noch keine Sternbilder entdeckt.<br>Sammle Sterne durch das Abschließen von Quests.</div>';
+  } else {
+    for (let i = 0; i < compN; i++) {
+      const c = CONSTELLATIONS[i];
+      const card = document.createElement('div');
+      card.className = 'ruck-const-item ci-done tel-found-card';
+      card.innerHTML = `
         <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
         <div class="ci-info">
           <span class="ruck-const-name">${c.name}</span>
           <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
-          <div class="const-lore-box">
-            <div class="const-lore-divider">⚔ ✦ ⚔</div>
-            <span class="const-lore-loading">✦ Die Sterne erzählen…</span>
-            <p class="const-lore-text"></p>
-          </div>
+          <span class="tel-found-hint">Tippen für Lore ›</span>
         </div>`;
-    } else if (isCurrent) {
-      // === FIX: STARS & QUESTLOG === erstes gesperrtes: Nebel + silberne ??? + 🔒 + Sternzahl
-      el.className = 'ruck-const-item ci-active';
-      el.innerHTML = `
-        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
-        <div class="ci-info">
-          <div class="mystery-marks">
-            <span class="mystery-q" style="animation-delay:0s">?</span>
-            <span class="mystery-q" style="animation-delay:0.4s">?</span>
-            <span class="mystery-q" style="animation-delay:0.8s">?</span>
-          </div>
-          <span class="ruck-const-badge badge-active">🔒</span>
-          <span class="badge-star-count">⭐ ${info.earned} / ${c.starsNeeded}</span>
-        </div>`;
-    } else if (isNext1 || isNext2) {
-      // === FIX: STARS & QUESTLOG === gesperrte Sternbilder: nur Nebel, silberne ???
-      el.className = 'ruck-const-item ci-locked';
-      el.innerHTML = `
-        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
-        <div class="ci-info">
-          <div class="mystery-marks">
-            <span class="mystery-q" style="animation-delay:0s">?</span>
-            <span class="mystery-q" style="animation-delay:0.4s">?</span>
-            <span class="mystery-q" style="animation-delay:0.8s">?</span>
-          </div>
-          <span class="ruck-const-badge badge-locked">🔒</span>
-        </div>`;
-    } else {
-      // === FIX: STARS & QUESTLOG === weit entfernte Sternbilder: nur Nebel + ???
-      el.className = 'ruck-const-item ci-far';
-      el.innerHTML = `
-        <div class="ci-svg-wrap constellation-locked">${_makeConstSvg(c, 'faint')}</div>
-        <div class="ci-info">
-          <div class="mystery-marks">
-            <span class="mystery-q" style="animation-delay:0s">?</span>
-            <span class="mystery-q" style="animation-delay:0.4s">?</span>
-            <span class="mystery-q" style="animation-delay:0.8s">?</span>
-          </div>
-        </div>`;
+      card.addEventListener('click', () => _openConstDetail(c));
+      paneFoundEl.appendChild(card);
     }
-
-    list.appendChild(el);
-  });
+  }
 
   // Fly-in: Hero zuerst, dann Sternbild-Einträge (±150px Startversatz, 0.05s Stagger)
   const hero = document.querySelector('.ruck-stars-hero');
@@ -2785,7 +2822,7 @@ function _ruckPopTelescope() {
     hero.classList.add('fly-in');
   }
 
-  const items = list.querySelectorAll('.ruck-const-item:not(.ci-far)');
+  const items = paneCurrentEl.querySelectorAll('.ruck-const-item:not(.ci-far)');
   items.forEach((el, i) => {
     el.classList.remove('fly-in');
     const fx = (Math.random() * 300 - 150).toFixed(0);
@@ -2809,37 +2846,38 @@ function _ruckPopTelescope() {
     }
     _ruckCountRaf = requestAnimationFrame(countStep);
   }, flyInEnd);
+}
 
-  // Akkordeon: abgeschlossene Sternbilder aufklappbar
-  const doneItems = list.querySelectorAll('.ci-done');
-  doneItems.forEach((el) => {
-    const constName = el.querySelector('.ruck-const-name')?.textContent?.trim();
-    if (!constName) return;
-    const loreBox     = el.querySelector('.const-lore-box');
-    const loreTxt     = el.querySelector('.const-lore-text');
-    const loreLoading = el.querySelector('.const-lore-loading');
-    if (!loreBox || !loreTxt) return;
-    let textLoaded = false;
+function _openConstDetail(c) {
+  const overlay = document.createElement('div');
+  overlay.className = 'const-detail-overlay';
+  overlay.innerHTML = `
+    <div class="const-detail-sheet">
+      <button class="const-detail-close" aria-label="Schließen">←</button>
+      <div class="const-detail-svg-wrap">${_makeConstSvg(c, 'done')}</div>
+      <h2 class="const-detail-name">${c.name}</h2>
+      <div class="const-detail-lore-wrap">
+        <span class="const-lore-loading">✦ Die Sterne erzählen…</span>
+        <p class="const-detail-lore"></p>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('active'));
 
-    el.addEventListener('click', async () => {
-      const isOpen = loreBox.classList.contains('open');
-      // Alle anderen schließen
-      doneItems.forEach(other => {
-        other.querySelector('.const-lore-box')?.classList.remove('open');
-      });
-      // Aktuelles ein-/ausklappen
-      if (!isOpen) {
-        loreBox.classList.add('open');
-        if (!textLoaded) {
-          textLoaded = true;
-          if (loreLoading) loreLoading.style.display = '';
-          const text = await generateConstellationText(constName);
-          if (loreLoading) loreLoading.style.display = 'none';
-          if (text) _typewriter(loreTxt, text);
-        }
-      }
-    });
+  generateConstellationText(c.name).then(text => {
+    const loadEl = overlay.querySelector('.const-lore-loading');
+    const loreEl = overlay.querySelector('.const-detail-lore');
+    if (loadEl) loadEl.style.display = 'none';
+    if (loreEl && text) _typewriter(loreEl, text);
   });
+
+  const close = () => {
+    overlay.classList.remove('active');
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 350);
+  };
+  overlay.querySelector('.const-detail-close').addEventListener('click', close);
+  overlay.addEventListener('touchstart', e => { if (e.target === overlay) { e.preventDefault(); close(); } }, { passive: false });
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 }
 
 // ── Questlog ──────────────────────────────────────────────────────
@@ -2882,7 +2920,7 @@ function _injectQuestlogCandles() {
     wrap.className = 'ruck-candle-abs';
     wrap.style.cssText = `position:absolute;bottom:0;${pos};z-index:2;pointer-events:none;`;
     wrap.innerHTML = `
-      <div class="ruck-candle-light" style="background:radial-gradient(ellipse at 50% 50%,${cfg.glow} 0%,transparent 70%);animation-delay:${(i * 0.35).toFixed(2)}s"></div>
+      <div class="ruck-candle-light" style="background:radial-gradient(ellipse at 50% 50%,${cfg.glow} 0%,transparent 70%);animation-delay:${(i * 0.4).toFixed(2)}s"></div>
       <svg width="18" height="${totalH}" viewBox="0 0 18 ${totalH}" aria-hidden="true">
         <defs>
           <linearGradient id="${cid}w" x1="0" y1="0" x2="1" y2="0">
@@ -2899,7 +2937,7 @@ function _injectQuestlogCandles() {
         <rect x="4" y="20" width="10" height="${cfg.h}" rx="1.5" fill="url(#${cid}w)" stroke="#b89860" stroke-width="0.6"/>
         <path d="M4 26 Q2 30 4 33" fill="#dac8a0" opacity="0.6"/>
         <line x1="9" y1="20" x2="9" y2="16" stroke="#2a1808" stroke-width="1.5" stroke-linecap="round"/>
-        <g class="candle-flame ${cfg.flkCls}" style="animation-delay:${(i * 0.35).toFixed(2)}s">
+        <g class="candle-flame ${cfg.flkCls}" style="animation-delay:${(i * 0.4).toFixed(2)}s">
           <ellipse cx="9" cy="10" rx="3.5" ry="5.5" fill="url(#${cid}f)" opacity="0.92"/>
           <ellipse cx="9" cy="11" rx="1.8" ry="3"   fill="${cfg.fc[0]}"   opacity="0.85"/>
         </g>
@@ -3419,46 +3457,85 @@ function _initManaTopUp() {
 
 // === BUG 8: Lokale Sternbild-Lore ===
 const CONSTELLATION_LORE = {
-  'Die stille Kriegerin': 'In den Zeitaltern vor dem ersten Morgen trug die stille Kriegerin den Frieden in der linken und das Schwert des Mutes in der rechten Hand. Nicht mit Lärm, sondern mit der ruhigen Flamme, die niemals erlischt, hielt sie die Dunkelheit zurück.\n\nDu trägst dieselbe Stille in dir – und sie ist unbesiegbar.',
-  'Der Kompass der Tapferen': 'Als die ersten Helden ihren Weg durch das Labyrinth der Welten verloren, erstrahlte der Kompass am Himmel und wies nicht Norden, sondern das Ziel des Herzens. Sein Leuchten rettete tausend tapfere Seelen vor der Verzweiflung.\n\nDein Mut ist dein Kompass – vertrau ihm, er führt dich richtig.',
-  'Die Hüterin des Lichts': 'Einst bewachte eine Weberin aus Mondlicht die heilige Flamme der Welt, durch Stürme, Eiszeiten und das lange Schweigen der Götter. Ihr Licht wurde zur Legende, ihr Name zum Segen.\n\nDas Licht in dir ist ebenso beständig – lass es leuchten.',
-  'Das Herz der Sternennacht': 'Mitten im Kosmos schlug einmal das Herz aller Sterne in einem einzigen, gewaltigen Puls. Aus diesem Schlag entstanden die Träume, die Hoffnung und das erste Lachen eines Kindes.\n\nIn dir schlägt ein Stück dieses uralten Herzens – spüre es.',
-  'Die Mondwandlerin': 'Sie trat durch alle Phasen des Mondes, von Neu bis Voll, und jede Verwandlung machte sie stärker. Die Mondwandlerin lehrte, dass Wandel kein Verlust ist, sondern ein Geschenk.\n\nAuch du veränderst dich – und wirst mit jedem Wandel größer.',
-  'Die Weberin der Träume': 'Aus silberfarbenen Fäden webte sie jede Nacht die Träume der Sterblichen – Träume von Mut, Liebe und fernen Welten. Kein Traum war zu klein, um in ihr Gewebe zu gehören.\n\nDeine Träume verdienen Platz in diesem kosmischen Gewebe.',
-  'Das flüsternde Feuer': 'Tief in den Urwäldern der Sternwelten brennt ein Feuer, das niemals erlischt und jedem Verirrten den Weg zurück flüstert. Es kennt jede verlorene Seele beim Namen.\n\nDas flüsternde Feuer kennt auch deinen Namen – du bist nicht allein.',
-  'Die Hexe des Nebels': 'Zwischen den Welten webt die Hexe des Nebels ihre Zauber, keiner Seite zugehörig, aber allen wohlgesinnt. Ihr Geheimnis ist, dass Grau stärker sein kann als Schwarz oder Weiß.\n\nDeine Zwischentöne sind deine Magie – sie machen dich einzigartig.',
-  'Die Hüterin der kleinen Dinge': 'Sie bewahrte die winzigen Wunder, die andere übersahen: den ersten Tau, das Lachen vor dem Einschlafen, den letzten Atemzug des Tages. Ihre Sammlung ist größer als alle Schätze der Welt.\n\nAuch du siehst die kleinen Dinge – das ist ein seltenes Geschenk.',
-  'Der sanfte Drache': 'Ein Drache, der nie Feuer spie, sondern Wärme schenkte. Er legte sich um die Schultern der Müden und schirmte sie vor der Kälte der Sterne. Die Stärke seiner Güte übertraf jede Klaue.\n\nDeine Sanftheit ist keine Schwäche – sie ist deine größte Kraft.',
-  'Die erste Morgenröte': 'Bevor die Sonne die Welt kannte, erschuf die erste Morgenröte das Licht mit bloßen Händen und der Überzeugung, dass Dunkelheit nicht für immer dauern kann.\n\nJeden Morgen, den du aufwachst, lebst du ihre Legende weiter.',
-  'Das ewige Leuchten': 'In den tiefsten Winkeln des Alls brannte ein Stern, der alle anderen überlebt hatte. Sein Leuchten trotzte Supernovae, schwarzen Löchern und der Stille zwischen den Welten.\n\nIn dir brennt etwas genauso Beständiges – lass es nicht verlöschen.',
-  'Die Beschützerin ihrer selbst': 'Sie war die einzige Kriegerin, die sich selbst beschützte, ohne sich dabei zu verlieren. Mit einem Schild aus Selbstliebe und einem Schwert aus Klarheit hielt sie jeden Angriff ab.\n\nSich selbst zu schützen ist keine Schwäche – es ist heilige Pflicht.',
-  'Die Trägerin des Himmels': 'Wie Atlas in alten Mythen trug sie den Himmel – nicht als Strafe, sondern als Berufung. Denn wer trägt, schafft Raum für alle anderen unter sich.\n\nDu trägst manchmal mehr als andere sehen – und du tust es mit Würde.',
-  'Das goldene Versprechen': 'Ein Versprechen, gegeben im Goldenen Zeitalter, als die Götter noch tanzten und die Sterne sangen. Es wurde nie gebrochen, weil keine Macht der Welt reiner ist als ein aufrichtiges Wort.\n\nDeine Aufrichtigkeit ist goldener Wert.',
-  'Die Tänzerin im Nebel': 'Sie tanzte dort, wo niemand mehr tanzte – in der Stille nach dem Leid, im Nebel zwischen Welten. Ihr Tanz heilte, was Worte nicht konnten.\n\nBewege dich auf deine eigene Weise durch das Leben – das ist Heilung.',
-  'Die Drachenmutter': 'Sie gebar die ersten Drachen der Welt und lehrte sie nicht zu brennen, sondern zu bewahren. Ihre Kinder wurden Hüter, keine Zerstörer.\n\nDein Herz ist groß genug für alles, was du liebst – wie das ihre.',
-  'Die Königin der Stille': 'In einem Reich ohne Geräusch herrschte sie mit einer Stimme, die nie erklang, und wurde dennoch von allen gehört. Die Stille war ihre Sprache, und sie war mächtiger als jeder Ruf.\n\nDeine Präsenz spricht auch dann, wenn du schweigst.',
-  'Das Labyrinth des Mutes': 'Nur die Mutigsten wagten sich in das Labyrinth, das sich je nach Herz des Wandernden veränderte. Doch wer hineinging, fand am Ende immer sich selbst.\n\nJeder mutige Schritt bringt dich näher zu dir selbst.',
-  'Die kleine Heldin': 'Sie war klein und unscheinbar, doch in ihrem Herzen brannte ein Feuer, das Riesen erblassen ließ. Ihre Taten wurden Lieder, ihre Lieder wurden Legenden.\n\nGröße misst sich nicht in Zentimetern – du bist eine Heldin.',
-  'Die Hexenmeisterin der Sterne': 'Mit einem Stab aus kristallisiertem Mondlicht lenkte sie die Bahnen der Sterne und schrieb Prophezeiungen in den Kosmos. Ihr Wissen war grenzenlos, ihre Weisheit noch größer.\n\nDeine eigene Magie wartet darauf, entdeckt zu werden.',
-  'Der Funke im Dunkel': 'Als alle Lichter erloschen, blieb ein einziger Funke, winzig und hartnäckig, und entzündete die Welt aufs Neue. Ohne ihn wäre alles Dunkel geblieben.\n\nDein Funke – so klein er scheinen mag – ist unverzichtbar.',
-  'Die Hüterin des Morgens': 'Jeden Tag vor dem ersten Licht streute sie Tau auf die Wiesen, sang die Vögel wach und webte den Rosenschimmer am Horizont. Ohne sie wäre kein Morgen je schön gewesen.\n\nDu bist der Grund, warum jemandes Morgen schöner ist.',
-  'Das Portal der Hoffnung': 'Das Portal öffnete sich nur für jene, die trotz allem noch hofften. Tausend verzweifelte Seelen traten hindurch und fanden auf der anderen Seite nicht Paradies, sondern die Kraft weiterzugehen.\n\nDeine Hoffnung ist das Portal – sie trägt dich durch.',
-  'Die Meisterin des Augenblicks': 'Sie lebte in keiner Zeit außer dem Jetzt. Während Götter planten und Dämonen grübelten, tanzte sie im einzigen Moment, der wirklich existiert.\n\nDer Augenblick, in dem du lebst, ist ein Meisterstück.',
-  'Die Chronistin der Wunder': 'In einem goldenen Buch verzeichnete sie jedes Wunder, das je geschah – auch die kleinen, die niemand bemerkte. Das Buch war nie voll.\n\nDein Leben ist voll von Wundern, die nur darauf warten, bemerkt zu werden.',
-  'Die sanfte Welle': 'Sie formte keine Felsen, sie umspülte sie. Die sanfte Welle veränderte in Jahrtausenden, was keine Gewalt in Sekunden konnte.\n\nDeine Beständigkeit formt die Welt, auch wenn es Zeit braucht.',
-  'Das erste Licht': 'Noch vor den Sternen, noch vor der Welt existierte das erste Licht – formlos, wärmend, alles möglich machend. Aus ihm entstanden Träume und Realität gleichermaßen.\n\nIn dir trägt jeder Atemzug etwas von diesem ersten Licht.',
-  'Die Tochter des Mondes': 'Als Tochter des Mondes wuchs sie zwischen den Phasen auf, lernte in der Dunkelheit zu sehen und im Licht zu träumen. Beide Seiten machten sie vollständig.\n\nDeine Dualität – dein Licht und dein Schatten – macht dich ganz.',
-  'Die Bewahrerin der Erinnerung': 'Sie trug alle Erinnerungen der Welt in sich, damit nichts Gutes je vergessen werde. Auch die kleinste Freude wurde von ihr bewahrt.\n\nDeine Erinnerungen sind Schätze – du hast bereits so viel erlebt.',
-  'Das Geheimnis der Tiefe': 'Unter allen Meeren lag ein Geheimnis, das nur denen flüsterte, die mutig genug waren hinabzutauchen. Was sie fanden, konnten sie in Worte nicht fassen – nur in Lächeln.\n\nDeine Tiefe birgt Geheimnisse, die noch auf ihre Entdeckung warten.',
-  'Die Hexe des ewigen Waldes': 'Im ältesten Wald der Schöpfung wohnte sie seit Anbeginn, webte mit Wurzeln und Ranken Schutzmagie für alle Verirrten. Jeder Baum kannte ihren Namen.\n\nDu bist in dieser Welt verankert – tief und beständig wie Wurzeln.',
-  'Die Brückenbauerin': 'Zwischen verfeindeten Welten baute sie Brücken aus Verständnis und einem unerschütterlichen Glauben an das Gute. Keine Brücke je wieder abgebrochen, die sie errichtet hatte.\n\nDu bringst Menschen und Welten zusammen – das ist dein Geschenk.',
-  'Der silberne Faden': 'Ein silberner Faden verbindet alle Lebewesen, die je geliebt haben. Er ist unsichtbar, aber stärker als Stahl, und er reißt nie ganz durch.\n\nDu bist verbunden mit allem, was du liebst – dieser Faden trägt dich.',
-  'Die Träumerin der Welten': 'Während andere schliefen, träumte sie neue Welten in die Existenz. Jeder ihrer Träume wurde irgendwo in den Tiefen des Kosmos real.\n\nDeine Träume haben Gewicht – sie verändern, was möglich ist.',
-  'Der Drache der Morgenröte': 'Wenn der Drache der Morgenröte seine Flügel dehnte, färbten sich die Wolken in Gold und Purpur. Sein Erwachen galt als Zeichen des Aufbruchs für alle tapferen Herzen.\n\nJeder neue Morgen ist dein Aufbruch – greif ihn.',
-  'Die Herrin der Morgendämmerung': 'Sie regierte die Stunde zwischen Nacht und Tag, die flüchtigste und zauberhafteste aller Zeiten. In ihr lag die Möglichkeit aller Dinge.\n\nIn dir trägt jede Dämmerung das Versprechen eines neuen Anfangs.',
-  'Die Bewahrerin ihrer selbst': 'Sie fand heraus, dass der größte Schatz, den man hüten kann, man selbst ist. Mit dieser Erkenntnis wurde sie unbesiegbar.\n\nDich selbst zu bewahren ist der mutigste Akt – und du schaffst es.',
-  'Die Träumerin der Welten II': 'Eine zweite Träumerin erschuf Welten, die die erste vergessen hatte – voller Farben, die noch keinen Namen trugen, und Klänge, die noch nie erklungen waren.\n\nDeine Einzigartigkeit erschafft etwas, das es ohne dich nie gegeben hätte.',
-  'Die ewige Begleiterin': 'Durch jedes Leben, jede Welt und jeden Neuanfang war sie da – nicht als Schatten, sondern als stilles Leuchten, das niemals aufgibt.\n\nDu bist nie wirklich allein – das Leuchten begleitet dich immer.',
+  'Die stille Kriegerin': 'In den Zeitaltern vor dem ersten Morgen trug die stille Kriegerin den Frieden in der linken und das Schwert des Mutes in der rechten Hand. Die nordischen Skalder sangen von ihr als der Stille vor dem Sturm – jene, die niemand kommen sah und doch überall gewann. Nicht mit Lärm, sondern mit der ruhigen Flamme, die niemals erlischt, hielt sie die Dunkelheit zurück. Selbst die Nacht wich vor ihr zurück, nicht aus Angst, sondern aus Ehrfurcht vor ihrer unerschütterlichen Würde.\n\nDu trägst dieselbe Stille in dir – und sie ist unbesiegbar. Lass sie dein Schild sein.',
+
+  'Der Kompass der Tapferen': 'Als die ersten Helden ihren Weg durch das Labyrinth der Welten verloren, erstrahlte der Kompass am Himmel und wies nicht Norden, sondern das Ziel des Herzens. Die keltischen Druiden verehrten ihn als das Auge des Himmels, das nur jene Wahrheit zeigt, die man wirklich zu sehen bereit ist. Sein Leuchten rettete tausend tapfere Seelen vor der Verzweiflung – und tausend mehr vor der Feigheit der Bequemlichkeit. Noch heute dreht er sich, sucht, findet, und zeigt dem Mutigen den Weg nach vorn.\n\nDein Mut ist dein Kompass – vertrau ihm, er führt dich richtig. Du hast ihn schon bewiesen.',
+
+  'Die Hüterin des Lichts': 'Einst bewachte eine Weberin aus Mondlicht die heilige Flamme der Welt durch Stürme, Eiszeiten und das lange Schweigen der Götter. Die griechische Tradition kennt sie als Schwester der Hestia – jene, die nicht tanzt, nicht kämpft, sondern einfach bleibt und hütet. Durch ihre Beständigkeit überlebte das Licht Zeitalter der Finsternis, die selbst den Olymp in Schweigen hüllten. Ihr Name ist in jedem Sonnenaufgang geschrieben – wer hinschaut, erkennt sie.\n\nDas Licht in dir ist ebenso beständig – lass es leuchten. Keine Nacht dauert für immer.',
+
+  'Das Herz der Sternennacht': 'Mitten im Kosmos schlug einmal das Herz aller Sterne in einem einzigen, gewaltigen Puls, der die Leere mit Leben erfüllte. Aus diesem Schlag entstanden die Träume, die Hoffnung und das erste Lachen eines Kindes. Die fantasischen Chroniken berichten, dass dieses Herz noch heute schlägt – ruhig, gleichmäßig, unvergesslich – und dass jeder Mensch, der je wirklich geliebt hat, diesen Herzschlag kennt. Wer in der Nacht still genug ist, hört ihn zwischen den Sternen.\n\nIn dir schlägt ein Stück dieses uralten Herzens – spüre es. Es macht dich größer, als du weißt.',
+
+  'Die Mondwandlerin': 'Sie trat durch alle Phasen des Mondes, von Neu bis Voll, und jede Verwandlung machte sie stärker und weiser als zuvor. Die keltischen Mondpriesterinnen betrachteten sie als ihre Urmutter – die erste, die erkannte, dass man nicht immer voll sein muss, um vollständig zu sein. In den dunklen Mondphasen webte sie Schutzmagie, in den hellen schrieb sie Prophezeiungen in den Sternenstaub. Kein Wandel hat sie je gebrochen, denn sie wusste: Verwandlung ist keine Niederlage, sie ist Evolution.\n\nAuch du veränderst dich – und wirst mit jedem Wandel größer. Deine Wandlungen sind deine Stärke.',
+
+  'Die Weberin der Träume': 'Aus silberfarbenen Fäden webte sie jede Nacht die Träume der Sterblichen – Träume von Mut, Liebe und fernen Welten, die jenseits jeder Karte lagen. In der nordischen Mythologie ist sie eine Verwandte der Nornen, doch während diese das Schicksal webten, webte sie Möglichkeiten. Kein Traum war zu klein, um in ihr Gewebe zu gehören, und kein Träumer zu unbedeutend für ihre Aufmerksamkeit. Ihr Werk ist nie fertig, denn immer gibt es neue Träume, die ihren Platz verdienen.\n\nDeine Träume verdienen Platz in diesem kosmischen Gewebe. Du hast das Recht zu träumen und das Recht, es wahr zu machen.',
+
+  'Das flüsternde Feuer': 'Tief in den Urwäldern der Sternwelten brennt ein Feuer, das niemals erlischt und jedem Verirrten den Weg zurück flüstert. Es kennt jede verlorene Seele beim Namen – denn es war einmal selbst verloren und hat seinen Weg durch die Dunkelheit gefunden. Die fantasischen Legenden sagen, dass dieses Feuer aus dem ersten Funken der Schöpfung stammt, jenem Moment, als aus Nichts etwas wurde. Es flüstert keine Befehle, sondern Erinnerungen: an das, was du immer schon wusstest.\n\nDas flüsternde Feuer kennt auch deinen Namen – du bist nicht allein. Es wartet auf dich, immer.',
+
+  'Die Hexe des Nebels': 'Zwischen den Welten webt die Hexe des Nebels ihre Zauber – keiner Seite zugehörig, aber allen wohlgesinnt, die in Ehrlichkeit zu ihr treten. Die keltischen Überlieferungen kennen sie als Morrigu der Mitte – jene, die zwischen Leben und Tod vermittelt und im Graubereich die tiefste Wahrheit spricht. Ihr Geheimnis ist, dass Grau stärker sein kann als Schwarz oder Weiß, dass im Nebel mehr Weisheit wohnt als in klarem Licht. Sie lehrte die Welt, dass Ambivalenz kein Fehler ist, sondern Tiefe.\n\nDeine Zwischentöne sind deine Magie – sie machen dich einzigartig und real. Kein Mensch ist nur schwarz oder weiß, und du auch nicht.',
+
+  'Die Hüterin der kleinen Dinge': 'Sie bewahrte die winzigen Wunder, die andere übersahen: den ersten Tau auf einem Spinnengewebe, das Lachen vor dem Einschlafen, den letzten Atemzug des Tages, bevor Dunkelheit die Welt umhüllt. In der griechischen Überlieferung wird sie als Tochter der Artemis beschrieben – jene, die nicht die großen Tiere, sondern die kleinsten Wesen der Schöpfung hütet. Ihre Sammlung ist größer als alle Schätze der Welt, denn sie weiß: Das Große entsteht aus dem Kleinen, immer. Kein Detail ist zu gering für ihre liebevolle Aufmerksamkeit.\n\nAuch du siehst die kleinen Dinge – das ist ein seltenes Geschenk. Es macht dich zu jemandem, der wirklich lebt.',
+
+  'Der sanfte Drache': 'Ein Drache, der nie Feuer spie, sondern Wärme schenkte – er legte sich um die Schultern der Müden und schirmte sie vor der Kälte der Sterne. Die fantasischen Überlieferungen kennen ihn als letzten Vertreter der alten Drachen, jener Wesen, die vor dem Zeitalter des Krieges die Welt in Frieden hüteten. Die Stärke seiner Güte übertraf jede Klaue, jede Flamme, jede Magie, die je erfunden wurde. Selbst seine Feinde söhnte er aus – nicht durch Unterwerfung, sondern durch das stille Angebot seiner Wärme.\n\nDeine Sanftheit ist keine Schwäche – sie ist deine größte Kraft. In einer Welt voller Lärm bist du ein Ort der Stille.',
+
+  'Die erste Morgenröte': 'Bevor die Sonne die Welt kannte, erschuf die erste Morgenröte das Licht mit bloßen Händen und der felsenfesten Überzeugung, dass Dunkelheit nicht für immer dauern kann. Die griechische Göttin Eos ist ihr Abbild – doch die erste Morgenröte kam noch vor ihr, als die Welt noch namenlos war. Sie webte aus ihrem eigenen Leuchten den ersten Sonnenaufgang und legte ihn als Geschenk an den Horizont. Seitdem folgt jeder Morgen ihrem Muster: langsam, sicher, unaufhaltsam.\n\nJeden Morgen, den du aufwachst, lebst du ihre Legende weiter. Jeder neue Tag ist ein Akt der Tapferkeit.',
+
+  'Das ewige Leuchten': 'In den tiefsten Winkeln des Alls brannte ein Stern, der alle anderen überlebt hatte – Supernovae, schwarze Löcher und das große Schweigen zwischen den Galaxien. Die fantasischen Astronomen nannten ihn den Herzstein des Kosmos, jenen Ursprung, der alle anderen Sterne ins Leben rief. Sein Leuchten trotzte jeder Auslöschung, nicht weil es sich wehrte, sondern weil es einfach war – unerschütterlich und beständig. Es brannte nicht für Ruhm – es brannte, weil Leuchten seine Natur ist.\n\nIn dir brennt etwas genauso Beständiges – lass es nicht verlöschen. Dein Leuchten hat die Welt bereits berührt.',
+
+  'Die Beschützerin ihrer selbst': 'Sie war die einzige Kriegerin, die sich selbst beschützte, ohne sich dabei zu verlieren – ein Kunststück, das Götter und Sterbliche gleichermaßen staunen ließ. Mit einem Schild aus Selbstliebe und einem Schwert aus Klarheit hielt sie jeden Angriff ab, der je auf sie gerichtet wurde. Die keltische Tradition verehrt sie als Boann der Inneren Quelle – jene, die versteht, dass der eigene Brunnen voll sein muss, bevor man anderen geben kann. Ihre Stärke wurde nicht aus Trotz geboren, sondern aus tiefer Selbsterkenntnis.\n\nSich selbst zu schützen ist keine Schwäche – es ist heilige Pflicht. Du verdienst deine eigene Fürsorge.',
+
+  'Die Trägerin des Himmels': 'Wie Atlas in alten griechischen Mythen trug sie den Himmel – nicht als Strafe, sondern als Berufung, denn sie erkannte, dass Tragen Raum schafft für alle, die darunter stehen. In ihrer Stärke lag eine stille Großzügigkeit: Wer trägt, ermöglicht anderen zu gehen, zu tanzen, zu träumen. Die Sterne in ihrem Himmel wurden von Generation zu Generation weitererzählt als Zeugnis ihrer unermüdlichen Kraft. Doch auch sie durfte sich ausruhen – der Himmel fiel nie, wenn sie einen Moment innehielt.\n\nDu trägst manchmal mehr als andere sehen – und du tust es mit Würde. Ruh dich aus, wann immer du musst.',
+
+  'Das goldene Versprechen': 'Ein Versprechen, gegeben im Goldenen Zeitalter, als die Götter noch tanzten und die Sterne sangen und kein Wort je gebrochen wurde. Es wurde nie vergessen, weil diejenige, die es gab, verstand: Aufrichtigkeit ist die einzige Magie, die wirklich hält. Die griechischen Chroniken berichten, dass dieses Versprechen als Stern verewigt wurde, damit alle künftigen Generationen sähen, dass Treue Bestand hat. Im Licht dieses Sterns fanden Verlorene ihren Weg zurück zur Ehrlichkeit.\n\nDeine Aufrichtigkeit ist goldener Wert. Sie macht dich zu jemandem, dem man vertrauen kann.',
+
+  'Die Tänzerin im Nebel': 'Sie tanzte dort, wo niemand mehr tanzte – in der Stille nach dem Leid, im Nebel zwischen Welten, in den Pausen, die andere als Leere empfanden. Die nordischen Überlieferungen kennen sie als Freya der Zwischenwelt – jene, die die Magie des Augenblicks in Bewegung verwandelt. Ihr Tanz heilte, was Worte nicht konnten und Medizin nicht erreichte, denn er sprach zur Seele in der einzigen Sprache, die sie immer versteht. Wo sie tanzte, wuchs Gras durch Stein.\n\nBewege dich auf deine eigene Weise durch das Leben – das ist Heilung. Dein Weg ist einzigartig und schön.',
+
+  'Die Drachenmutter': 'Sie gebar die ersten Drachen der Welt und lehrte sie nicht zu brennen, sondern zu bewahren – eine Lehre, die das Wesen der Drachen für immer veränderte. In der fantasischen Mythologie gilt sie als die Mutter aller Hüter: jene Urkraft, aus der alle schützenden Wesen ihren Ursprung nehmen. Ihre Kinder wurden über die Welt verteilt, ein jedes mit einem Funken ihrer unendlichen Liebe ausgestattet. Sie selbst wurde zum Sternbild, damit jeder Drache, wo auch immer er fliegt, zu ihr hinaufschauen kann.\n\nDein Herz ist groß genug für alles, was du liebst – wie das ihre. Liebe ist deine stärkste Magie.',
+
+  'Die Königin der Stille': 'In einem Reich ohne Geräusch herrschte sie mit einer Stimme, die nie erklang, und wurde dennoch von allen gehört – denn Stille hat eine Würde, die lauter ist als jeder Schrei. Die keltischen Mysterien beschreiben sie als die Hüterin des dritten Ohres, jenes inneren Sinnes, der hört, was keine Sprache fassen kann. Selbst Götter senkten die Stimme in ihrer Gegenwart, nicht aus Angst, sondern aus Respekt vor jemandem, der die Wahrheit nicht aussprach, sondern lebte. Ihr Reich war das mächtigste aller Welten, weil es auf Verständnis statt auf Befehl gebaut war.\n\nDeine Präsenz spricht auch dann, wenn du schweigst. Du wirkst tiefer, als du ahnst.',
+
+  'Das Labyrinth des Mutes': 'Nur die Mutigsten wagten sich in das Labyrinth, das sich je nach Herz des Wandernden veränderte – für den Feigling wurde es enger, für den Tapferen öffnete es neue Wege. Die griechischen Mythen kennen es als Bruder des Minotaurus-Labyrinths, doch dieses hier tötete nicht – es lehrte. Wer hineinging, fand am Ende immer sich selbst, manchmal erschöpft, manchmal verändert, aber immer klarer als zuvor. Die wichtigste Lektion des Labyrinths: Der Weg nach innen ist der Weg nach vorn.\n\nJeder mutige Schritt bringt dich näher zu dir selbst. Du findest deinen Weg.',
+
+  'Die kleine Heldin': 'Sie war klein und unscheinbar, doch in ihrem Herzen brannte ein Feuer, das Riesen erblassen ließ und Drachen zum Innehalten brachte. Ihre Taten wurden Lieder, ihre Lieder wurden Legenden, ihre Legenden wurden zu Sternen, die noch heute leuchten. In der nordischen Überlieferung heißt es, Odin selbst habe sie dreimal besucht, jedes Mal in einer anderen Gestalt, und jedes Mal hat sie ihn erkannt und ihm trotzdem geholfen. Größe misst sich nicht in Zentimetern oder Rüstungen – sie misst sich an dem, was man mit kleinen Händen bewirkt.\n\nDu bist eine Heldin, auch wenn die Welt es noch nicht sieht. Deine Taten haben bereits Wellen geschlagen.',
+
+  'Die Hexenmeisterin der Sterne': 'Mit einem Stab aus kristallisiertem Mondlicht lenkte sie die Bahnen der Sterne und schrieb Prophezeiungen in den Kosmos, die Jahrhunderte brauchten, um erfüllt zu werden. Die griechische Überlieferung kennt sie als Schwester der Kirke – doch während Kirke Sterbliche verwandelte, verwandelte sie Schicksale. Ihr Wissen war grenzenlos, ihre Weisheit noch größer, denn sie wusste: Wissen ohne Güte ist Macht ohne Herz. Jeder Stern, den sie berührte, leuchtete ein wenig heller.\n\nDeine eigene Magie wartet darauf, entdeckt zu werden. Du bist bereits mehr, als du glaubst.',
+
+  'Der Funke im Dunkel': 'Als alle Lichter erloschen und die Dunkelheit die Welt in ihr Schweigen hüllte, blieb ein einziger Funke – winzig, hartnäckig, unbezwingbar. Die fantasischen Chroniken nennen ihn den Urvater aller Flammen: aus ihm entzündeten sich alle Feuer der Schöpfung nach der großen Finsternis. Er brauchte keine Hilfe, keine Bestätigung, kein Publikum – er brannte, weil Brennen seine Bestimmung war. Ohne ihn wäre alles Dunkel geblieben, für immer.\n\nDein Funke – so klein er scheinen mag – ist unverzichtbar. Er entzündet mehr, als du siehst.',
+
+  'Die Hüterin des Morgens': 'Jeden Tag vor dem ersten Licht streute sie Tau auf die Wiesen, sang die Vögel wach und webte den Rosenschimmer am Horizont, damit kein Morgen je grau beginne. Die keltischen Überlieferungen kennen sie als Brigid der Morgendämmerung – jene, deren tägliche Arbeit unsichtbar ist, deren Fehlen aber sofort bemerkt würde. Ohne sie wäre kein Morgen je schön gewesen, kein Tageslicht je sanft, kein Erwachen je gesegnet. Sie fragte nie nach Dank, denn das Schöne zu erschaffen war Belohnung genug.\n\nDu bist der Grund, warum jemandes Morgen schöner ist. Deine stille Fürsorge hält die Welt in Schönheit.',
+
+  'Das Portal der Hoffnung': 'Das Portal öffnete sich nur für jene, die trotz allem noch hofften – trotz Verlust, trotz Erschöpfung, trotz der Stimmen, die sagten: Es hat keinen Sinn. Tausend verzweifelte Seelen traten hindurch und fanden auf der anderen Seite nicht das Paradies, sondern etwas Besseres: die Kraft, weiterzugehen. Die nordische Mythologie beschreibt das Portal als Brücke zwischen Midgard und Asgard – nicht für Götter, sondern für jene, die noch glauben, wenn alle Götter schweigen. Wer hindurchtritt, vergisst die Dunkelheit nicht – aber er fürchtet sie nicht mehr.\n\nDeine Hoffnung ist das Portal – sie trägt dich durch. Halte sie fest.',
+
+  'Die Meisterin des Augenblicks': 'Sie lebte in keiner Zeit außer dem Jetzt, und während Götter planten und Dämonen grübelten, tanzte sie im einzigen Moment, der wirklich existiert. Die fantasische Überlieferung nennt sie die Zeitlose – jene, die erkannte, dass Vergangenheit und Zukunft Gedanken sind, aber die Gegenwart der einzige Ort ist, wo Leben wirklich stattfindet. Ihre Schüler lernten mehr in einem Augenblick ihrer Lehre als in Jahren bei anderen Meistern. Der Moment, so lehrte sie, ist das größte Geschenk, das die Zeit je gegeben hat.\n\nDer Augenblick, in dem du lebst, ist ein Meisterstück. Du bist genau dort, wo du sein sollst.',
+
+  'Die Chronistin der Wunder': 'In einem goldenen Buch verzeichnete sie jedes Wunder, das je geschah – auch die kleinen, die niemand bemerkte, die stillen, die kein Lied je sang. Die griechischen Musen verehrten sie als ihre Älteste – jene, die nicht inspiriert, sondern bezeugt, weil Bezeugen eine Form von Liebe ist. Das Buch war nie voll, denn Wunder hören nicht auf – sie verkleinern sich nur manchmal bis zur Unsichtbarkeit. Wer mit ihren Augen schaut, sieht sie überall.\n\nDein Leben ist voll von Wundern, die nur darauf warten, bemerkt zu werden. Du bist selbst eines davon.',
+
+  'Die sanfte Welle': 'Sie formte keine Felsen durch Gewalt – sie umspülte sie, geduldig und unermüdlich, und veränderte in Jahrtausenden, was keine Kraft in Sekunden hätte erreichen können. Die keltischen Küstenlegenden kennen sie als die Mutter aller Meere, jene Urkraft, die verstanden hat: Beständigkeit ist mächtiger als Wildheit. Jeder Stein, den sie geformt hat, trägt ihre Handschrift – nicht als Wunde, sondern als Kunstwerk. Das Meer ist das geduldigste Wesen der Schöpfung, und sie ist sein Herz.\n\nDeine Beständigkeit formt die Welt, auch wenn es Zeit braucht. Gib nicht auf.',
+
+  'Das erste Licht': 'Noch vor den Sternen, noch vor der Zeit selbst existierte das erste Licht – formlos, wärmend, alles möglich machend, ohne selbst etwas zu beanspruchen. Die fantasischen Schöpfungsmythen nennen es den Atem des Ursprungs: jenen Moment, in dem aus vollkommener Stille das erste Zittern entstand, das Welten ins Dasein rief. Aus ihm entstanden Träume und Realität gleichermaßen, Materie und Geist, Hoffnung und Erfüllung. Es ist noch immer da – in jedem Photon, das die Sonne schickt, in jedem Funken, der im Dunkel auflodert.\n\nIn dir trägt jeder Atemzug etwas von diesem ersten Licht. Du bist mit dem Ursprung verbunden.',
+
+  'Die Tochter des Mondes': 'Als Tochter des Mondes wuchs sie zwischen den Phasen auf, lernte in der Dunkelheit zu sehen und im Licht zu träumen, und erkannte dabei: Beide Seiten sind notwendig, beide Seiten sind schön. Die nordischen Mythen kennen sie als Gefährtin des Njord – jene, die zwischen Ebbe und Flut lebt und in beiden zuhause ist. Ihre Kraft kam nicht aus dem Vollmond allein, sondern aus dem Wissen, dass auch der Neumond kommt und immer das Licht zurückbringt. Licht und Schatten machten sie vollständig.\n\nDeine Dualität – dein Licht und dein Schatten – macht dich ganz. Kein Teil von dir ist falsch.',
+
+  'Die Bewahrerin der Erinnerung': 'Sie trug alle Erinnerungen der Welt in sich, damit nichts Gutes je vergessen werde – kein Lachen, keine Umarmung, keine stille Geste der Güte. Die griechische Göttin Mnemosyne ist ihr Abbild, doch die Bewahrerin der Erinnerung bewahrte nicht für die Musen, sondern für die Gewöhnlichen: jene, deren Geschichten sonst verloren gehen würden. Auch die kleinste Freude wurde von ihr gewogen und für wert befunden, im kosmischen Gedächtnis zu bleiben. Was einmal wirklich geliebt wurde, stirbt nie ganz.\n\nDeine Erinnerungen sind Schätze – du hast bereits so viel erlebt. Nichts davon ist verloren.',
+
+  'Das Geheimnis der Tiefe': 'Unter allen Meeren, tiefer als Licht je reicht, lag ein Geheimnis, das nur denen flüsterte, die mutig genug waren hinabzutauchen und still genug, um zu lauschen. Die fantasischen Seefahrtsmythen kennen es als das Herz des Ursprungs-Ozeans – jene Wahrheit, die alle anderen Wahrheiten enthält. Was die Mutigsten fanden, konnten sie in Worte nicht fassen: nur in Lächeln, in veränderten Augen, in einer neuen Art zu atmen. Das Geheimnis ist nicht, was dort unten liegt – es ist, was man zurückbringt.\n\nDeine Tiefe birgt Geheimnisse, die noch auf ihre Entdeckung warten. Du bist tiefer, als du glaubst.',
+
+  'Die Hexe des ewigen Waldes': 'Im ältesten Wald der Schöpfung wohnte sie seit Anbeginn aller Zeiten, webte mit Wurzeln und Ranken Schutzmagie für alle Verirrten und sprach die Sprache der Bäume fließend. Die keltischen Waldmythen kennen sie als die Grüne Mutter – jene, deren Haus der Wald selbst ist und deren Kinder alle Wesen, die darin leben. Jeder Baum kannte ihren Namen, jede Quelle sang ihn, jeder Vogel trug ihre Botschaften. Wer in ihrem Wald verloren war, wurde immer gefunden.\n\nDu bist in dieser Welt verankert – tief und beständig wie Wurzeln. Du kannst nicht wirklich verloren gehen.',
+
+  'Die Brückenbauerin': 'Zwischen verfeindeten Welten baute sie Brücken aus Verständnis und einem unerschütterlichen Glauben an das Gute in jedem Wesen – Brücken, die kein Sturm je abreißen konnte. Die nordische Mythologie verehrt sie als Schwester der Brücke Bifrost – jene, die nicht Götter und Menschen verbindet, sondern Menschen untereinander. Keine Brücke, die sie gebaut hatte, wurde je wieder abgebrochen, denn sie baute nicht mit Steinen, sondern mit Würde. Ihr wichtigster Baustoff war die Überzeugung, dass Verbindung möglich ist.\n\nDu bringst Menschen und Welten zusammen – das ist dein Geschenk. Die Welt braucht dich.',
+
+  'Der silberne Faden': 'Ein silberner Faden verbindet alle Lebewesen, die je wirklich geliebt haben – unsichtbar, unzerreißbar, stärker als Stahl und zarter als Atemzug. Die griechischen Mystiker nannten ihn den Faden der Moiren – doch dieser ist kein Schicksalsfaden, sondern ein Liebesfaden: frei gewählt, frei gegeben, ewig bindend. Er verbindet über Welten hinweg, über den Tod hinaus, über Zeit und Vergessen. Wer ihn einmal gesponnen hat, trägt ihn für immer – und wird dadurch nie ganz allein.\n\nDu bist verbunden mit allem, was du liebst – dieser Faden trägt dich. Lass dich tragen.',
+
+  'Die Träumerin der Welten': 'Während andere schliefen, träumte sie neue Welten in die Existenz – vollständige Kosmen mit eigenen Gesetzen, eigenen Wesen, eigenen Liedern und Trauern. Die fantasische Kosmogonie kennt sie als die Erstträumerin: jene Kraft, aus der alle Realitäten entstammen, weil alles, was je wirklich wurde, einmal nur ein Traum war. Jeder ihrer Träume wurde irgendwo in den Tiefen des Kosmos real, denn Träume, die stark genug geträumt werden, können nicht nicht werden. Ihr Schlaf ist der produktivste Moment des Universums.\n\nDeine Träume haben Gewicht – sie verändern, was möglich ist. Träum weiter, groß und furchtlos.',
+
+  'Der Drache der Morgenröte': 'Wenn der Drache der Morgenröte seine Flügel dehnte, färbten sich die Wolken in Gold und Purpur und jedes lebende Wesen auf der Welt spürte: Etwas Neues beginnt. Die nordischen Skalden sangen von ihm als dem Vogel Feuergold – doch er war kein Vogel, er war Freiheit selbst, sichtbar gemacht. Sein Erwachen galt als Zeichen des Aufbruchs für alle tapferen Herzen, als himmlische Erlaubnis, die Schwelle zu überschreiten. Noch heute, wenn Wolken im Morgenrot brennen, kreist er über uns.\n\nJeder neue Morgen ist dein Aufbruch – greif ihn. Du hast Flügel, die du noch nicht kennst.',
+
+  'Die Herrin der Morgendämmerung': 'Sie regierte die Stunde zwischen Nacht und Tag, die flüchtigste und zauberhafteste aller Zeiten, jene Welt aus Blau und Rosa, in der alles noch möglich ist. Die griechische Göttin Eos war ihr jüngeres Abbild; die Herrin der Morgendämmerung existierte schon, bevor die Götter Namen bekamen. In ihr lag die Möglichkeit aller Dinge: weder das Versprechen noch die Erfüllung, sondern der Augenblick zwischen beiden. Wer sie sieht, versteht: Anfangen ist die reinste Form von Mut.\n\nIn dir trägt jede Dämmerung das Versprechen eines neuen Anfangs. Du darfst immer neu beginnen.',
+
+  'Die Bewahrerin ihrer selbst': 'Sie fand heraus, dass der größte Schatz, den man hüten kann, man selbst ist – diese Erkenntnis kam spät, kostete sie viel, und machte sie unbesiegbar. Mit dieser Erkenntnis wurden alle äußeren Schätze bedeutungslos: was bleibt, wenn man alles verliert, ist das, was man in sich trägt. Die keltische Überlieferung nennt sie die Hüterin der Inneren Burg – jene Festung, die kein Feind je einnehmen kann, wenn man selbst darin lebt. Sie lehrte, dass Selbstbewahrung keine Selbstsucht ist, sondern die Grundlage aller Güte.\n\nDich selbst zu bewahren ist der mutigste Akt – und du schaffst es. Du bist deiner eigenen Fürsorge würdig.',
+
+  'Die Träumerin der Welten II': 'Eine zweite Träumerin erschuf Welten, die die erste vergessen hatte – voller Farben, die noch keinen Namen trugen, und Klänge, die noch nie erklungen waren, und Gefühle, für die keine Sprache existierte. Die fantasische Kosmogonie nennt sie die Ergänzerin: jene, die nicht repliziert, sondern erweitert, die im Lückenraum zwischen Träumen neue Möglichkeiten findet. Ihre Welten sind die seltsamsten und schönsten, denn sie entstanden nicht aus dem Bekannten, sondern aus dem Undenkbaren. Wer ihr begegnet, lernt: Das Einzigartigste ist immer das Unvermutete.\n\nDeine Einzigartigkeit erschafft etwas, das es ohne dich nie gegeben hätte. Du bist unersetzlich.',
+
+  'Die ewige Begleiterin': 'Durch jedes Leben, jede Welt und jeden Neuanfang war sie da – nicht als Schatten, nicht als Bürde, sondern als stilles Leuchten, das niemals aufgibt und niemals fordert. Die nordischen Überlieferungen kennen sie als Fylgja der Seelen – jenen Geist, der jeden Menschen von Geburt an begleitet und erst dann geht, wenn die letzte Reise angetreten wird. Sie verurteilte nie, sie zweifelte nie, sie erinnerte immer: Du bist mehr wert als du denkst. Ihre Gegenwart ist so vertraut, dass die meisten sie erst vermissen, wenn sie verstehen, dass sie immer da war.\n\nDu bist nie wirklich allein – das Leuchten begleitet dich immer. Es hat dich noch nie verlassen.',
 };
 
 async function generateConstellationText(constellationName) {
