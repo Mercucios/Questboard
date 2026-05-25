@@ -607,6 +607,9 @@ function markRhythmDone(name, rhythm) {
 
 // ── Quest selection ───────────────────────────────────────────────────────────
 
+// === FIX: QUEST REMOVE ===
+function _genQuestId() { return 'q_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
+
 function selectQuests(allQuests, mood) {
   const rhythm     = loadRhythm();
   const restQuests = allQuests.filter(q => q.rest);
@@ -615,8 +618,8 @@ function selectQuests(allQuests, mood) {
     const shown = shuffle(restQuests).slice(0, 2);
     const shownNames = new Set(shown.map(q => q.name));
     return {
-      quests: shown.map(q => ({ ...q, done: false })),
-      pool:   restQuests.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false })),
+      quests: shown.map(q => ({ ...q, done: false, id: _genQuestId() })), // === FIX: QUEST REMOVE ===
+      pool:   restQuests.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false, id: _genQuestId() })),
     };
   }
 
@@ -637,8 +640,8 @@ function selectQuests(allQuests, mood) {
   const pool          = allQuests.filter(q => !selectedNames.has(q.name));
 
   return {
-    quests: allSelected.map(q => ({ ...q, done: false })),
-    pool:   pool.map(q => ({ ...q, done: false })),
+    quests: allSelected.map(q => ({ ...q, done: false, id: _genQuestId() })), // === FIX: QUEST REMOVE ===
+    pool:   pool.map(q => ({ ...q, done: false, id: _genQuestId() })),
   };
 }
 
@@ -853,6 +856,7 @@ function makeQuestCard(q, mana) {
   card.className       = `quest-card${q.rest ? ' rest-card rast-quest' : ''}${diffCount > 0 ? ` difficulty-${diffCount}` : ''}`;
   card.dataset.name     = q.name;
   card.dataset.category = q.category || '';
+  card.dataset.questId  = q.id || q.name; // === FIX: QUEST REMOVE ===
 
   // === MANA-SYSTEM ===
   // === QUEST-BOARD UPDATE === P8: 🌙 Rast statt "Rast"
@@ -934,7 +938,7 @@ function swapQuest(name) {
   if (candidates.length === 0) return;
 
   const pick     = candidates[Math.floor(Math.random() * candidates.length)];
-  const incoming = { ...pick.q, done: false };
+  const incoming = { ...pick.q, done: false, id: _genQuestId() }; // === FIX: QUEST REMOVE ===
   const outgoing = appState.quests[idx];
 
   appState.pool.splice(pick.i, 1);
@@ -1054,41 +1058,53 @@ function _finalizeQuestCompletion(name, preReward) {
   rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
   saveDayState(appState);
 
-  // === BUGFIX & UI UPDATE === PUNKT 3: Karte fliegt heraus (animationend), dann renderBoard
-  const _cardEl = document.querySelector(`#quest-list .quest-card[data-name="${CSS.escape(name)}"]`);
-  if (_cardEl) {
-    const _rect = _cardEl.getBoundingClientRect();
-    const _star = document.createElement('div');
-    _star.className = 'shooting-star-fx';
-    _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
-    _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
-    document.body.appendChild(_star);
-    requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
-    setTimeout(() => _star.remove(), 800);
+  // === FIX: QUEST REMOVE ===
+  appState.completedCount = (appState.completedCount || 0) + 1;
+  removeQuest(quest.id || quest.name, () => {
+    if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+    if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
+  });
+}
 
-    _cardEl.classList.add('quest-card--fly-off');
-    let _flyRendered = false;
-    const _doRender = () => {
-      if (_flyRendered) return;
-      _flyRendered = true;
-      renderBoard();
-      if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
-      const totalDone = appState.quests.filter(q => q.done).length;
-      if (totalDone >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
-    };
-    _cardEl.addEventListener('animationend', _doRender, { once: true });
-    setTimeout(_doRender, 550);
+// === FIX: QUEST REMOVE ===
+function removeQuest(questId, onDone) {
+  console.log('questId:', questId, 'in array:', appState.quests.map(q => q.id));
+
+  const element = document.querySelector(`[data-quest-id="${CSS.escape(questId)}"]`);
+  if (!element) {
+    appState.quests = appState.quests.filter(q => q.id !== questId);
+    saveDayState(appState);
+    renderBoard();
+    if (onDone) onDone();
     return;
   }
 
-  renderBoard();
-  // === MANA & REMINDER UPDATE === PUNKT 2A: mana leer → Tagesrating zeigen
-  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+  const _rect = element.getBoundingClientRect();
+  const _star = document.createElement('div');
+  _star.className  = 'shooting-star-fx';
+  _star.style.left = (_rect.left + _rect.width  / 2) + 'px';
+  _star.style.top  = (_rect.top  + _rect.height / 2) + 'px';
+  document.body.appendChild(_star);
+  requestAnimationFrame(() => requestAnimationFrame(() => _star.classList.add('shooting-star-fx--go')));
+  setTimeout(() => _star.remove(), 800);
 
-  const totalDone = appState.quests.filter(q => q.done).length;
-  if (totalDone >= 2 && !appState.starAwarded) {
-    setTimeout(awardStar, 1800);
-  }
+  element.classList.add('shooting-star-exit');
+
+  let _done = false;
+  const _finish = () => {
+    if (_done) return;
+    _done = true;
+    appState.quests = appState.quests.filter(q => q.id !== questId);
+    saveDayState(appState);
+    if (element.parentNode) element.remove();
+    renderBoard();
+    if (onDone) onDone();
+  };
+
+  element.addEventListener('animationend', _finish, { once: true });
+  setTimeout(() => {
+    if (element.parentNode) _finish();
+  }, 1000);
 }
 
 // === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Popup
@@ -1678,6 +1694,10 @@ function init() {
     appState = saved;
     // === MANA-SYSTEM === backward compat
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
+    // === FIX: QUEST REMOVE === backward compat: IDs + completedCount
+    if (!appState.completedCount) appState.completedCount = appState.quests.filter(q => q.done).length;
+    appState.quests.forEach(q => { if (!q.id) q.id = _genQuestId(); });
+    if (appState.pool) appState.pool.forEach(q => { if (!q.id) q.id = _genQuestId(); });
     if (!appState.pool || appState.pool.length === 0) {
       const shownNames = new Set(appState.quests.map(q => q.name));
       appState.pool = QUESTS_DATA.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false }));
