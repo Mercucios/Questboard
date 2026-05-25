@@ -301,37 +301,6 @@
     </div>
   </div>
 
-  <!-- REST POPUP (nur-ueberleben) -->
-  <div id="popup-rest" class="overlay hidden" role="dialog" aria-modal="true">
-    <div class="popup rest-popup">
-      <div class="rest-flame">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 60" width="64" height="64">
-          <ellipse cx="28" cy="57" rx="12" ry="3.5" fill="#1e1410"/>
-          <rect x="22" y="53" width="12" height="5" rx="1" fill="#1e1410"/>
-          <path d="M22 43 Q19.5 48 21 53" fill="#605040" stroke="none"/>
-          <path d="M34 40 Q36.5 46 35 53" fill="#605040" stroke="none"/>
-          <rect x="22" y="37" width="12" height="18" rx="2.5" fill="#605040"/>
-          <path d="M28 37 C28 35 29 33 28 31" fill="none" stroke="#1a1006" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="28" cy="30.5" r="1.6" fill="#7a3810">
-            <animate attributeName="opacity" values="0.9;0.25;0.9" dur="1.8s" repeatCount="indefinite"/>
-            <animate attributeName="r" values="1.6;0.9;1.6" dur="1.8s" repeatCount="indefinite"/>
-          </circle>
-          <path d="M28 29 C25.5 24 30 19 27.5 14 C25 9 29.5 5 28 1" fill="none" stroke="rgba(170,150,130,0.65)" stroke-width="1.6" stroke-linecap="round">
-            <animate attributeName="opacity" values="0.65;0.15;0.65" dur="2.6s" repeatCount="indefinite"/>
-            <animateTransform attributeName="transform" type="translate" values="0,0;-1.5,-3;0,0" dur="2.6s" repeatCount="indefinite"/>
-          </path>
-          <path d="M28 28 C30.5 23 26 18 29 13 C31.5 8 27 4 29.5 0" fill="none" stroke="rgba(150,130,110,0.4)" stroke-width="1.2" stroke-linecap="round">
-            <animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.1s" repeatCount="indefinite" begin="0.9s"/>
-            <animateTransform attributeName="transform" type="translate" values="0,0;1.5,-3;0,0" dur="2.1s" repeatCount="indefinite" begin="0.9s"/>
-          </path>
-        </svg>
-      </div>
-      <h3 class="rest-title">Ein Moment der Ruhe</h3>
-      <p id="rest-msg" class="rest-msg"></p>
-      <button id="btn-rest-close" class="btn-action">Ich bin da ✦</button>
-    </div>
-  </div>
-
   <!-- STAR MAP (fullscreen) -->
   <div id="popup-starmap" class="overlay hidden starmap-fs" role="dialog" aria-modal="true">
     <button id="btn-starmap-close" class="starmap-back-btn back-btn" aria-label="Schließen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#f0c040" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>

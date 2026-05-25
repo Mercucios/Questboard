@@ -1771,10 +1771,6 @@ function init() {
         $('mood-badge').textContent = `${MOOD_GLYPH[mood]} ${MOOD_LABEL[mood]}`;
         renderBoard();
         showScreen('screen-board');
-        if (mood === 'nur-ueberleben') {
-          $('rest-msg').textContent = REST_MSGS[Math.floor(Math.random() * REST_MSGS.length)];
-          $('popup-rest').classList.remove('hidden');
-        }
       });
     });
   }
@@ -1784,7 +1780,6 @@ function init() {
     $('popup-star').classList.add('hidden');
     openStarMap();
   });
-  $('btn-rest-close').addEventListener('click',   () => $('popup-rest').classList.add('hidden'));
 
   // === TAG & RAST UPDATE === PUNKT 8: Rast-Mana Gain Buttons
   document.querySelectorAll('.rest-mana-gain-btn').forEach(btn => {
@@ -2834,21 +2829,52 @@ function _ruckPopTelescope() {
     void hero.offsetWidth;
     hero.classList.add('fly-in');
 
-    // Inject decorative mini stars
-    hero.querySelectorAll('.tel-mini-star').forEach(s => s.remove());
+    // Inject decorative mini stars (rejection sampling avoids center protection zone)
+    hero.querySelectorAll('.tel-mini-star, .tel-shoot-star').forEach(s => s.remove());
     const _miniColors = ['#f0c040', '#c0d0f0', '#c090f0', '#f090c0', '#60d0f0'];
-    const _miniCount  = 15 + Math.floor(Math.random() * 11);
+    const _miniCount  = 18 + Math.floor(Math.random() * 9);
     for (let i = 0; i < _miniCount; i++) {
+      let sx, sy, t = 0;
+      do {
+        sx = Math.random() * 90 + 5;
+        sy = Math.random() * 88 + 6;
+        t++;
+      } while (t < 30 && (sx >= 28 && sx <= 72) && (sy >= 22 && sy <= 78));
       const s = document.createElement('span');
       s.className = 'tel-mini-star';
       s.textContent = '✦';
-      s.style.left             = (Math.random() * 88 + 6).toFixed(1) + '%';
-      s.style.top              = (Math.random() * 78 + 6).toFixed(1) + '%';
+      s.style.left             = sx.toFixed(1) + '%';
+      s.style.top              = sy.toFixed(1) + '%';
       s.style.color            = _miniColors[Math.floor(Math.random() * _miniColors.length)];
       s.style.fontSize         = (0.45 + Math.random() * 0.5).toFixed(2) + 'rem';
       s.style.animationDelay   = (Math.random() * 3).toFixed(2) + 's';
       s.style.animationDuration = (2 + Math.random() * 2).toFixed(2) + 's';
       hero.insertBefore(s, hero.firstChild);
+    }
+
+    // Inject shooting stars (3-5, outside center protection zone)
+    const _ssColors = ['#ffffff', '#f0c040', '#d8e8ff'];
+    const _ssCount  = 3 + Math.floor(Math.random() * 3);
+    for (let j = 0; j < _ssCount; j++) {
+      let sx, sy, t = 0;
+      do {
+        sx = Math.random() * 75 + 5;
+        sy = Math.random() * 70 + 5;
+        t++;
+      } while (t < 30 && (sx >= 28 && sx <= 72) && (sy >= 22 && sy <= 78));
+      const ss = document.createElement('span');
+      ss.className = 'tel-shoot-star';
+      const angle = 15 + Math.random() * 35;
+      const dist  = 70 + Math.floor(Math.random() * 80);
+      ss.style.left = sx.toFixed(1) + '%';
+      ss.style.top  = sy.toFixed(1) + '%';
+      ss.style.width = dist + 'px';
+      ss.style.setProperty('--ss-angle', angle.toFixed(0) + 'deg');
+      ss.style.setProperty('--ss-dist', dist + 'px');
+      ss.style.background = `linear-gradient(to right, transparent, ${_ssColors[Math.floor(Math.random() * _ssColors.length)]}, transparent)`;
+      ss.style.animationDuration = (2.5 + Math.random() * 1.5).toFixed(2) + 's';
+      ss.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+      hero.insertBefore(ss, hero.firstChild);
     }
   }
 
@@ -2929,56 +2955,11 @@ function _ruckRatingLabel(type, rating) {
   }[rating] || rating;
 }
 
-// === BUGFIX & UI UPDATE === PUNKT 8: Kerzen absolut positioniert, 4 Flammenfarben
-function _injectQuestlogCandles() {
-  const view = document.getElementById('rucksack-view-questlog');
-  if (!view) return;
-  view.querySelectorAll('.ruck-candle-abs').forEach(el => el.remove());
-
-  const CFG = [
-    { left: '5%',  bottom: 0, h: 44, fc: ['#ffffd0','#f0a820','#e04808'], flkCls: 'flicker1', glow: 'rgba(255,200,60,0.28)' },
-    { left: '16%', bottom: 0, h: 58, fc: ['#d0f8ff','#20c0e0','#0058c0'], flkCls: 'flicker2', glow: 'rgba(30,200,255,0.22)' },
-    { right:'16%', bottom: 0, h: 50, fc: ['#ffd0ff','#e040a0','#800060'], flkCls: 'flicker3', glow: 'rgba(255,60,200,0.22)' },
-    { right:'5%',  bottom: 0, h: 38, fc: ['#d0ffd0','#30e060','#006020'], flkCls: 'flicker4', glow: 'rgba(60,255,100,0.22)' },
-  ];
-
-  CFG.forEach((cfg, i) => {
-    const cid   = 'cabs' + (++_ruckIconSeq);
-    const totalH = cfg.h + 20;
-    const pos   = cfg.left ? `left:${cfg.left}` : `right:${cfg.right}`;
-    const wrap  = document.createElement('div');
-    wrap.className = 'ruck-candle-abs';
-    wrap.style.cssText = `position:absolute;bottom:0;${pos};z-index:2;pointer-events:none;`;
-    wrap.innerHTML = `
-      <div class="ruck-candle-light" style="background:radial-gradient(ellipse at 50% 50%,${cfg.glow} 0%,transparent 70%);animation-delay:${(i * 0.4).toFixed(2)}s"></div>
-      <svg width="18" height="${totalH}" viewBox="0 0 18 ${totalH}" aria-hidden="true">
-        <defs>
-          <linearGradient id="${cid}w" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-color="#dac8a0"/>
-            <stop offset="45%"  stop-color="#f4ead0"/>
-            <stop offset="100%" stop-color="#b89860"/>
-          </linearGradient>
-          <radialGradient id="${cid}f" cx="50%" cy="80%" r="65%">
-            <stop offset="0%"   stop-color="${cfg.fc[0]}"/>
-            <stop offset="38%"  stop-color="${cfg.fc[1]}"/>
-            <stop offset="100%" stop-color="${cfg.fc[2]}" stop-opacity="0.3"/>
-          </radialGradient>
-        </defs>
-        <rect x="4" y="20" width="10" height="${cfg.h}" rx="1.5" fill="url(#${cid}w)" stroke="#b89860" stroke-width="0.6"/>
-        <path d="M4 26 Q2 30 4 33" fill="#dac8a0" opacity="0.6"/>
-        <line x1="9" y1="20" x2="9" y2="16" stroke="#2a1808" stroke-width="1.5" stroke-linecap="round"/>
-        <g class="candle-flame ${cfg.flkCls}" style="animation-delay:${(i * 0.4).toFixed(2)}s">
-          <ellipse cx="9" cy="10" rx="3.5" ry="5.5" fill="url(#${cid}f)" opacity="0.92"/>
-          <ellipse cx="9" cy="11" rx="1.8" ry="3"   fill="${cfg.fc[0]}"   opacity="0.85"/>
-        </g>
-      </svg>`;
-    view.appendChild(wrap);
-  });
-}
+// === BUGFIX & UI UPDATE === PUNKT 8: Kerzen entfernt
+function _injectQuestlogCandles() {}
 
 // === FIX: PUNKT 2 – Questlog Pergament mit Tag-Gruppierung ===
 function _ruckPopQuestlog() {
-  _injectQuestlogCandles();
   const scrollArea = $('ruck-log-scroll');
   const logs       = loadLogs();
   const ratings    = loadDayRatings();
