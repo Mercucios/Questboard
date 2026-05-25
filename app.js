@@ -1808,6 +1808,7 @@ function init() {
   document.querySelectorAll('.overlay').forEach(el => {
     el.addEventListener('click', e => {
       if (e.target === el) {
+        if (el.id === 'popup-quest-log') return; // mandatory: must save rating before closing
         if (el.id === 'popup-starmap' && starMapAnimFrame) {
           cancelAnimationFrame(starMapAnimFrame); starMapAnimFrame = null;
         }
@@ -2444,34 +2445,45 @@ function completeSidequest(sqId) {
   const sqs = loadTodaySidequests();
   const sq  = sqs.find(s => s.id === sqId && !s.done);
   if (!sq) return;
-  if (sq.mana > 0 && appState.mana < sq.mana) return; // FIX 1: Mana-Guard
-  _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title };
+  if (sq.mana > 0 && appState.mana < sq.mana) return;
 
-  // === FIX: QUEST REMOVE === Sidequest-Karte sofort beim Log-Dialog entfernen
+  const reward = getRandomReward('sidequest');
+  _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title, reward, questObj: { ...sq } };
+
+  appState.mana = Math.max(0, appState.mana - sq.mana);
+  updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
+  renderBoard();
+
+  removeQuestFromData(sqId);
+  saveDayState(appState);
+
   const sqCard = document.querySelector(`.sidequest-card[data-sq-id="${CSS.escape(sqId)}"]`);
   if (sqCard) {
     sqCard.classList.add('shooting-star-exit');
-    setTimeout(() => { if (sqCard.parentNode) sqCard.remove(); }, 1000);
+    setTimeout(() => { if (sqCard.parentNode) sqCard.remove(); }, 600);
   }
 
-  openLogPopup(sqId, sq.title);
+  setTimeout(() => showVictoryScreen({ name: sq.title }, reward), 600);
 }
 
-function _finalizeSidequestCompletion(sqId) {
-  const sqs = loadTodaySidequests();
-  const sq  = sqs.find(s => s.id === sqId && !s.done);
-  if (!sq || !appState) return;
+function _finalizeSidequestCompletion(sqId, preReward, questObj) {
+  if (!appState) return;
 
-  sq.done     = true;
-  sq.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
-  appState.mana = Math.max(0, appState.mana - sq.mana);
+  let treasure;
+  if (preReward && typeof preReward === 'string') {
+    treasure = { name: REWARD_ICON_MAP[preReward] || preReward };
+  } else {
+    treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  }
 
-  rucksackRecordTreasure(sq.title, sq.treasure, 'sidequest');
-  // === FIX: QUEST REMOVE === Sidequest aus localStorage entfernen statt nur als done markieren
-  removeQuestFromData(sqId);
+  const title = questObj ? questObj.title : sqId;
+  rucksackRecordTreasure(title, treasure, 'sidequest');
+
+  appState.completedCount = (appState.completedCount || 0) + 1;
   saveDayState(appState);
   renderBoard();
-  showRewardPopup(sq);
+  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+  if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2537,7 +2549,7 @@ function initLogPopup() {
       // === FIX: QUEST COMPLETE FLOW === questObj übergeben (Quest bereits aus Array entfernt)
       _finalizeQuestCompletion(pending.id, pending.reward, pending.questObj);
     } else {
-      _finalizeSidequestCompletion(pending.id);
+      _finalizeSidequestCompletion(pending.id, pending.reward, pending.questObj);
     }
   });
 }
