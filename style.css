@@ -2714,13 +2714,16 @@ h1 {
 }
 .ruck-scroll-outer::-webkit-scrollbar { display: none !important; }
 
-/* C) Obere Schriftrolle */
+/* C) Obere Schriftrolle – dunkles Holzbraun mit Tiefe */
 .ruck-scroll-roll {
   height: 28px !important;
-  background: linear-gradient(to bottom, #f0e8d0, #d4b880, #b89050, #d4b880, #e8d8b0) !important;
+  background: linear-gradient(to bottom, #d4a060, #8b5e2a, #5a3a10, #8b5e2a, #c8904a) !important;
   border-radius: 6px !important;
   border: none !important;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.6), 0 1px 0 rgba(255,240,180,0.35) !important;
+  box-shadow:
+    0 5px 14px rgba(0,0,0,0.75),
+    inset 0 2px 5px rgba(255,220,140,0.2),
+    inset 0 -3px 6px rgba(0,0,0,0.5) !important;
   margin: 0 !important;
 }
 .ruck-scroll-roll::before { display: none !important; }
@@ -2728,23 +2731,39 @@ h1 {
 /* D) Untere Schriftrolle */
 .ruck-scroll-roll-bot {
   height: 28px !important;
-  background: linear-gradient(to top, #f0e8d0, #d4b880, #b89050, #d4b880, #e8d8b0) !important;
+  background: linear-gradient(to top, #d4a060, #8b5e2a, #5a3a10, #8b5e2a, #c8904a) !important;
   border-radius: 6px !important;
   border: none !important;
-  box-shadow: 0 -3px 10px rgba(0,0,0,0.6), 0 -1px 0 rgba(255,240,180,0.35) !important;
+  box-shadow:
+    0 -5px 14px rgba(0,0,0,0.75),
+    inset 0 -2px 5px rgba(255,220,140,0.2),
+    inset 0 3px 6px rgba(0,0,0,0.5) !important;
   margin: 0 !important;
 }
 
-/* E) Pergament-Körper: Radial-Gradient + Vignette */
+/* E) Pergament-Körper: vergilbtes, fleckiges, strukturiertes Pergament */
 .ruck-scroll-body {
-  background: radial-gradient(ellipse at 50% 20%, #f5e8c0 0%, #e8d4a0 30%, #d4b870 60%, #b89040 80%, #8b6020 100%) !important;
+  background:
+    repeating-linear-gradient(180deg,
+      transparent 0px, transparent 22px,
+      rgba(100,55,15,0.07) 22px, rgba(100,55,15,0.07) 23px),
+    repeating-linear-gradient(90deg,
+      transparent 0px, transparent 55px,
+      rgba(80,40,10,0.05) 55px, rgba(80,40,10,0.05) 56px),
+    radial-gradient(ellipse at 12% 50%, rgba(120,60,10,0.2) 0%, transparent 38%),
+    radial-gradient(ellipse at 88% 50%, rgba(120,60,10,0.2) 0%, transparent 38%),
+    radial-gradient(ellipse at 50% 4%,  rgba(90,45,8,0.25)  0%, transparent 45%),
+    radial-gradient(ellipse at 50% 96%, rgba(90,45,8,0.25)  0%, transparent 45%),
+    radial-gradient(ellipse at 30% 25%, rgba(200,170,100,0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 70%, rgba(180,140,70,0.25)  0%, transparent 35%),
+    linear-gradient(165deg, #f4e4b0 0%, #edd898 18%, #e8d090 38%, #dfc078 55%, #d4b060 72%, #c8a860 88%, #bc9850 100%) !important;
   border: none !important;
   box-shadow:
-    inset 0 0 60px rgba(60,30,8,0.22),
-    inset 10px 0 24px rgba(0,0,0,0.14),
-    inset -10px 0 24px rgba(0,0,0,0.14),
-    inset 0 10px 24px rgba(0,0,0,0.10),
-    inset 0 -10px 24px rgba(0,0,0,0.10) !important;
+    inset 0 0 55px rgba(50,25,5,0.18),
+    inset 14px 0 28px rgba(0,0,0,0.16),
+    inset -14px 0 28px rgba(0,0,0,0.16),
+    inset 0 12px 20px rgba(0,0,0,0.1),
+    inset 0 -12px 20px rgba(0,0,0,0.1) !important;
   color: #2a1000 !important;
   padding: 20px 28px !important;
   min-height: 60vh !important;
@@ -4091,10 +4110,10 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   background: rgba(240,192,64,0.12);
   border: 1px solid rgba(240,192,64,0.35);
   color: #f0c040;
-  font-size: 1.4rem;
+  font-size: 16px;
   line-height: 1;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -4126,13 +4145,13 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838) !important;
   border: 2px solid #c4a030 !important;
   border-radius: 50% !important;
-  width: 26px !important;
-  height: 26px !important;
+  width: 36px !important;
+  height: 36px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   color: #f0c040 !important;
-  font-size: 13px !important;
+  font-size: 16px !important;
   cursor: pointer !important;
   z-index: 100 !important;
   touch-action: manipulation !important;
@@ -4644,6 +4663,10 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   z-index: 2;
   pointer-events: none;
 }
+@keyframes candleGlow {
+  0%,100% { opacity: 0.15; }
+  50%     { opacity: 0.5; }
+}
 .ruck-candle-abs .ruck-candle-light {
   width: 70px;
   height: 80px;
@@ -4652,7 +4675,7 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;
-  animation: flickerGlow 2.2s ease-in-out infinite;
+  animation: candleGlow 1.8s ease-in-out infinite;
 }
 @keyframes flicker1 {
   0%,100% { transform: scaleX(1)    scaleY(1)    rotate(-1deg); opacity: 1;    }

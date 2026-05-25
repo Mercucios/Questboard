@@ -1048,7 +1048,7 @@ function _finalizeQuestCompletion(name, preReward, questObj) {
 
   if (quest.rest) {
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
-    appState.maxMana = Math.min(appState.maxMana + 10, 60);
+    appState.maxMana = Math.min(appState.maxMana + 10, 80);
     appState.mana    = Math.min(appState.mana + 10, appState.maxMana);
   }
   updateManaBottle(appState.mana, appState.maxMana || MAX_MANA);
@@ -1161,7 +1161,7 @@ function _finalizeRestQuestCompletion(name, manaGain) {
   quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
 
   if (!appState.maxMana) appState.maxMana = MAX_MANA;
-  appState.maxMana += manaGain;
+  appState.maxMana = Math.min(appState.maxMana + manaGain, 80);
   appState.mana    = Math.min(appState.mana + manaGain, appState.maxMana);
 
   $('popup-rest-mana').classList.add('hidden');
@@ -1734,6 +1734,8 @@ function init() {
     appState = saved;
     // === MANA-SYSTEM === backward compat
     if (!appState.maxMana) appState.maxMana = MAX_MANA;
+    appState.maxMana = Math.min(appState.maxMana, 80);
+    appState.mana    = Math.min(appState.mana, 80);
     // === FIX: QUEST REMOVE === backward compat: IDs + completedCount
     if (!appState.completedCount) appState.completedCount = appState.quests.filter(q => q.done).length;
     appState.quests.forEach(q => { if (!q.id) q.id = _genQuestId(); });
@@ -3400,7 +3402,7 @@ function _initManaTopUp() {
       const delta   = parseInt(btn.dataset.manaDelta, 10);
       const maxMana = appState.maxMana || MAX_MANA;
       if (delta > 0) {
-        appState.mana = Math.min(appState.mana + delta, maxMana + 50);
+        appState.mana = Math.min(appState.mana + delta, 80);
       } else {
         const floor = Math.max(30, maxMana);
         appState.mana = Math.max(floor, appState.mana + delta);
