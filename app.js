@@ -1224,7 +1224,8 @@ function getConstellationInfo(starCount) {
   let cumulative = 0;
   for (let i = 0; i < CONSTELLATIONS.length; i++) {
     const c = CONSTELLATIONS[i];
-    if (starCount <= cumulative + c.starsNeeded) {
+    if (starCount < cumulative + c.starsNeeded) {
+      console.log('[Teleskop] Abgeschlossene Sternbilder:', i, '| Sterne:', starCount, '| Verdient in aktuellem:', starCount - cumulative, '/', c.starsNeeded);
       return {
         idx: i,
         constellation: c,
@@ -2733,7 +2734,7 @@ function _ruckPopTelescope() {
   tabBar.className = 'tel-tab-bar';
   tabBar.innerHTML = `
     <button class="tel-tab active" data-tab="current">Aktuell</button>
-    <button class="tel-tab" data-tab="found">Entdeckt <span class="tel-found-count">${compN}</span> ✦</button>
+    <button class="tel-tab" data-tab="found">Entdeckt ✦</button>
   `;
   list.appendChild(tabBar);
 
@@ -2832,6 +2833,23 @@ function _ruckPopTelescope() {
     hero.classList.remove('fly-in');
     void hero.offsetWidth;
     hero.classList.add('fly-in');
+
+    // Inject decorative mini stars
+    hero.querySelectorAll('.tel-mini-star').forEach(s => s.remove());
+    const _miniColors = ['#f0c040', '#c0d0f0', '#c090f0', '#f090c0', '#60d0f0'];
+    const _miniCount  = 15 + Math.floor(Math.random() * 11);
+    for (let i = 0; i < _miniCount; i++) {
+      const s = document.createElement('span');
+      s.className = 'tel-mini-star';
+      s.textContent = '✦';
+      s.style.left             = (Math.random() * 88 + 6).toFixed(1) + '%';
+      s.style.top              = (Math.random() * 78 + 6).toFixed(1) + '%';
+      s.style.color            = _miniColors[Math.floor(Math.random() * _miniColors.length)];
+      s.style.fontSize         = (0.45 + Math.random() * 0.5).toFixed(2) + 'rem';
+      s.style.animationDelay   = (Math.random() * 3).toFixed(2) + 's';
+      s.style.animationDuration = (2 + Math.random() * 2).toFixed(2) + 's';
+      hero.insertBefore(s, hero.firstChild);
+    }
   }
 
   const items = paneCurrentEl.querySelectorAll('.ruck-const-item:not(.ci-far)');

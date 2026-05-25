@@ -1820,6 +1820,21 @@ h1 {
 .ruck-stars-hero {
   text-align: center;
   padding: 0.8rem 0 1rem;
+  position: relative;
+  overflow: visible;
+}
+
+@keyframes starPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%       { opacity: 1;   transform: scale(1.2); }
+}
+
+.tel-mini-star {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+  animation: starPulse ease-in-out infinite;
 }
 
 .ruck-star-num {
@@ -2840,9 +2855,9 @@ h1 {
 .rucksack-back-btn       { font-size: 2.1rem !important; }
 
 /* ── Teleskop ─────────────────────────────────────────────── */
-.ruck-star-num       { font-size: 7.6rem !important; }
-.ruck-star-glyph     { font-size: 4rem !important; }
-.ruck-star-sub       { font-size: 1.56rem !important; }
+.ruck-star-num       { font-size: 5.1rem !important; }
+.ruck-star-glyph     { font-size: 2.7rem !important; }
+.ruck-star-sub       { font-size: 1.0rem !important; }
 .ruck-open-map-btn   { font-size: 1.6rem !important; }
 .ruck-section-lbl    { font-size: 1.32rem !important; }
 .ruck-const-icon     { font-size: 1.8rem !important; }
