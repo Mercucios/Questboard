@@ -1382,6 +1382,7 @@ h1 {
   color: #3a2608;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative;
 }
 .quest-log-popup::-webkit-scrollbar { width: 3px; }
 .quest-log-popup::-webkit-scrollbar-thumb { background: rgba(100,60,10,0.25); border-radius: 2px; }
@@ -1440,7 +1441,7 @@ h1 {
   gap: 12px;
   width: 100%;
   padding: 0.85rem 1rem;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.12) !important;
   border: 1.5px solid;
   border-radius: 10px;
   cursor: pointer;
@@ -1451,7 +1452,7 @@ h1 {
 .log-rating-btn[data-rating="ok"]   { border-color: rgba(150,120,220,0.5);  color: #1a1a1a !important; }
 .log-rating-btn[data-rating="bad"]  { border-color: rgba(200,80,80,0.5);    color: #1a1a1a !important; }
 
-.log-rating-btn:hover { background: rgba(0,0,0,0.45); }
+.log-rating-btn:hover { background: rgba(0,0,0,0.22) !important; }
 .log-rating-btn[data-rating="good"]:hover { border-color: rgba(240,192,64,0.8); }
 .log-rating-btn[data-rating="ok"]:hover   { border-color: rgba(150,120,220,0.8); }
 .log-rating-btn[data-rating="bad"]:hover  { border-color: rgba(200,80,80,0.8); }
@@ -5163,4 +5164,35 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   line-height: 1.8;
   margin: 0;
   white-space: pre-line;
+}
+
+/* === FIX: Tanzende Runen im Quest-Bewertungs-Popup === */
+@keyframes runeDrift1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg);   opacity: 0.08; }
+  50%       { transform: translateY(-12px) rotate(8deg); opacity: 0.18; }
+}
+@keyframes runeDrift2 {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); opacity: 0.06; }
+  50%       { transform: translateY(8px) rotate(5deg);  opacity: 0.15; }
+}
+@keyframes runeDrift3 {
+  0%, 100% { transform: translateX(0px) rotate(0deg);    opacity: 0.1; }
+  50%       { transform: translateX(-8px) rotate(-10deg); opacity: 0.2; }
+}
+.quest-log-rune {
+  position: absolute;
+  color: rgba(0,0,0,0.12);
+  pointer-events: none;
+  z-index: 0;
+  font-family: serif;
+  user-select: none;
+  line-height: 1;
+}
+
+/* === FIX: Sidequest cant-afford Button === */
+.sidequest-card .quest-complete-btn.cant-afford {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+  border-color: #505050;
 }

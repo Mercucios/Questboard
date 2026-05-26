@@ -2310,7 +2310,8 @@ function makeSidequestCard(sq) {
   const canAfford = appState.mana >= (sq.mana || 0);
 
   const log       = getTodayLog(sq.id);
-  const sqCheckSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const sqCheckSvg   = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const sqMinusSvg   = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M7 14 H21" fill="none" stroke="#606060" stroke-width="3" stroke-linecap="round"/></svg>`;
   const actionHtml = sq.done
     ? `<div class="quest-done-mark">
         ${log
@@ -2318,7 +2319,7 @@ function makeSidequestCard(sq) {
           : '✓'}
        </div>`
     : `<div class="quest-actions">
-        <button class="quest-complete-btn${canAfford ? '' : ' cant-afford'}"${canAfford ? '' : ' disabled'} aria-label="${sq.title} abschließen">${sqCheckSvg}</button>
+        <button class="quest-complete-btn${canAfford ? '' : ' cant-afford'}"${canAfford ? '' : ' disabled'} aria-label="${sq.title} abschließen">${canAfford ? sqCheckSvg : sqMinusSvg}</button>
        </div>`;
 
   card.innerHTML = `
