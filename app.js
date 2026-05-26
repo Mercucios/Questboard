@@ -2307,6 +2307,7 @@ function makeSidequestCard(sq) {
 
   // === MANA-SYSTEM ===
   const costHtml = sq.mana > 0 ? manaSymbols(sq.mana) : '';
+  const canAfford = appState.mana >= sq.mana;
 
   const log       = getTodayLog(sq.id);
   const sqCheckSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -2317,7 +2318,7 @@ function makeSidequestCard(sq) {
           : '✓'}
        </div>`
     : `<div class="quest-actions">
-        <button class="quest-complete-btn" aria-label="${sq.title} abschließen">${sqCheckSvg}</button>
+        <button class="quest-complete-btn${canAfford ? '' : ' cant-afford'}"${canAfford ? '' : ' disabled'} aria-label="${sq.title} abschließen">${sqCheckSvg}</button>
        </div>`;
 
   card.innerHTML = `
@@ -2332,7 +2333,7 @@ function makeSidequestCard(sq) {
     </div>
     ${actionHtml}`;
 
-  if (!sq.done) {
+  if (!sq.done && canAfford) {
     card.querySelector('.quest-complete-btn').addEventListener('click', () => completeSidequest(sq.id));
   } else if (log) {
     card.querySelector('.log-view-btn')?.addEventListener('click', () => showLogView(log));
@@ -2428,7 +2429,7 @@ function initSqCreateModal() {
     };
     saveSidequest(sq);
     $('popup-sq-create').classList.add('hidden');
-    renderSidequests();
+    renderBoard();
   };
   const _sqSaveBtn = $('btn-sq-save');
   _sqSaveBtn.addEventListener('click', _sqDoSave);
