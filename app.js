@@ -2243,8 +2243,8 @@ function initDayRatingPopup() {
     });
   });
 
-  $('btn-day-rating-save').addEventListener('click', () => {
-    const selected  = document.querySelector('.day-rating-opt-btn.selected');
+  const _drDoSave = () => {
+    const selected = document.querySelector('.day-rating-opt-btn.selected');
     if (!selected) return;
     const autoRated = $('popup-day-rating').dataset.autoRated === '1';
     saveDayRating({
@@ -2254,7 +2254,11 @@ function initDayRatingPopup() {
       autoRated,
     });
     $('popup-day-rating').classList.add('hidden');
-  });
+  };
+
+  const _saveBtn = $('btn-day-rating-save');
+  _saveBtn.addEventListener('click', _drDoSave);
+  _saveBtn.addEventListener('touchend', e => { e.preventDefault(); _drDoSave(); });
 
   $('btn-day-rating-skip').addEventListener('click', () => {
     _dayRatingDismissedAt = Date.now();
@@ -2514,6 +2518,44 @@ function openLogPopup(questId, questTitle) {
   $('log-note-input').value        = '';
   document.querySelectorAll('.log-rating-btn').forEach(b => b.classList.remove('selected'));
   $('btn-log-save').disabled       = true;
+
+  // Tanzende Runen injizieren (position: absolute im Popup-Container)
+  const popup = document.querySelector('#popup-quest-log .quest-log-popup');
+  if (popup) {
+    popup.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
+    const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚ';
+    // [top, bottom, left, right, size, animation, duration, delay]
+    const POS = [
+      ['8%',  null,  '12%', null,  '1.1rem', 'runeWipLeft',  '7s',  '0s'  ],
+      ['15%', null,  null,  '8%',  '0.9rem', 'runeWipRight', '9s',  '1.5s'],
+      ['25%', null,  '5%',  null,  '1.4rem', 'runeWipLeft',  '11s', '3s'  ],
+      ['35%', null,  null,  '14%', '1.0rem', 'runeWipRight', '7s',  '5s'  ],
+      ['50%', null,  '18%', null,  '1.6rem', 'runeWipLeft',  '9s',  '2s'  ],
+      ['60%', null,  null,  '5%',  '0.9rem', 'runeWipRight', '11s', '4s'  ],
+      ['70%', null,  '7%',  null,  '1.2rem', 'runeWipLeft',  '7s',  '1s'  ],
+      ['80%', null,  null,  '20%', '1.3rem', 'runeWipRight', '9s',  '7s'  ],
+      ['44%', null,  '33%', null,  '1.5rem', 'runeWipLeft',  '11s', '0.5s'],
+      ['20%', null,  '52%', null,  '1.0rem', 'runeWipRight', '7s',  '3.5s'],
+      ['68%', null,  null,  '28%', '0.9rem', 'runeWipLeft',  '9s',  '6s'  ],
+      ['88%', null,  '16%', null,  '1.1rem', 'runeWipRight', '11s', '2.5s'],
+      ['5%',  null,  null,  '33%', '1.3rem', 'runeWipLeft',  '7s',  '4.5s'],
+      ['55%', null,  '68%', null,  '1.6rem', 'runeWipRight', '9s',  '8s'  ],
+      ['75%', null,  '43%', null,  '0.9rem', 'runeWipLeft',  '11s', '1.5s'],
+    ];
+    POS.forEach(([top, bot, left, right, size, anim, dur, delay], i) => {
+      const s = document.createElement('span');
+      s.className = 'popup-abs-rune';
+      let style = `font-size:${size};animation:${anim} ${dur} ease-in-out ${delay} infinite;`;
+      if (top)   style += `top:${top};`;
+      if (bot)   style += `bottom:${bot};`;
+      if (left)  style += `left:${left};`;
+      if (right) style += `right:${right};`;
+      s.style.cssText = style;
+      s.textContent   = RUNES[i % RUNES.length];
+      popup.appendChild(s);
+    });
+  }
+
   $('popup-quest-log').classList.remove('hidden');
 }
 
