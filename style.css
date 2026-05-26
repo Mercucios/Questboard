@@ -3055,8 +3055,8 @@ h1 {
 }
 
 @keyframes runesDance {
-  0%, 100% { letter-spacing: 0.3em; opacity: 0.4; }
-  50%       { letter-spacing: 0.5em; opacity: 0.7; }
+  0%, 100% { letter-spacing: 0.3em; opacity: 0.35; }
+  50%       { letter-spacing: 0.45em; opacity: 0.6; }
 }
 
 .quest-complete-btn {
@@ -3113,7 +3113,7 @@ h1 {
   font-size: 9px;
   letter-spacing: 0.3em;
   color: rgba(196,160,48,0.6);
-  animation: runesDance 2s ease-in-out infinite;
+  animation: runesDance 4.5s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -5166,27 +5166,28 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   white-space: pre-line;
 }
 
-/* === FIX: Tanzende Runen im Quest-Bewertungs-Popup === */
-@keyframes runeDrift1 {
-  0%, 100% { transform: translateY(0px) rotate(0deg);   opacity: 0.08; }
-  50%       { transform: translateY(-12px) rotate(8deg); opacity: 0.18; }
+/* === FIX: Tanzende Runen über gesamten Viewport (position: fixed) === */
+@keyframes runeWipLeft {
+  0%, 100% { transform: translateX(0) rotate(-3deg); opacity: 0.12; }
+  50%       { transform: translateX(-10px) rotate(3deg); opacity: 0.2; }
 }
-@keyframes runeDrift2 {
-  0%, 100% { transform: translateY(0px) rotate(-5deg); opacity: 0.06; }
-  50%       { transform: translateY(8px) rotate(5deg);  opacity: 0.15; }
+@keyframes runeWipRight {
+  0%, 100% { transform: translateX(0) rotate(3deg); opacity: 0.1; }
+  50%       { transform: translateX(10px) rotate(-3deg); opacity: 0.18; }
 }
-@keyframes runeDrift3 {
-  0%, 100% { transform: translateX(0px) rotate(0deg);    opacity: 0.1; }
-  50%       { transform: translateX(-8px) rotate(-10deg); opacity: 0.2; }
+@keyframes runeWipSlow {
+  0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.08; }
+  50%       { transform: translateX(6px) rotate(-5deg); opacity: 0.16; }
 }
-.quest-log-rune {
-  position: absolute;
-  color: rgba(0,0,0,0.12);
+.vp-rune {
+  position: fixed;
+  color: rgba(0,0,0,0.13);
   pointer-events: none;
-  z-index: 0;
   font-family: serif;
   user-select: none;
   line-height: 1;
+  animation-fill-mode: none;
+  animation-iteration-count: infinite;
 }
 
 /* === FIX: Sidequest cant-afford Button === */
@@ -5195,4 +5196,116 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   cursor: not-allowed;
   background: transparent;
   border-color: #505050;
+}
+
+/* === FIX 3: Day Rating Opt-Btn – Emoji/Text nebeneinander === */
+#popup-day-rating .day-rating-opt-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 1rem 1.2rem !important;
+}
+
+/* === FIX 4: "Ins Schicksal schreiben" Save Button === */
+@keyframes savePulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(196,160,48,0.25); }
+  50%       { box-shadow: 0 0 38px rgba(196,160,48,0.55); }
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(200%); }
+  100% { transform: translateX(-100%); }
+}
+#btn-day-rating-save {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 1rem 1.5rem !important;
+  background: linear-gradient(135deg, #1a0a2e 0%, #2d1060 50%, #1a0a2e 100%) !important;
+  border: 2px solid #c4a030 !important;
+  border-radius: 12px !important;
+  color: #f0c040 !important;
+  font-family: Cinzel, serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  animation: savePulse 2.5s ease-in-out infinite;
+  position: relative !important;
+  overflow: hidden !important;
+  margin-top: 0.75rem !important;
+}
+#btn-day-rating-save::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 60% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,220,100,0.1), transparent) !important;
+  animation: shimmer 3s ease-in-out infinite !important;
+  pointer-events: none !important;
+}
+#btn-day-rating-save::after {
+  content: 'ᚱ ᚢ ᚾ ᛖ ᚾ ᚠ ᚨ' !important;
+  position: absolute !important;
+  bottom: 3px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  font-size: 8px !important;
+  letter-spacing: 0.3em !important;
+  color: rgba(196,160,48,0.4) !important;
+  animation: runesDance 4.5s ease-in-out infinite !important;
+  pointer-events: none !important;
+}
+
+/* === FIX 5: "Die Sterne sollen warten" Skip Button === */
+@keyframes laterFade {
+  0%, 100% { border-color: rgba(196,160,48,0.25); color: rgba(240,192,64,0.55); }
+  50%       { border-color: rgba(196,160,48,0.5);  color: rgba(240,192,64,0.8); }
+}
+@keyframes starWink {
+  0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
+  50%       { opacity: 0.8; transform: translateY(-50%) scale(1.4); }
+}
+#btn-day-rating-skip {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 0.85rem 1.5rem !important;
+  background: transparent !important;
+  border: 1.5px solid rgba(196,160,48,0.3) !important;
+  border-radius: 12px !important;
+  color: rgba(240,192,64,0.65) !important;
+  font-family: Cinzel, serif !important;
+  font-size: 0.95rem !important;
+  font-style: italic !important;
+  letter-spacing: 0.06em !important;
+  animation: laterFade 4s ease-in-out infinite;
+  position: relative !important;
+  margin-top: 0.75rem !important;
+}
+#btn-day-rating-skip::before {
+  content: '✦' !important;
+  position: absolute !important;
+  left: 0.8rem !important;
+  top: 50% !important;
+  font-size: 0.6rem !important;
+  animation: starWink 3s ease-in-out infinite !important;
+  pointer-events: none !important;
+  font-style: normal !important;
+}
+#btn-day-rating-skip::after {
+  content: '✦' !important;
+  position: absolute !important;
+  right: 0.8rem !important;
+  top: 50% !important;
+  font-size: 0.6rem !important;
+  animation: starWink 3s ease-in-out 1.5s infinite !important;
+  pointer-events: none !important;
+  font-style: normal !important;
 }
