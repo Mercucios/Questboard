@@ -1419,12 +1419,12 @@ h1 {
 }
 
 .log-rating-heading {
-  font-size: 2rem !important;
+  font-size: 1.35rem !important;
   font-family: 'Cinzel', serif !important;
-  color: #f0c040 !important;
+  color: #1a1a1a !important;
   text-align: center !important;
   margin-bottom: 0.75rem;
-  text-shadow: 0 1px 8px rgba(196,160,48,0.3);
+  text-shadow: none;
 }
 
 .log-rating-row {
@@ -1447,9 +1447,9 @@ h1 {
   transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
 }
 
-.log-rating-btn[data-rating="good"] { border-color: rgba(240,192,64,0.5);   color: #f0c040; }
-.log-rating-btn[data-rating="ok"]   { border-color: rgba(150,120,220,0.5);  color: #c0a0f0; }
-.log-rating-btn[data-rating="bad"]  { border-color: rgba(200,80,80,0.5);    color: #f08080; }
+.log-rating-btn[data-rating="good"] { border-color: rgba(240,192,64,0.5);   color: #1a1a1a !important; }
+.log-rating-btn[data-rating="ok"]   { border-color: rgba(150,120,220,0.5);  color: #1a1a1a !important; }
+.log-rating-btn[data-rating="bad"]  { border-color: rgba(200,80,80,0.5);    color: #1a1a1a !important; }
 
 .log-rating-btn:hover { background: rgba(0,0,0,0.45); }
 .log-rating-btn[data-rating="good"]:hover { border-color: rgba(240,192,64,0.8); }
@@ -1474,12 +1474,14 @@ h1 {
   font-family: 'Cinzel', serif;
   font-size: 0.95rem;
   font-weight: 700;
+  color: #1a1a1a !important;
 }
 
 .lr-sub {
   font-size: 0.78rem;
   opacity: 0.7;
   font-style: italic;
+  color: #333333 !important;
 }
 
 .log-note-input {
@@ -3045,53 +3047,40 @@ h1 {
   text-shadow: 0 0 4px rgba(240,192,64,0.6);
 }
 
-/* Quest-Abschluss-Button (Runenschwert-Design) */
+/* Quest-Abschluss-Button (einfacher Haken-Button) */
 @keyframes questBtnPulse {
   0%, 100% { box-shadow: 0 0 20px rgba(196,160,48,0.3), inset 0 1px 0 rgba(255,220,100,0.2); }
   50%       { box-shadow: 0 0 40px rgba(196,160,48,0.6), inset 0 1px 0 rgba(255,220,100,0.2); }
 }
 
+@keyframes runesDance {
+  0%, 100% { letter-spacing: 0.3em; opacity: 0.4; }
+  50%       { letter-spacing: 0.5em; opacity: 0.7; }
+}
+
 .quest-complete-btn {
-  background: linear-gradient(135deg, #1a0a2e, #2d1060, #1a0a2e);
-  border: 2px solid #c4a030;
-  border-radius: 12px;
-  width: 58px;
-  height: 48px;
+  background: rgba(201,162,39,0.1);
+  border: 1px solid rgba(201,162,39,0.32);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: #f0c040;
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  letter-spacing: 0.08em;
   position: relative;
-  animation: questBtnPulse 2.5s ease-in-out infinite;
-  transition: border-color 0.18s, transform 0.12s;
-}
-
-.quest-complete-btn::after {
-  content: 'ᚱ ᚢ ᚾ ᛖ ᚾ';
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  letter-spacing: 0.3em;
-  color: rgba(196,160,48,0.4);
-  white-space: nowrap;
-  pointer-events: none;
+  transition: border-color 0.18s, background 0.18s, transform 0.12s;
 }
 
 .quest-complete-btn:hover:not(:disabled) {
-  border-color: #f0c040;
-  box-shadow: 0 0 24px rgba(240,192,64,0.5), inset 0 1px 0 rgba(255,220,100,0.2);
+  border-color: rgba(201,162,39,0.6);
+  background: rgba(201,162,39,0.18);
 }
 
 .quest-complete-btn:active {
   transform: scale(0.92);
-  border-color: #f0c040;
 }
 
 .quest-complete-btn.cant-afford {
@@ -3099,7 +3088,32 @@ h1 {
   border-color: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.18);
   cursor: not-allowed;
-  animation: none;
+}
+
+/* Quest erfüllen – finaler Abschluss-Button im Log-Popup */
+#btn-log-save:not(:disabled) {
+  background: linear-gradient(135deg, #1a0a2e, #2d1060, #1a0a2e) !important;
+  border: 2px solid #c4a030 !important;
+  color: #f0c040 !important;
+  text-shadow: 0 0 10px rgba(240,192,64,0.5) !important;
+  animation: questBtnPulse 2.5s ease-in-out infinite;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+#btn-log-save:not(:disabled):hover {
+  border-color: #f0c040 !important;
+  box-shadow: 0 0 24px rgba(240,192,64,0.5), inset 0 1px 0 rgba(255,220,100,0.2) !important;
+}
+#btn-log-save:not(:disabled)::after {
+  content: 'ᚱ ᚢ ᚾ ᛖ ᚾ';
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(196,160,48,0.6);
+  animation: runesDance 2s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* === QUEST-BOARD UPDATE === */

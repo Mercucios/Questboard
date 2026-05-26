@@ -2307,7 +2307,7 @@ function makeSidequestCard(sq) {
 
   // === MANA-SYSTEM ===
   const costHtml = sq.mana > 0 ? manaSymbols(sq.mana) : '';
-  const canAfford = appState.mana >= sq.mana;
+  const canAfford = appState.mana >= (sq.mana || 0);
 
   const log       = getTodayLog(sq.id);
   const sqCheckSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -2353,6 +2353,7 @@ function showSqCreateModal() {
   document.querySelectorAll('.sq-ap-btn').forEach(b => b.classList.remove('selected'));
   $('btn-sq-save').disabled  = true;
   $('popup-sq-create').classList.remove('hidden');
+  renderSidequests();
 }
 
 function _updateSqSaveState() {
@@ -2441,8 +2442,7 @@ function initSqCreateModal() {
 function completeSidequest(sqId) {
   const sqs = loadTodaySidequests();
   const sq  = sqs.find(s => s.id === sqId && !s.done);
-  if (!sq) return;
-  if (sq.mana > 0 && appState.mana < sq.mana) return;
+  if (!sq || appState.mana < (sq.mana || 0)) return;
 
   const reward = getRandomReward('sidequest');
   _pendingCompletion = { type: 'sidequest', id: sqId, questTitle: sq.title, reward, questObj: { ...sq } };
