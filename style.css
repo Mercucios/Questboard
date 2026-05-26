@@ -5072,99 +5072,154 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/* SESSION 6 – FIX 6: Sternbild-Detail Bottom-Sheet          */
+/* FEATURE – Sternbild-Detail Fullscreen                       */
 /* ═══════════════════════════════════════════════════════════ */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.9; }
+}
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+@keyframes runeWip {
+  0%, 100% { transform: translateX(0) rotate(-2deg); }
+  50%       { transform: translateX(8px) rotate(2deg); }
+}
+@keyframes runeWipMirror {
+  0%, 100% { transform: translateX(0) rotate(2deg); }
+  50%       { transform: translateX(-8px) rotate(-2deg); }
+}
+
 .const-detail-overlay {
   position: fixed;
   inset: 0;
   z-index: 500;
-  background: rgba(2,0,12,0.82);
-  display: flex;
-  align-items: flex-end;
+  background: radial-gradient(ellipse at 30% 20%, #1a0550 0%, #050215 100%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  backdrop-filter: blur(4px);
+  overflow: hidden;
 }
 .const-detail-overlay.active {
   opacity: 1;
   pointer-events: all;
 }
-.const-detail-sheet {
-  width: 100%;
-  max-height: 88vh;
-  background: linear-gradient(180deg, #14072e 0%, #080215 100%);
-  border-top: 2px solid #c4a030;
-  border-radius: 20px 20px 0 0;
-  padding: 1.5rem 1.25rem 3rem;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-  transform: translateY(40px);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.4, 1);
-  box-shadow: 0 -4px 40px rgba(196,160,48,0.15), 0 -1px 0 rgba(196,160,48,0.3);
-}
-.const-detail-overlay.active .const-detail-sheet {
-  transform: translateY(0);
-}
-.const-detail-close {
+
+.const-detail-star {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  background: radial-gradient(circle at 40% 35%, #3a2060, #1a0838);
-  border: 2px solid #c4a030;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  background: #fff;
+  pointer-events: none;
+  animation: twinkle ease-in-out infinite;
+}
+
+.const-detail-rune {
+  position: absolute;
+  color: rgba(196,160,48,0.18);
+  font-size: 1.1rem;
+  pointer-events: none;
+  user-select: none;
+  animation-fill-mode: none;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.const-detail-content {
+  position: relative;
+  z-index: 2;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  color: #f0c040;
-  font-size: 16px;
-  cursor: pointer;
-  z-index: 10;
-  touch-action: manipulation;
-  padding: 0;
-  box-shadow: 0 0 10px rgba(196,160,48,0.25);
-  transition: transform 0.15s, box-shadow 0.2s;
+  padding: 76px 1.25rem 3rem;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  overflow-y: auto;
+  max-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
 }
-.const-detail-close:active {
-  transform: scale(0.9);
-  box-shadow: 0 0 20px rgba(196,160,48,0.5);
-}
+
 .const-detail-svg-wrap {
   width: 200px;
   height: 150px;
-  margin: 2.75rem auto 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 0 12px rgba(220,130,255,0.6));
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
 }
 .const-detail-svg-wrap .ci-svg {
   width: 100%;
   height: 100%;
 }
-.const-detail-name {
-  font-family: 'Star2', serif;
-  color: #f0c040;
-  font-size: 1.4rem;
-  text-align: center;
-  margin: 0 0 1.25rem;
-  text-shadow: 0 0 16px rgba(240,192,64,0.45);
-  letter-spacing: 0.05em;
+
+.const-detail-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid rgba(200,100,255,0.3);
+  border-radius: 16px;
+  background: rgba(15,5,35,0.85);
+  box-shadow: 0 0 40px rgba(180,80,255,0.15);
+  padding: 1.5rem 1.2rem;
+  animation: cardFloat 4s ease-in-out infinite;
+  box-sizing: border-box;
 }
-.const-detail-lore-wrap {
-  background: rgba(0,0,0,0.35);
-  border: 1px solid rgba(196,160,48,0.22);
-  border-radius: 12px;
-  padding: 1rem 1.1rem 1.2rem;
+
+.const-card-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(200,100,255,0.5);
+  border-style: solid;
+  border-width: 0;
+}
+.const-card-corner.tl { top: 8px; left: 8px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.const-card-corner.tr { top: 8px; right: 8px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.const-card-corner.bl { bottom: 8px; left: 8px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.const-card-corner.br { bottom: 8px; right: 8px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+.const-detail-name {
+  font-family: 'Cinzel Decorative', Cinzel, serif;
+  font-size: 1.3rem;
+  color: #f0e8ff;
+  text-shadow: 0 0 15px rgba(220,130,255,0.5);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.const-detail-date {
+  font-family: Cinzel, serif;
+  font-size: 0.7rem;
+  color: #a080c0;
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.const-detail-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,100,255,0.4), transparent);
+  margin-bottom: 1rem;
 }
 .const-detail-lore {
-  color: #d4b870;
-  font-size: 0.88rem;
-  line-height: 1.8;
+  font-family: Cinzel, serif;
+  font-size: 0.85rem;
+  color: #ddd0f0;
+  line-height: 1.85;
+  text-align: center;
   margin: 0;
-  white-space: pre-line;
+}
+.const-detail-personal {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(200,100,255,0.2);
+  font-family: Cinzel, serif;
+  font-size: 0.8rem;
+  color: #f5eeff;
+  line-height: 1.75;
+  font-style: italic;
+  text-align: center;
 }
 
 /* === FIX: Tanzende Runen über gesamten Viewport (position: fixed) === */

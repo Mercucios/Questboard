@@ -2949,35 +2949,96 @@ function _ruckPopTelescope() {
 }
 
 function _openConstDetail(c) {
+  const stars = loadStars();
+
+  // Calculate discovery date from cumulative star threshold
+  let cumulative = 0;
+  let discoveryDate = '';
+  for (let i = 0; i < CONSTELLATIONS.length; i++) {
+    cumulative += CONSTELLATIONS[i].starsNeeded;
+    if (CONSTELLATIONS[i].id === c.id) {
+      const dateStr = stars[cumulative - 1];
+      if (dateStr) {
+        try {
+          discoveryDate = new Intl.DateTimeFormat('de-AT', {
+            timeZone: 'Europe/Vienna', day: 'numeric', month: 'long', year: 'numeric',
+          }).format(new Date(dateStr + 'T12:00:00'));
+        } catch { discoveryDate = dateStr; }
+      }
+      break;
+    }
+  }
+
+  // Split stored lore string into lore + personal (separated by \n\n)
+  const fullText = CONSTELLATION_LORE[c.name] || '';
+  const splitIdx = fullText.indexOf('\n\n');
+  const loreText     = splitIdx >= 0 ? fullText.slice(0, splitIdx) : fullText;
+  const personalText = splitIdx >= 0 ? fullText.slice(splitIdx + 2) : '';
+
+  const dateDisplay = discoveryDate ? `✦ Entdeckt am ${discoveryDate} ✦` : '✦ Entdeckt ✦';
+
+  // Seeded RNG for deterministic placement
+  const srng = s => { const x = Math.sin(s * 127.1) * 10000; return x - Math.floor(x); };
+
+  // 40 twinkling background stars (2–3 px circles)
+  let starsHtml = '';
+  for (let i = 0; i < 40; i++) {
+    const px  = (srng(i)       * 100).toFixed(1);
+    const py  = (srng(i + 40)  * 100).toFixed(1);
+    const sz  = (srng(i + 80)  * 1 + 2).toFixed(1);
+    const dur = (srng(i + 120) * 2 + 2).toFixed(1);
+    const del = (srng(i + 160) * 3).toFixed(1);
+    starsHtml += `<div class="const-detail-star" style="left:${px}%;top:${py}%;width:${sz}px;height:${sz}px;animation-duration:${dur}s;animation-delay:${del}s"></div>`;
+  }
+
+  // Decorative runes on left + right edges
+  const runeChars = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ','ᛇ','ᛈ','ᛉ','ᛊ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
+  let runesHtml = '';
+  for (let i = 0; i < 8; i++) {
+    const topPct = 10 + i * 11;
+    const lDur  = (7 + srng(i + 200) * 5).toFixed(1);
+    const lDel  = (srng(i + 208) * 8).toFixed(1);
+    const lLeft = (2 + srng(i + 216) * 13).toFixed(1);
+    runesHtml += `<span class="const-detail-rune" style="left:${lLeft}px;top:${topPct}%;animation-name:runeWip;animation-duration:${lDur}s;animation-delay:${lDel}s">${runeChars[i % runeChars.length]}</span>`;
+    const rDur   = (7 + srng(i + 224) * 5).toFixed(1);
+    const rDel   = (srng(i + 232) * 8).toFixed(1);
+    const rRight = (2 + srng(i + 240) * 13).toFixed(1);
+    runesHtml += `<span class="const-detail-rune" style="right:${rRight}px;top:${topPct}%;animation-name:runeWipMirror;animation-duration:${rDur}s;animation-delay:${rDel}s">${runeChars[(i + 8) % runeChars.length]}</span>`;
+  }
+
   const overlay = document.createElement('div');
   overlay.className = 'const-detail-overlay';
   overlay.innerHTML = `
-    <div class="const-detail-sheet">
-      <button class="const-detail-close" aria-label="Schließen">←</button>
+    ${starsHtml}
+    ${runesHtml}
+    <button class="back-btn" aria-label="Zurück">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#f0c040" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="const-detail-content">
       <div class="const-detail-svg-wrap">${_makeConstSvg(c, 'done')}</div>
-      <h2 class="const-detail-name">${c.name}</h2>
-      <div class="const-detail-lore-wrap">
-        <span class="const-lore-loading">✦ Die Sterne erzählen…</span>
-        <p class="const-detail-lore"></p>
+      <div class="const-detail-card">
+        <div class="const-card-corner tl"></div>
+        <div class="const-card-corner tr"></div>
+        <div class="const-card-corner bl"></div>
+        <div class="const-card-corner br"></div>
+        <div class="const-detail-name">${c.name}</div>
+        <div class="const-detail-date">${dateDisplay}</div>
+        <div class="const-detail-divider"></div>
+        <div class="const-detail-lore">${loreText}</div>
+        ${personalText ? `<div class="const-detail-personal">${personalText}</div>` : ''}
       </div>
     </div>`;
+
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('active'));
-
-  generateConstellationText(c.name).then(text => {
-    const loadEl = overlay.querySelector('.const-lore-loading');
-    const loreEl = overlay.querySelector('.const-detail-lore');
-    if (loadEl) loadEl.style.display = 'none';
-    if (loreEl && text) _typewriter(loreEl, text);
-  });
 
   const close = () => {
     overlay.classList.remove('active');
     setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 350);
   };
-  overlay.querySelector('.const-detail-close').addEventListener('click', close);
-  overlay.addEventListener('touchstart', e => { if (e.target === overlay) { e.preventDefault(); close(); } }, { passive: false });
-  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  const backBtn = overlay.querySelector('.back-btn');
+  backBtn.addEventListener('click', close);
+  backBtn.addEventListener('touchend', e => { e.preventDefault(); close(); }, { passive: false });
 }
 
 // ── Questlog ──────────────────────────────────────────────────────
