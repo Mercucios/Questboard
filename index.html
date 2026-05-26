@@ -445,11 +445,29 @@
     <div class="popup quest-log-popup">
       <div class="scroll-ornament">⊕ ✦ ⊕</div>
       <h3 id="log-quest-title" class="log-quest-title"></h3>
-      <div class="log-section-label">Wie war diese Quest? <span class="sq-req">*</span></div>
+      <div class="log-section-label log-rating-heading">Wie war die Quest? <span class="sq-req">*</span></div>
       <div class="log-rating-row">
-        <button class="log-rating-btn" data-rating="good"><span>😄</span><span>Sehr gut</span></button>
-        <button class="log-rating-btn" data-rating="ok"><span>😐</span><span>Ok</span></button>
-        <button class="log-rating-btn" data-rating="bad"><span>😞</span><span>Schlecht</span></button>
+        <button class="log-rating-btn" data-rating="good">
+          <span class="lr-icon">🏆</span>
+          <div class="lr-text">
+            <span class="lr-title">Heldenhaft gemeistert</span>
+            <span class="lr-sub">Die Quest neigte sich vor dir</span>
+          </div>
+        </button>
+        <button class="log-rating-btn" data-rating="ok">
+          <span class="lr-icon">⚔️</span>
+          <div class="lr-text">
+            <span class="lr-title">Tapfer gekämpft</span>
+            <span class="lr-sub">Mit Mühe, doch siegreich</span>
+          </div>
+        </button>
+        <button class="log-rating-btn" data-rating="bad">
+          <span class="lr-icon">💀</span>
+          <div class="lr-text">
+            <span class="lr-title">Beinahe gefallen</span>
+            <span class="lr-sub">Der Kampf hat dich gefordert</span>
+          </div>
+        </button>
       </div>
       <div class="log-section-label">Gedanken <span class="sq-opt">(optional)</span></div>
       <textarea id="log-note-input" class="log-note-input" placeholder="Schreibe deine Gedanken zu dieser Quest nieder..." maxlength="500" rows="3"></textarea>
