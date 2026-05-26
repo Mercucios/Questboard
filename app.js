@@ -3063,7 +3063,7 @@ function _ruckRatingLabel(type, rating) {
 // === BUGFIX & UI UPDATE === PUNKT 8: Kerzen entfernt
 function _injectQuestlogCandles() {}
 
-// === FIX: PUNKT 2 – Questlog Pergament mit Tag-Gruppierung ===
+// === FEATURE – Questlog Episches Logbuch-Design ===
 function _ruckPopQuestlog() {
   const scrollArea = $('ruck-log-scroll');
   const logs       = loadLogs();
@@ -3074,23 +3074,45 @@ function _ruckPopQuestlog() {
     ...ratings.map(r => ({ type: 'day', date: r.date, rating: r.rating })),
   ];
 
-  // === FIX: STARS & QUESTLOG === Empty state
-  if (allEntries.length === 0) {
-    scrollArea.innerHTML = `
-      <div class="ruck-scroll-outer">
-        <div class="ruck-scroll-roll"></div>
-        <div class="ruck-scroll-body">
-          <div class="ruck-scroll-heading">Quest Log</div>
-          <div class="questlog-empty"><span>✦</span><p>Noch keine Abenteuer verzeichnet...</p></div>
+  const QR_ICONS  = { good: '🏆', ok: '⚔️', bad: '💀' };
+  const DR_ICONS  = { too_little: '🌱', just_right: '⭐', much: '🔥', too_much: '💀' };
+  const DR_LABELS = { too_little: 'Zu wenig', just_right: 'Genau richtig', much: 'Viel', too_much: 'Zu viel' };
+
+  function fmtLong(d) {
+    try {
+      return new Date(d + 'T12:00:00').toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch { return d; }
+  }
+
+  const header = `
+    <span class="ql-crest">⚔️🛡️⚔️</span>
+    <div class="ql-title">Quest Log</div>
+    <div class="ql-subtitle">Chronik der Abenteuer</div>
+    <div class="ql-ornament">
+      <div class="ql-orn-line"></div>
+      <span class="ql-orn-text">✦ ᚱ ✦ ᚢ ✦ ᚾ ✦</span>
+      <div class="ql-orn-line"></div>
+    </div>`;
+
+  function buildScroll(inner) {
+    return `
+      <div class="ql-outer">
+        <div class="ql-roll"></div>
+        <div class="ql-body">
+          <span class="ql-margin-l"><span>ᚱᚢᚾᛖᚾ</span><span>ᚠᚨᚷᛁᛉ</span><span>ᛊᛏᛒᛗᛚ</span></span>
+          <span class="ql-margin-r"><span>ᛚᛗᛒᛏᛊ</span><span>ᛉᛁᚷᚨᚠ</span><span>ᚾᛖᚾᚢᚱ</span></span>
+          <div class="ql-vline-l"></div>
+          <div class="ql-vline-r"></div>
+          <div class="ql-content">${header}${inner}</div>
         </div>
-        <div class="ruck-scroll-roll-bot"></div>
+        <div class="ql-roll-bot"></div>
       </div>`;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const body = scrollArea.querySelector('.ruck-scroll-body');
-        if (body) body.classList.add('unrolling');
-      });
-    });
+  }
+
+  if (allEntries.length === 0) {
+    scrollArea.innerHTML = buildScroll(
+      `<div class="questlog-empty"><span>✦</span><p>Noch keine Abenteuer verzeichnet...</p></div>`
+    );
     return;
   }
 
@@ -3103,77 +3125,45 @@ function _ruckPopQuestlog() {
   });
 
   const dates = Object.keys(byDate).sort().reverse();
+  let entriesHtml = '';
 
-  const DR_ICONS  = { too_little: '🌱', just_right: '⭐', much: '🔥', too_much: '💀' };
-  const DR_LABELS = { too_little: 'Zu wenig', just_right: 'Genau richtig', much: 'Viel', too_much: 'Zu viel' };
-  const QR_ICONS  = { good: '😄', ok: '😐', bad: '😞' };
+  dates.forEach(date => {
+    const group = byDate[date];
 
-  let entryIdx = 0;
-  let bodyHtml = '';
+    entriesHtml += `
+      <div class="ql-date-sep">
+        <div class="ql-ds-line"></div>
+        <span class="ql-ds-label">✦ ${fmtLong(date)} ✦</span>
+        <div class="ql-ds-line"></div>
+      </div>`;
 
-  dates.forEach((date, di) => {
-    const group   = byDate[date];
-    const fmtDate = _ruckFmtDate(date);
-
-    const sepClass = di > 0 ? ' ruck-perg-day-group ruck-perg-day-group-sep' : 'ruck-perg-day-group';
-    bodyHtml += `<div class="${sepClass}">`;
-
-    // Day header
-    bodyHtml += `<div class="ruck-perg-entry ruck-perg-day-hdr" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
-      <span class="ruck-perg-day-ornament">✦</span> ${fmtDate} <span class="ruck-perg-day-ornament">✦</span>
-    </div>`;
-    entryIdx++;
-
-    // Day rating block
     if (group.dayRating) {
       const r = group.dayRating;
-      bodyHtml += `<div class="ruck-perg-entry ruck-perg-day-rating" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
-        <span class="ruck-perg-day-rating-icon">${DR_ICONS[r.rating] || '⭐'}</span>
-        <span class="ruck-perg-day-rating-label">Tag: ${DR_LABELS[r.rating] || r.rating}</span>
-      </div>`;
-      entryIdx++;
+      entriesHtml += `
+        <div class="ql-entry ql-day">
+          <div class="ql-e-top">
+            <span class="ql-e-rating">${DR_ICONS[r.rating] || '⭐'}</span>
+            <span class="ql-e-name">Tag: ${DR_LABELS[r.rating] || r.rating}</span>
+          </div>
+        </div>`;
     }
 
-    // Quest entries with SVG separators
-    group.quests.forEach((e, qi) => {
-      if (qi > 0) {
-        bodyHtml += `<div class="ruck-perg-sep" aria-hidden="true">
-          <svg width="100%" height="12" viewBox="0 0 200 12" preserveAspectRatio="none">
-            <path d="M0,6 Q25,2 50,6 Q75,10 100,6 Q125,2 150,6 Q175,10 200,6" stroke="#8b6020" stroke-width="1.2" fill="none" opacity="0.4"/>
-          </svg>
+    group.quests.forEach(e => {
+      const cls  = e.rating === 'good' ? 'good' : e.rating === 'bad' ? 'bad' : 'ok';
+      const icon = QR_ICONS[e.rating] || '⚔️';
+      entriesHtml += `
+        <div class="ql-entry ${cls}">
+          <div class="ql-e-top">
+            <span class="ql-e-rating">${icon}</span>
+            <span class="ql-e-name">${e.title}</span>
+          </div>
+          ${e.note ? `<div class="ql-e-note">${e.note}</div>` : ''}
         </div>`;
-      }
-      const ratingIcon = QR_ICONS[e.rating] || '';
-      bodyHtml += `<div class="ruck-perg-entry ruck-perg-quest" style="animation-delay:${(entryIdx * 0.1 + 0.22).toFixed(2)}s">
-        <div class="ruck-perg-entry-hdr">
-          <span class="ruck-perg-title">${e.title}</span>
-          <span class="ruck-perg-rating-icon">${ratingIcon}</span>
-        </div>
-        ${e.note ? `<div class="ruck-perg-note">${e.note}</div>` : ''}
-      </div>`;
-      entryIdx++;
-    });
-
-    bodyHtml += `</div>`;
-  });
-
-  scrollArea.innerHTML = `
-    <div class="ruck-scroll-outer">
-      <div class="ruck-scroll-roll"></div>
-      <div class="ruck-scroll-body"><div class="ruck-scroll-heading">Quest Log</div>${bodyHtml}</div>
-      <div class="ruck-scroll-roll-bot"></div>
-    </div>`;
-
-  // === FIX: STARS & QUESTLOG === double-rAF sichert DOM-Layout vor Animationsstart
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      const body = scrollArea.querySelector('.ruck-scroll-body');
-      if (body) body.classList.add('unrolling');
-      scrollArea.querySelectorAll('.ruck-perg-entry').forEach(el => {
-        requestAnimationFrame(() => el.classList.add('perg-in'));
-      });
     });
   });
+
+  entriesHtml += `<div class="ql-seal">✦ Ende der Einträge ✦ Mögen deine Quests glorreich sein ✦</div>`;
+  scrollArea.innerHTML = buildScroll(entriesHtml);
 }
 
 // ── Schatztruhe ───────────────────────────────────────────────────

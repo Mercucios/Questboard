@@ -5422,3 +5422,353 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 #btn-day-rating-save::before {
   display: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   QUESTLOG – Episches Logbuch-Design
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes runeFadeQ {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* Scrollbereich: kein Padding, dunkler Hintergrund */
+#ruck-log-scroll {
+  padding: 0 !important;
+  background: #1a0e06 !important;
+}
+
+/* Äußerer Container */
+.ql-outer {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.6rem 1rem;
+}
+
+/* Holzrollen (oben + unten) */
+.ql-roll,
+.ql-roll-bot {
+  position: relative;
+  height: 26px;
+  background: linear-gradient(180deg, #4a2804 0%, #7a4e1a 45%, #4a2804 100%);
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.ql-roll::before,
+.ql-roll::after,
+.ql-roll-bot::before,
+.ql-roll-bot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #c08040, #6b3e0a);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.ql-roll::before,
+.ql-roll-bot::before { left: 10px; }
+.ql-roll::after,
+.ql-roll-bot::after  { right: 10px; }
+
+/* Pergament-Körper */
+.ql-body {
+  position: relative;
+  flex: 1;
+  background:
+    radial-gradient(ellipse at 0% 0%,   rgba(80, 40, 5, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 0%,  rgba(80, 40, 5, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 0% 100%,  rgba(80, 40, 5, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%,rgba(80, 40, 5, 0.22) 0%, transparent 55%),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 29px,
+      rgba(100, 55, 5, 0.06) 29px,
+      rgba(100, 55, 5, 0.06) 30px
+    ),
+    linear-gradient(160deg, #f2e4a8, #e6cc7a, #edd88e, #e2c870, #eeda90);
+  box-shadow: inset 0 0 40px rgba(80, 40, 5, 0.18);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.ql-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top: 3px solid rgba(80, 40, 5, 0.35);
+  border-bottom: 3px solid rgba(80, 40, 5, 0.35);
+  border-left: 2px solid rgba(80, 40, 5, 0.25);
+  border-right: 2px solid rgba(80, 40, 5, 0.25);
+  z-index: 1;
+}
+
+/* Randen-Runen (links/rechts) */
+.ql-margin-l,
+.ql-margin-r {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 1.5rem 0;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+.ql-margin-l { left: 2px; }
+.ql-margin-r { right: 2px; }
+
+.ql-margin-l span,
+.ql-margin-r span {
+  font-size: 0.65rem;
+  color: rgba(80, 40, 5, 0.25);
+  writing-mode: vertical-rl;
+  letter-spacing: 3px;
+  line-height: 1;
+  animation: runeFadeQ 4s ease-in-out infinite;
+}
+.ql-margin-l span:nth-child(1) { animation-delay: 0s; }
+.ql-margin-l span:nth-child(2) { animation-delay: 1.5s; }
+.ql-margin-l span:nth-child(3) { animation-delay: 3s; }
+.ql-margin-r span:nth-child(1) { animation-delay: 0.7s; }
+.ql-margin-r span:nth-child(2) { animation-delay: 2.2s; }
+.ql-margin-r span:nth-child(3) { animation-delay: 3.7s; }
+
+/* Senkrechte Randlinien */
+.ql-vline-l,
+.ql-vline-r {
+  position: absolute;
+  top: 1.4rem;
+  bottom: 1.1rem;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(160, 80, 10, 0.25) 15%,
+    rgba(160, 80, 10, 0.25) 85%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.ql-vline-l { left: 16px; }
+.ql-vline-r { right: 16px; }
+
+/* Inhaltsbereich */
+.ql-content {
+  position: relative;
+  z-index: 3;
+  padding: 1.2rem 1.6rem 1rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Wappen / Crest */
+.ql-crest {
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.2rem;
+  display: block;
+}
+
+/* Titel */
+.ql-title {
+  font-family: 'Cinzel Decorative', Cinzel, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #3a1a02;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(200, 150, 30, 0.3);
+}
+
+/* Untertitel */
+.ql-subtitle {
+  font-family: Cinzel, serif;
+  font-size: 0.7rem;
+  color: rgba(80, 40, 5, 0.65);
+  letter-spacing: 0.2em;
+  text-align: center;
+  font-style: italic;
+  margin-top: 0.15rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Ornament-Trennlinie */
+.ql-ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-bottom: 0.8rem;
+}
+.ql-orn-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(120, 70, 10, 0.45), transparent);
+}
+.ql-orn-text {
+  font-size: 0.6rem;
+  color: rgba(100, 55, 10, 0.6);
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+}
+
+/* Datumstrenner */
+.ql-date-sep {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0.7rem 0 0.4rem;
+}
+.ql-ds-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(120, 70, 10, 0.35), transparent);
+}
+.ql-ds-label {
+  font-family: Cinzel, serif;
+  font-size: 0.6rem;
+  color: rgba(80, 45, 5, 0.7);
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
+/* Eintrags-Karten (Basis) */
+.ql-entry {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  border-left: 3px solid rgba(100, 60, 10, 0.4);
+  border-radius: 3px;
+  padding: 0.45rem 0.55rem 0.45rem 0.7rem;
+  margin-bottom: 0.4rem;
+  background: rgba(200, 160, 80, 0.08);
+  overflow: hidden;
+}
+.ql-entry::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.ql-entry::after {
+  content: '⬡';
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  color: rgba(80, 40, 5, 0.04);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+}
+
+/* Gute Quest */
+.ql-entry.good {
+  border-left-color: #9a6a08;
+  background: rgba(160, 110, 20, 0.13);
+}
+.ql-entry.good::before {
+  background: linear-gradient(90deg, rgba(196, 160, 48, 0.18), transparent 70%);
+}
+
+/* Mittelmäßige Quest */
+.ql-entry.ok {
+  border-left-color: #6040a0;
+  background: rgba(100, 70, 160, 0.1);
+}
+.ql-entry.ok::before {
+  background: linear-gradient(90deg, rgba(120, 80, 200, 0.18), transparent 70%);
+}
+
+/* Schlechte Quest */
+.ql-entry.bad {
+  border-left-color: #902010;
+  background: rgba(150, 40, 20, 0.1);
+}
+.ql-entry.bad::before {
+  background: linear-gradient(90deg, rgba(180, 50, 20, 0.18), transparent 70%);
+}
+
+/* Tagesbewertung */
+.ql-entry.ql-day {
+  border-left-color: rgba(80, 60, 10, 0.5);
+  background: rgba(160, 120, 20, 0.07);
+  font-style: italic;
+}
+
+/* Eintrags-Inhalte */
+.ql-e-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.4rem;
+}
+.ql-e-rating {
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.ql-e-name {
+  font-family: Cinzel, serif;
+  font-size: 0.72rem;
+  color: #2a1200;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+.ql-e-note {
+  position: relative;
+  z-index: 1;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.78rem;
+  color: rgba(50, 25, 5, 0.75);
+  margin-top: 0.25rem;
+  padding-left: 1.4rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Abschluss-Siegel */
+.ql-seal {
+  font-family: Cinzel, serif;
+  font-size: 0.58rem;
+  color: rgba(80, 45, 5, 0.55);
+  letter-spacing: 0.18em;
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid rgba(120, 70, 10, 0.25);
+}
+
+/* Leer-Zustand */
+.questlog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  color: rgba(80, 45, 5, 0.5);
+  font-family: Cinzel, serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  text-align: center;
+}
