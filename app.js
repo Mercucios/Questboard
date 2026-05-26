@@ -2187,6 +2187,7 @@ function scheduleDailyReminder() {
 
 function showDayRatingPopup() {
   if (!appState) return;
+  if (!$('popup-day-rating').classList.contains('hidden')) return;
 
   const apUsed    = (appState.maxMana || MAX_MANA) - appState.mana;
   const autoHint  = $('day-rating-auto-hint');
@@ -2520,28 +2521,33 @@ function openLogPopup(questId, questTitle) {
   if (popup) {
     popup.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
     const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚ';
-    // [top, bottom, left, right, size, animation, duration, delay]
+    // [top, bottom, left, right, size, duration, delay]  — all use runeOpacity, no transforms
     const POS = [
-      ['8%',  null,  '12%', null,  '1.1rem', 'runeWipLeft',  '7s',  '0s'  ],
-      ['15%', null,  null,  '8%',  '0.9rem', 'runeWipRight', '9s',  '1.5s'],
-      ['25%', null,  '5%',  null,  '1.4rem', 'runeWipLeft',  '11s', '3s'  ],
-      ['35%', null,  null,  '14%', '1.0rem', 'runeWipRight', '7s',  '5s'  ],
-      ['50%', null,  '18%', null,  '1.6rem', 'runeWipLeft',  '9s',  '2s'  ],
-      ['60%', null,  null,  '5%',  '0.9rem', 'runeWipRight', '11s', '4s'  ],
-      ['70%', null,  '7%',  null,  '1.2rem', 'runeWipLeft',  '7s',  '1s'  ],
-      ['80%', null,  null,  '20%', '1.3rem', 'runeWipRight', '9s',  '7s'  ],
-      ['44%', null,  '33%', null,  '1.5rem', 'runeWipLeft',  '11s', '0.5s'],
-      ['20%', null,  '52%', null,  '1.0rem', 'runeWipRight', '7s',  '3.5s'],
-      ['68%', null,  null,  '28%', '0.9rem', 'runeWipLeft',  '9s',  '6s'  ],
-      ['88%', null,  '16%', null,  '1.1rem', 'runeWipRight', '11s', '2.5s'],
-      ['5%',  null,  null,  '33%', '1.3rem', 'runeWipLeft',  '7s',  '4.5s'],
-      ['55%', null,  '68%', null,  '1.6rem', 'runeWipRight', '9s',  '8s'  ],
-      ['75%', null,  '43%', null,  '0.9rem', 'runeWipLeft',  '11s', '1.5s'],
+      // Top edge
+      ['5%',  null,  '8%',  null,  '1.1rem', '7s',  '0s'  ],
+      ['5%',  null,  '30%', null,  '0.9rem', '9s',  '1.5s'],
+      ['5%',  null,  '55%', null,  '1.3rem', '11s', '3s'  ],
+      ['5%',  null,  '78%', null,  '1.0rem', '8s',  '5s'  ],
+      // Bottom edge
+      [null,  '5%',  '12%', null,  '1.4rem', '9s',  '2s'  ],
+      [null,  '5%',  '38%', null,  '0.9rem', '7s',  '4s'  ],
+      [null,  '5%',  '62%', null,  '1.2rem', '11s', '1s'  ],
+      [null,  '5%',  '85%', null,  '1.3rem', '9s',  '6s'  ],
+      // Left edge
+      ['22%', null,  '4%',  null,  '1.0rem', '7s',  '0.5s'],
+      ['42%', null,  '4%',  null,  '1.5rem', '11s', '3.5s'],
+      ['62%', null,  '4%',  null,  '0.9rem', '9s',  '7s'  ],
+      ['78%', null,  '4%',  null,  '1.1rem', '7s',  '2.5s'],
+      // Right edge
+      ['18%', null,  null,  '4%',  '1.3rem', '9s',  '4.5s'],
+      ['38%', null,  null,  '4%',  '1.6rem', '11s', '1s'  ],
+      ['58%', null,  null,  '4%',  '0.9rem', '7s',  '5.5s'],
+      ['75%', null,  null,  '4%',  '1.2rem', '9s',  '8s'  ],
     ];
-    POS.forEach(([top, bot, left, right, size, anim, dur, delay], i) => {
+    POS.forEach(([top, bot, left, right, size, dur, delay], i) => {
       const s = document.createElement('span');
       s.className = 'popup-abs-rune';
-      let style = `font-size:${size};animation:${anim} ${dur} ease-in-out ${delay} infinite;`;
+      let style = `font-size:${size};animation:runeOpacity ${dur} ease-in-out ${delay} infinite;animation-fill-mode:none;`;
       if (top)   style += `top:${top};`;
       if (bot)   style += `bottom:${bot};`;
       if (left)  style += `left:${left};`;
@@ -2762,7 +2768,24 @@ function _ruckPopTelescope() {
   const list  = $('ruck-const-list');
   list.innerHTML = '';
   const info  = getConstellationInfo(starCount);
-  const compN = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+  const compN_stars = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+
+  // Fallback: check appState for directly tracked constellation completions
+  let compN_state = 0;
+  if (appState) {
+    if (typeof appState.completedConstellations === 'number') {
+      compN_state = Math.max(compN_state, appState.completedConstellations);
+    }
+    if (Array.isArray(appState.unlockedConstellations)) {
+      compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
+    }
+    CONSTELLATIONS.forEach((c, i) => {
+      const sc = appState[c.id];
+      if (sc?.isComplete || sc?.isUnlocked) compN_state = Math.max(compN_state, i + 1);
+    });
+  }
+  const compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
+  console.log('[Teleskop] Entdeckte Sternbilder:', compN, '| Sterne:', starCount, '| compN_stars:', compN_stars, '| compN_state:', compN_state);
 
   // Tab-Leiste
   const tabBar = document.createElement('div');
@@ -2892,30 +2915,26 @@ function _ruckPopTelescope() {
       hero.insertBefore(s, hero.firstChild);
     }
 
-    // Inject shooting stars (3-5, outside center protection zone)
-    const _ssColors = ['#ffffff', '#f0c040', '#d8e8ff'];
-    const _ssCount  = 3 + Math.floor(Math.random() * 3);
-    for (let j = 0; j < _ssCount; j++) {
-      let sx, sy, t = 0;
-      do {
-        sx = Math.random() * 75 + 5;
-        sy = Math.random() * 70 + 5;
-        t++;
-      } while (t < 30 && (sx >= 28 && sx <= 72) && (sy >= 22 && sy <= 78));
+    // Inject shooting stars: exactly 3, fixed configs for consistent experience
+    const SS_CONFIGS = [
+      { left: '8%',  top: '12%', angle: 35,  dist: 100, dur: '4.5s', delay: '0s', color: '#ffffff' },
+      { left: '82%', top: '8%',  angle: -30, dist: 110, dur: '5.5s', delay: '3s', color: '#f0c040' },
+      { left: '45%', top: '5%',  angle: 20,  dist: 120, dur: '4.8s', delay: '6s', color: '#d8e8ff' },
+    ];
+    SS_CONFIGS.forEach(cfg => {
       const ss = document.createElement('span');
       ss.className = 'tel-shoot-star';
-      const angle = 15 + Math.random() * 35;
-      const dist  = 70 + Math.floor(Math.random() * 80);
-      ss.style.left = sx.toFixed(1) + '%';
-      ss.style.top  = sy.toFixed(1) + '%';
-      ss.style.width = dist + 'px';
-      ss.style.setProperty('--ss-angle', angle.toFixed(0) + 'deg');
-      ss.style.setProperty('--ss-dist', dist + 'px');
-      ss.style.background = `linear-gradient(to right, transparent, ${_ssColors[Math.floor(Math.random() * _ssColors.length)]}, transparent)`;
-      ss.style.animationDuration = (2.5 + Math.random() * 1.5).toFixed(2) + 's';
-      ss.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+      ss.style.left = cfg.left;
+      ss.style.top  = cfg.top;
+      ss.style.width = cfg.dist + 'px';
+      ss.style.setProperty('--ss-angle', cfg.angle + 'deg');
+      ss.style.setProperty('--ss-dist', cfg.dist + 'px');
+      ss.style.background = `linear-gradient(to right, transparent, ${cfg.color}, transparent)`;
+      ss.style.animationDuration = cfg.dur;
+      ss.style.animationDelay = cfg.delay;
+      ss.style.animationFillMode = 'none';
       hero.insertBefore(ss, hero.firstChild);
-    }
+    });
   }
 
   const items = paneCurrentEl.querySelectorAll('.ruck-const-item:not(.ci-far)');

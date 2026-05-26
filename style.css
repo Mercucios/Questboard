@@ -5253,6 +5253,10 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   0%, 100% { transform: translateX(0) rotate(3deg); opacity: 0.1; }
   50%       { transform: translateX(10px) rotate(-3deg); opacity: 0.18; }
 }
+@keyframes runeOpacity {
+  0%, 100% { opacity: 0.08; }
+  50%       { opacity: 0.22; }
+}
 @keyframes runeWipSlow {
   0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.08; }
   50%       { transform: translateX(6px) rotate(-5deg); opacity: 0.16; }
@@ -5301,6 +5305,9 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   justify-content: center !important;
   gap: 10px !important;
   width: 100% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
   padding: 1rem 1.5rem !important;
   background: linear-gradient(135deg, #1a0a2e 0%, #2d1060 50%, #1a0a2e 100%) !important;
   border: 2px solid #c4a030 !important;
