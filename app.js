@@ -1705,14 +1705,10 @@ const DAILY_QUOTES = [
   'Deine Stärke wächst mit jedem Tag.',
   'Sei sanft mit dir – du kämpfst täglich.',
 ];
-const WEATHER_MOODS = ['☀️ Sonnig', '🌤️ Aufheiternd', '⛅ Leicht bewölkt', '🌧️ Regnerisch', '🌈 Nach dem Sturm', '⭐ Sternenklar', '🌙 Mondschein'];
+const MOON_EMOTES = ['🌕','🌙','🔮','🌟','⚗️','🦉','🌿','🕯️','🌑','✨','🧿','🌒','🌛','🍄','🦇'];
 function getDailyQuote() {
   const idx = Math.floor(Date.now() / 86400000) % DAILY_QUOTES.length;
   return DAILY_QUOTES[idx];
-}
-function getDailyMoodWeather() {
-  const idx = Math.floor(Date.now() / 86400000) % WEATHER_MOODS.length;
-  return WEATHER_MOODS[idx];
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -1726,11 +1722,11 @@ function init() {
   });
   $('date-display').innerHTML = `<span>${dateStr}</span>${getDailySymbol()}`;
 
-  // === BUGFIX & UI UPDATE === PUNKT 7B: Tages-Zitat + Wetter befüllen
-  const _quoteEl = $('inv-daily-quote');
-  if (_quoteEl) _quoteEl.textContent = '✦ ' + getDailyQuote();
-  const _weatherEl = $('inv-daily-weather');
-  if (_weatherEl) _weatherEl.textContent = getDailyMoodWeather();
+  // Mondlicht-Prophezeiung befüllen
+  const _moonEmote = $('moon-prophecy-emote');
+  if (_moonEmote) _moonEmote.textContent = MOON_EMOTES[new Date().getDate() % MOON_EMOTES.length];
+  const _moonQuote = $('moon-prophecy-quote');
+  if (_moonQuote) _moonQuote.textContent = getDailyQuote();
 
   const allQuests = QUESTS_DATA;
   const saved     = loadDayState();

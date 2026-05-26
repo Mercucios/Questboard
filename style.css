@@ -4723,30 +4723,53 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   grid-column: 1 / -1 !important;
 }
 
-/* PUNKT 7B – Inventar-Bottom: Tages-Zitat + Wetter-Stimmung */
-.inventory-bottom {
-  padding: 0.7rem 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border-top: 1px solid rgba(201,162,39,0.15);
-  flex-shrink: 0;
+/* Mondlicht-Prophezeiung */
+@keyframes moonGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(200,150,255,0.4)); }
+  50%       { filter: drop-shadow(0 0 18px rgba(200,150,255,0.9)); }
 }
-.inv-bottom-quote {
-  font-family: 'Crimson Text', Georgia, serif;
-  font-size: 0.88rem;
-  color: #c8b08a;
+.moon-prophecy {
+  background: radial-gradient(ellipse at 50% 0%, rgba(80,40,120,0.5) 0%, rgba(8,5,20,0.97) 70%);
+  border: 1px solid rgba(160,80,255,0.25);
+  border-radius: 12px;
+  padding: 1.5rem 1.2rem 1.2rem;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12px;
+  pointer-events: none;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+.moon-prophecy-emote {
+  display: block;
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 0.4rem;
+  animation: moonGlow 4s ease-in-out infinite;
+}
+.moon-prophecy-stars {
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(200,150,255,0.4);
+  letter-spacing: 6px;
+  margin-bottom: 0.8rem;
+}
+.moon-prophecy-quote {
+  font-family: Cinzel, serif;
+  font-size: 1.1rem;
+  color: #e0c8ff;
+  line-height: 1.75;
   text-align: center;
   font-style: italic;
-  line-height: 1.45;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+  text-shadow: 0 0 16px rgba(180,100,255,0.3);
 }
-.inv-bottom-weather {
-  font-family: 'Cinzel', serif;
-  font-size: 0.82rem;
-  color: #f0c040;
+.moon-prophecy-sigil {
   text-align: center;
-  opacity: 0.8;
+  margin-top: 0.8rem;
+  font-size: 0.72rem;
+  color: rgba(180,100,255,0.35);
+  letter-spacing: 3px;
 }
 
 /* PUNKT 8 – Kerzen entfernt */
@@ -4849,8 +4872,7 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .quest-cost,
 .victory-reward-name,
 .victory-quest-name,
-.log-rating-btn span:first-child,
-.inv-bottom-weather {
+.log-rating-btn span:first-child {
   font-family: 'Cinzel', serif !important;
 }
 .badge-star-count { font-size: 0.78rem; font-weight: 600; color: #f0c040; display: block; margin-top: 0.15rem; }
