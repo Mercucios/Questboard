@@ -1806,6 +1806,7 @@ function init() {
         }
         if (el.id === 'popup-day-rating') {
           _dayRatingDismissedAt = Date.now();
+          el.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
         }
         el.classList.add('hidden');
         if (el.id === 'popup-starmap') {
@@ -2215,6 +2216,48 @@ function showDayRatingPopup() {
   }
 
   $('popup-day-rating').dataset.autoRated = autoRated ? '1' : '';
+
+  // Inject decorative runes around popup edges
+  const _drPopup = document.querySelector('#popup-day-rating .day-rating-popup');
+  if (_drPopup) {
+    _drPopup.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
+    const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚ';
+    const DR_POS = [
+      // top edge
+      ['5%',  null,  '8%',  null,  '1.1rem', '10s', '0s'  ],
+      ['5%',  null,  '30%', null,  '0.9rem', '13s', '1.5s'],
+      ['5%',  null,  '55%', null,  '1.3rem', '14s', '3s'  ],
+      ['5%',  null,  '78%', null,  '1.0rem', '9s',  '5s'  ],
+      // bottom edge
+      [null,  '5%',  '12%', null,  '1.4rem', '12s', '2s'  ],
+      [null,  '5%',  '38%', null,  '0.9rem', '8s',  '4s'  ],
+      [null,  '5%',  '62%', null,  '1.2rem', '11s', '1s'  ],
+      [null,  '5%',  '85%', null,  '1.3rem', '15s', '6s'  ],
+      // left edge
+      ['22%', null,  '3%',  null,  '1.0rem', '9s',  '0.5s'],
+      ['42%', null,  '3%',  null,  '1.5rem', '16s', '3.5s'],
+      ['62%', null,  '3%',  null,  '0.9rem', '11s', '7s'  ],
+      ['78%', null,  '3%',  null,  '1.1rem', '8s',  '2.5s'],
+      // right edge
+      ['18%', null,  null,  '3%',  '1.3rem', '12s', '4.5s'],
+      ['38%', null,  null,  '3%',  '1.6rem', '14s', '1s'  ],
+      ['58%', null,  null,  '3%',  '0.9rem', '9s',  '5.5s'],
+      ['75%', null,  null,  '3%',  '1.2rem', '13s', '8s'  ],
+    ];
+    DR_POS.forEach(([top, bot, left, right, size, dur, delay], i) => {
+      const s = document.createElement('span');
+      s.className = 'popup-abs-rune';
+      let style = `font-size:${size};animation:runeOpacity ${dur} ease-in-out ${delay} infinite;animation-fill-mode:none;color:rgba(240,192,64,0.18);`;
+      if (top)   style += `top:${top};`;
+      if (bot)   style += `bottom:${bot};`;
+      if (left)  style += `left:${left};`;
+      if (right) style += `right:${right};`;
+      s.style.cssText = style;
+      s.textContent   = RUNES[i % RUNES.length];
+      _drPopup.appendChild(s);
+    });
+  }
+
   $('popup-day-rating').classList.remove('hidden');
 }
 
@@ -2250,6 +2293,7 @@ function initDayRatingPopup() {
       apUsed:    (appState?.maxMana ?? MAX_MANA) - (appState?.mana ?? MAX_MANA),
       autoRated,
     });
+    $('popup-day-rating').querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
     $('popup-day-rating').classList.add('hidden');
   };
 
@@ -2259,6 +2303,7 @@ function initDayRatingPopup() {
 
   $('btn-day-rating-skip').addEventListener('click', () => {
     _dayRatingDismissedAt = Date.now();
+    $('popup-day-rating').querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
     $('popup-day-rating').classList.add('hidden');
   });
 }
@@ -2892,49 +2937,29 @@ function _ruckPopTelescope() {
     void hero.offsetWidth;
     hero.classList.add('fly-in');
 
-    // Inject decorative mini stars (rejection sampling avoids center protection zone)
-    hero.querySelectorAll('.tel-mini-star, .tel-shoot-star').forEach(s => s.remove());
-    const _miniColors = ['#f0c040', '#c0d0f0', '#c090f0', '#f090c0', '#60d0f0'];
-    const _miniCount  = 18 + Math.floor(Math.random() * 9);
-    for (let i = 0; i < _miniCount; i++) {
-      let sx, sy, t = 0;
+    // Inject decorative mini stars as CSS circles (protection zone: top 15-75%, left 20-80%)
+    hero.querySelectorAll('.tel-mini-star').forEach(s => s.remove());
+    const _STAR_COLORS = ['#f0c040', '#c0d0f0', '#c090f0', '#f090c0', '#60d0f0', '#ffffff'];
+    const _STAR_COUNT  = 35 + Math.floor(Math.random() * 6);
+    for (let i = 0; i < _STAR_COUNT; i++) {
+      let sx, sy, tries = 0;
       do {
-        sx = Math.random() * 90 + 5;
-        sy = Math.random() * 88 + 6;
-        t++;
-      } while (t < 30 && (sx >= 28 && sx <= 72) && (sy >= 22 && sy <= 78));
-      const s = document.createElement('span');
+        sx = Math.random() * 100;
+        sy = Math.random() * 100;
+        tries++;
+      } while (tries < 60 && sx >= 20 && sx <= 80 && sy >= 15 && sy <= 75);
+      const sz = (2 + Math.random() * 3).toFixed(1);
+      const s  = document.createElement('div');
       s.className = 'tel-mini-star';
-      s.textContent = '✦';
       s.style.left             = sx.toFixed(1) + '%';
       s.style.top              = sy.toFixed(1) + '%';
-      s.style.color            = _miniColors[Math.floor(Math.random() * _miniColors.length)];
-      s.style.fontSize         = (0.45 + Math.random() * 0.5).toFixed(2) + 'rem';
-      s.style.animationDelay   = (Math.random() * 3).toFixed(2) + 's';
-      s.style.animationDuration = (2 + Math.random() * 2).toFixed(2) + 's';
+      s.style.width            = sz + 'px';
+      s.style.height           = sz + 'px';
+      s.style.background       = _STAR_COLORS[Math.floor(Math.random() * _STAR_COLORS.length)];
+      s.style.animationDuration = (1.5 + Math.random() * 2.5).toFixed(2) + 's';
+      s.style.animationDelay   = (Math.random() * 4).toFixed(2) + 's';
       hero.insertBefore(s, hero.firstChild);
     }
-
-    // Inject shooting stars: exactly 3, fixed configs for consistent experience
-    const SS_CONFIGS = [
-      { left: '8%',  top: '12%', angle: 35,  dist: 100, dur: '4.5s', delay: '0s', color: '#ffffff' },
-      { left: '82%', top: '8%',  angle: -30, dist: 110, dur: '5.5s', delay: '3s', color: '#f0c040' },
-      { left: '45%', top: '5%',  angle: 20,  dist: 120, dur: '4.8s', delay: '6s', color: '#d8e8ff' },
-    ];
-    SS_CONFIGS.forEach(cfg => {
-      const ss = document.createElement('span');
-      ss.className = 'tel-shoot-star';
-      ss.style.left = cfg.left;
-      ss.style.top  = cfg.top;
-      ss.style.width = cfg.dist + 'px';
-      ss.style.setProperty('--ss-angle', cfg.angle + 'deg');
-      ss.style.setProperty('--ss-dist', cfg.dist + 'px');
-      ss.style.background = `linear-gradient(to right, transparent, ${cfg.color}, transparent)`;
-      ss.style.animationDuration = cfg.dur;
-      ss.style.animationDelay = cfg.delay;
-      ss.style.animationFillMode = 'none';
-      hero.insertBefore(ss, hero.firstChild);
-    });
   }
 
   const items = paneCurrentEl.querySelectorAll('.ruck-const-item:not(.ci-far)');
@@ -3014,11 +3039,11 @@ function _openConstDetail(c) {
     const lDur  = (7 + srng(i + 200) * 5).toFixed(1);
     const lDel  = (srng(i + 208) * 8).toFixed(1);
     const lLeft = (2 + srng(i + 216) * 13).toFixed(1);
-    runesHtml += `<span class="const-detail-rune" style="left:${lLeft}px;top:${topPct}%;animation-name:runeWip;animation-duration:${lDur}s;animation-delay:${lDel}s">${runeChars[i % runeChars.length]}</span>`;
+    runesHtml += `<span class="const-detail-rune" style="left:${lLeft}px;top:${topPct}%;animation-name:runeOpacity;animation-duration:${lDur}s;animation-delay:${lDel}s">${runeChars[i % runeChars.length]}</span>`;
     const rDur   = (7 + srng(i + 224) * 5).toFixed(1);
     const rDel   = (srng(i + 232) * 8).toFixed(1);
     const rRight = (2 + srng(i + 240) * 13).toFixed(1);
-    runesHtml += `<span class="const-detail-rune" style="right:${rRight}px;top:${topPct}%;animation-name:runeWipMirror;animation-duration:${rDur}s;animation-delay:${rDel}s">${runeChars[(i + 8) % runeChars.length]}</span>`;
+    runesHtml += `<span class="const-detail-rune" style="right:${rRight}px;top:${topPct}%;animation-name:runeOpacity;animation-duration:${rDur}s;animation-delay:${rDel}s">${runeChars[(i + 8) % runeChars.length]}</span>`;
   }
 
   const overlay = document.createElement('div');
@@ -3158,7 +3183,7 @@ function _ruckPopQuestlog() {
         <div class="ql-entry ql-day">
           <div class="ql-e-top">
             <span class="ql-e-rating">${DR_ICONS[r.rating] || '⭐'}</span>
-            <span class="ql-e-name">Tag: ${DR_LABELS[r.rating] || r.rating}</span>
+            <span class="ql-e-name">✦ Tag: ${DR_LABELS[r.rating] || r.rating}</span>
           </div>
         </div>`;
     }
@@ -3381,18 +3406,24 @@ function _ruckPopTreasure() {
   _ruckChestTimers.push(setTimeout(() => {
     const sw = document.getElementById('ruck-scattered-wrap');
     if (!sw) return;
-    const PER_ROW  = 3;
-    const COL_PCT  = [8, 40, 72];
-    const ROW_PCT  = [8, 42, 72];
+    // 6×8 grid (48 cells), seeded shuffle, ±5% jitter per cell
+    const GCOLS = 6, GROWS = 8;
+    const _gsr  = s => { const x = Math.sin(s * 127.1) * 10000; return x - Math.floor(x); };
+    const gCells = [];
+    for (let gr = 0; gr < GROWS; gr++)
+      for (let gc = 0; gc < GCOLS; gc++)
+        gCells.push([5 + (gc / (GCOLS - 1)) * 85, 5 + (gr / (GROWS - 1)) * 82]);
+    for (let i = gCells.length - 1; i > 0; i--) {
+      const j = Math.floor(_gsr(i + 300) * (i + 1));
+      [gCells[i], gCells[j]] = [gCells[j], gCells[i]];
+    }
     let scatterHtml = '';
     all.forEach((t, i) => {
-      const col     = i % PER_ROW;
-      const row     = Math.floor(i / PER_ROW);
-      const leftPct = Math.max(0, Math.min(80, COL_PCT[col] + (Math.random()-0.5) * 20));
-      const baseTop = row < ROW_PCT.length ? ROW_PCT[row] : ROW_PCT[2] + (row - 2) * 28;
-      const topPct  = Math.max(0, Math.min(84, baseTop + (Math.random()-0.5) * 10));
-      const rot     = -22 + Math.random() * 44;
-      const zIdx    = 2 + Math.floor(Math.random() * 7);
+      const cell    = gCells[i % gCells.length];
+      const leftPct = Math.max(1, Math.min(88, cell[0] + (_gsr(i + 400) - 0.5) * 10));
+      const topPct  = Math.max(1, Math.min(88, cell[1] + (_gsr(i + 500) - 0.5) * 10));
+      const rot     = -22 + _gsr(i + 600) * 44;
+      const zIdx    = 2 + Math.floor(_gsr(i + 700) * 7);
       const delay   = (i * 0.08 + 0.1).toFixed(2);
       scatterHtml += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPct.toFixed(1)}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });

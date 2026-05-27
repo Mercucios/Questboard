@@ -1862,8 +1862,9 @@ h1 {
   position: absolute;
   pointer-events: none;
   user-select: none;
-  line-height: 1;
-  animation: starPulse ease-in-out infinite;
+  border-radius: 50%;
+  z-index: 0;
+  animation: starTwinkle ease-in-out infinite;
 }
 
 @keyframes shootStar {
@@ -4323,8 +4324,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 
 /* PUNKT 4B: CSS-Twinkle-Sterne (JS-generiert) */
 @keyframes starTwinkle {
-  0%,100% { opacity: 0.2; transform: scale(1); }
-  50%     { opacity: 0.9; transform: scale(1.3); }
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.3); }
 }
 .starmap-twinkle-star {
   position: absolute;
@@ -4841,27 +4842,44 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   display: inline-block !important;
 }
 
-/* PUNKT 11 – Tagesbewertung: doppelte Schriftgrößen + Vollbild */
+/* PUNKT 11 – Tagesbewertung: zentrierter Popup (nicht Vollbild) */
 .day-rating-popup {
   position: fixed !important;
-  inset: 0 !important;
-  max-width: none !important;
-  width: 100% !important;
-  border-radius: 0 !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: calc(100vw - 2rem) !important;
+  max-width: 420px !important;
+  max-height: 90dvh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  border-radius: 16px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
-  padding: 2.5rem 2rem !important;
+  padding: 1.5rem 1rem !important;
 }
-.day-rating-title  { font-size: 2.6rem !important; }
-.day-rating-sub    { font-size: 1.84rem !important; }
-.dr-icon           { font-size: 3.5rem !important; }
-.dr-label          { font-size: 1.6rem !important; }
-.dr-desc           { font-size: 1.52rem !important; }
-.day-rating-auto-hint { font-size: 1.76rem !important; }
-.day-rating-options { gap: 1rem !important; }
-.day-rating-opt-btn { padding: 1.2rem 0.8rem !important; }
+.day-rating-popup > * {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.day-rating-title  { font-size: 1.4rem !important; }
+.day-rating-sub    { font-size: 1rem !important; }
+.dr-icon           { font-size: 1.8rem !important; }
+.dr-label          { font-size: 0.9rem !important; }
+.dr-desc           { font-size: 0.82rem !important; }
+.day-rating-auto-hint { font-size: 0.85rem !important; }
+.day-rating-options { gap: 0.5rem !important; }
+.day-rating-opt-btn {
+  padding: 0.6rem 0.5rem !important;
+  width: 100% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+}
 
 /* PUNKT 12 – Cinzel-Schrift für alle Zahlen-Elemente */
 .ruck-star-num,
@@ -5254,7 +5272,7 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   50%       { transform: translateX(10px) rotate(-3deg); opacity: 0.18; }
 }
 @keyframes runeOpacity {
-  0%, 100% { opacity: 0.08; }
+  0%, 100% { opacity: 0.06; }
   50%       { opacity: 0.22; }
 }
 @keyframes runeWipSlow {
@@ -5409,15 +5427,19 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 
 /* === FIX: Tagesbewertungs-Popup – Responsive, kein Overflow auf 380px === */
 .day-rating-popup {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: calc(100vw - 2rem) !important;
+  max-width: 420px !important;
+  max-height: 90dvh !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   justify-content: flex-start !important;
   align-items: stretch !important;
   padding: 1.5rem 1rem !important;
   box-sizing: border-box !important;
-  max-width: 100vw !important;
-  max-height: 100dvh !important;
-  width: 100% !important;
 }
 .day-rating-popup > * {
   box-sizing: border-box !important;
@@ -5800,4 +5822,69 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   font-size: 0.8rem;
   font-style: italic;
   text-align: center;
+}
+
+/* ═══ BUG-FIXES FINAL ════════════════════════════════════════════ */
+
+/* BUG 1: Day-Rating-Popup – letzter Gewinner, zentriert + begrenzt */
+.day-rating-popup {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: calc(100vw - 2rem) !important;
+  max-width: 420px !important;
+  max-height: 90dvh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+  padding: 1.5rem 1rem !important;
+}
+.day-rating-popup > * {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.day-rating-options {
+  flex-direction: column !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  gap: 0.5rem !important;
+}
+#popup-day-rating .day-rating-opt-btn {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* BUG 3: Questlog – Datum in Star2 fett, Tagesstimmung gold */
+.ql-ds-label {
+  font-family: 'Star2', serif !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+}
+.ql-e-name {
+  font-family: 'Star2', serif !important;
+}
+.ql-entry.ql-day {
+  background: rgba(196, 160, 48, 0.15) !important;
+  border-left: 4px solid #c4a030 !important;
+  padding: 0.7rem 0.75rem !important;
+  border-radius: 5px !important;
+}
+.ql-entry.ql-day .ql-e-name {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+}
+
+/* BUG 4: Teleskop-Hero – Sterninhalt über dekorative Sterne */
+.ruck-star-num,
+.ruck-star-glyph,
+.ruck-star-sub,
+.ruck-open-map-btn {
+  position: relative;
+  z-index: 1;
 }
