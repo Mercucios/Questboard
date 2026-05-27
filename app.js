@@ -2561,52 +2561,37 @@ function openLogPopup(questId, questTitle) {
   document.querySelectorAll('.log-rating-btn').forEach(b => b.classList.remove('selected'));
   $('btn-log-save').disabled       = true;
 
-  // Tanzende Runen injizieren – NUR in Randbereichen (kein Überlappen des Inhalts)
+  // Runen injizieren – NUR in Randbereichen, frisch pro Öffnen
   const popup = document.querySelector('#popup-quest-log .quest-log-popup');
-  if (popup) {
-    popup.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
-    const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚᚦᚹᚺᚾᛃᛇᛈ';
-    // [top, bottom, left, right, size, duration, delay]
-    // Randbereiche: Oben 1-12%, Unten 88-99%, Links 1-8%, Rechts 92-99%
-    const POS = [
-      // Oben (top 1-12%)
-      ['3%',  null,  '5%',  null,  '1.1rem', '10s', '0s'  ],
-      ['7%',  null,  '22%', null,  '0.9rem', '14s', '1.5s'],
-      ['4%',  null,  '42%', null,  '1.3rem', '12s', '3s'  ],
-      ['9%',  null,  '62%', null,  '1.0rem', '16s', '5s'  ],
-      ['5%',  null,  '82%', null,  '1.2rem', '11s', '7s'  ],
-      ['2%',  null,  '95%', null,  '0.85rem','15s', '2s'  ],
-      // Unten (top 88-99% = bottom 1-12%)
-      [null,  '3%',  '8%',  null,  '1.4rem', '13s', '2s'  ],
-      [null,  '7%',  '28%', null,  '0.9rem', '9s',  '4s'  ],
-      [null,  '4%',  '50%', null,  '1.2rem', '17s', '1s'  ],
-      [null,  '8%',  '72%', null,  '1.3rem', '12s', '6s'  ],
-      [null,  '5%',  '90%', null,  '1.0rem', '14s', '3.5s'],
-      // Links (left 1-8%)
-      ['20%', null,  '3%',  null,  '1.0rem', '11s', '0.5s'],
-      ['35%', null,  '5%',  null,  '1.5rem', '18s', '3.5s'],
-      ['52%', null,  '4%',  null,  '0.9rem', '13s', '7s'  ],
-      ['70%', null,  '6%',  null,  '1.1rem', '10s', '2.5s'],
-      ['84%', null,  '3%',  null,  '1.3rem', '15s', '5.5s'],
-      // Rechts (right 1-8%)
-      ['15%', null,  null,  '4%',  '1.3rem', '12s', '4.5s'],
-      ['30%', null,  null,  '6%',  '1.6rem', '16s', '1s'  ],
-      ['48%', null,  null,  '3%',  '0.9rem', '11s', '5.5s'],
-      ['65%', null,  null,  '5%',  '1.2rem', '14s', '8s'  ],
-      ['80%', null,  null,  '4%',  '1.0rem', '17s', '2s'  ],
-    ];
-    POS.forEach(([top, bot, left, right, size, dur, delay], i) => {
-      const s = document.createElement('span');
+  if (popup && !popup.hasAttribute('data-runes-injected')) {
+    const RUNES  = ['ᚱ','ᚢ','ᚾ','ᛖ','ᚠ','ᚨ','ᚷ','ᛁ','ᛉ','ᛊ','ᛏ','ᛒ','ᛗ','ᛚ','ᚦ','ᚩ','ᚳ','ᚻ','ᛞ','ᛟ'];
+    const DELAYS = [-2,-5,-8,-11,-14,-3,-7,-10,-13,-4,-6,-9,-12,-1.5,-4.5,-7.5,-10.5,-2.5,-6.5,-11.5];
+    const SLR = 92 / 4; // top-spread für linken/rechten Rand: 3%–95%
+    const STB = 90 / 4; // left-spread für oberen/unteren Rand: 5%–95%
+
+    const pos = [];
+    for (let i = 0; i < 5; i++) pos.push({ top: `${(3 + i * SLR).toFixed(1)}%`, left:   `${2 + (i % 3) * 2}%` });
+    for (let i = 0; i < 5; i++) pos.push({ top: `${(3 + i * SLR).toFixed(1)}%`, right:  `${2 + (i % 3) * 2}%` });
+    for (let i = 0; i < 5; i++) pos.push({ top: `${1 + (i % 3) * 2}%`,          left:   `${(5 + i * STB).toFixed(1)}%` });
+    for (let i = 0; i < 5; i++) pos.push({ bottom: `${1 + (i % 3) * 2}%`,       left:   `${(5 + i * STB).toFixed(1)}%` });
+
+    pos.forEach((p, i) => {
+      const s     = document.createElement('span');
       s.className = 'popup-abs-rune';
-      let style = `font-size:${size};animation:runeOpacity ${dur} ease-in-out ${delay} infinite;animation-fill-mode:none;color:rgba(240,192,64,0.2);`;
-      if (top)   style += `top:${top};`;
-      if (bot)   style += `bottom:${bot};`;
-      if (left)  style += `left:${left};`;
-      if (right) style += `right:${right};`;
-      s.style.cssText = style;
-      s.textContent   = RUNES[i % RUNES.length];
+      const color = i % 3 === 2 ? 'rgba(150,85,10,0.6)' : i % 2 === 0 ? 'rgba(120,60,5,0.55)' : 'rgba(180,110,15,0.5)';
+      const size  = i % 2 === 0 ? '1.2rem' : '0.85rem';
+      const dur   = (7 + (i / 19) * 8).toFixed(1);
+      const delay = DELAYS[i];
+      let css = `color:${color};font-size:${size};animation:runeGlow ${dur}s ease-in-out ${delay}s infinite;animation-fill-mode:none;`;
+      if (p.top)    css += `top:${p.top};`;
+      if (p.bottom) css += `bottom:${p.bottom};`;
+      if (p.left)   css += `left:${p.left};`;
+      if (p.right)  css += `right:${p.right};`;
+      s.style.cssText = css;
+      s.textContent   = RUNES[i];
       popup.appendChild(s);
     });
+    popup.setAttribute('data-runes-injected', '1');
   }
 
   $('popup-quest-log').classList.remove('hidden');
@@ -2634,6 +2619,11 @@ function initLogPopup() {
     });
 
     $('popup-quest-log').classList.add('hidden');
+    const popupEl = document.querySelector('#popup-quest-log .quest-log-popup');
+    if (popupEl) {
+      popupEl.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
+      popupEl.removeAttribute('data-runes-injected');
+    }
 
     const pending = _pendingCompletion;
     _pendingCompletion = null;

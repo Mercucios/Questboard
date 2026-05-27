@@ -1381,7 +1381,7 @@ h1 {
               inset 0 0 60px rgba(180,130,50,0.08);
   color: #3a2608;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
   z-index: 0;
 }
@@ -5275,6 +5275,11 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   0%, 100% { opacity: 0.07; }
   50%       { opacity: 0.25; }
 }
+@keyframes runeGlow {
+  0%   { opacity: 0.35; }
+  50%  { opacity: 0.75; }
+  100% { opacity: 0.35; }
+}
 @keyframes runeWipSlow {
   0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.08; }
   50%       { transform: translateX(6px) rotate(-5deg); opacity: 0.16; }
@@ -5413,16 +5418,18 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   font-style: normal !important;
 }
 
-/* === FIX: Tanzende Runen im Quest-Log Popup (position: absolute, z-index unter Inhalt) === */
+/* === FIX: Tanzende Runen im Quest-Log Popup (position: absolute, Rand-Deko) === */
 .popup-abs-rune {
   position: absolute;
-  z-index: -1;
-  color: rgba(0,0,0,0.13);
+  z-index: 0;
   pointer-events: none;
   user-select: none;
   font-family: serif;
   line-height: 1;
   animation-fill-mode: none;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-timing-function: ease-in-out;
 }
 
 /* === FIX: Tagesbewertungs-Popup – Responsive, kein Overflow auf 380px === */
