@@ -5272,8 +5272,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   50%       { transform: translateX(10px) rotate(-3deg); opacity: 0.18; }
 }
 @keyframes runeOpacity {
-  0%, 100% { opacity: 0.06; }
-  50%       { opacity: 0.22; }
+  0%, 100% { opacity: 0.07; }
+  50%       { opacity: 0.25; }
 }
 @keyframes runeWipSlow {
   0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.08; }
@@ -5303,8 +5303,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
-  gap: 10px !important;
-  padding: 1rem 1.2rem !important;
+  gap: 6px !important;
+  padding: 0.7rem 0.8rem !important;
 }
 
 /* === FIX 4: "Ins Schicksal schreiben" Save Button === */
@@ -5326,13 +5326,13 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   white-space: normal !important;
   word-break: break-word !important;
   box-sizing: border-box !important;
-  padding: 1rem 1.5rem !important;
+  padding: 0.85rem 1.5rem !important;
   background: linear-gradient(135deg, #1a0a2e 0%, #2d1060 50%, #1a0a2e 100%) !important;
   border: 2px solid #c4a030 !important;
   border-radius: 12px !important;
   color: #f0c040 !important;
   font-family: Cinzel, serif !important;
-  font-size: 1.15rem !important;
+  font-size: 0.95rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.08em !important;
   animation: savePulse 2.5s ease-in-out infinite;
@@ -5691,10 +5691,10 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   background: linear-gradient(90deg, transparent, rgba(120, 70, 10, 0.35), transparent);
 }
 .ql-ds-label {
-  font-family: Cinzel, serif;
-  font-size: 0.6rem;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 0.72rem;
   color: rgba(80, 45, 5, 0.7);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   white-space: nowrap;
 }
 
@@ -5860,15 +5860,15 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   word-break: break-word !important;
 }
 
-/* BUG 3: Questlog – Datum in Star2 fett, Tagesstimmung gold */
+/* BUG 2 FIX: Datum-Zahlen – Crimson Text statt Star2 für Ziffern */
 .ql-ds-label {
-  font-family: 'Star2', serif !important;
-  font-weight: 700 !important;
-  font-size: 0.9rem !important;
+  font-family: 'Crimson Text', Georgia, serif !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.1em !important;
 }
-.ql-e-name {
-  font-family: 'Star2', serif !important;
-}
+
+/* Tagesstimmung gold */
 .ql-entry.ql-day {
   background: rgba(196, 160, 48, 0.15) !important;
   border-left: 4px solid #c4a030 !important;
@@ -5876,15 +5876,79 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   border-radius: 5px !important;
 }
 .ql-entry.ql-day .ql-e-name {
-  font-size: 0.95rem !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
 }
 
-/* BUG 4: Teleskop-Hero – Sterninhalt über dekorative Sterne */
+/* BUG 3 FIX: Day-Rating – 2-Spalten-Grid, gleichgroße Buttons */
+#popup-day-rating .day-rating-options {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+}
+#popup-day-rating .day-rating-opt-btn {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* BUG 4 FIX: Teleskop-Hero – Sterninhalt über dekorative Sterne */
 .ruck-star-num,
 .ruck-star-glyph,
 .ruck-star-sub,
 .ruck-open-map-btn {
   position: relative;
   z-index: 1;
+}
+
+/* BUG 4 FIX: Schatztruhe Blast-Animation */
+@keyframes treasureBlast {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0; }
+}
+.ruck-treasure-blast {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ruck-treasure-blast-particle {
+  position: absolute;
+  font-size: var(--sz, 20px);
+  line-height: 1;
+  animation: treasureBlast var(--dur, 2s) ease-out var(--delay, 0s) 1 forwards;
+}
+
+/* BUG 5 FIX: Questlog – Wasserzeichen rechts ausblenden */
+.ql-entry::after {
+  display: none !important;
+}
+
+/* BUG 5 FIX: Questlog – Tages-Toggle */
+.ql-day-toggleable {
+  cursor: pointer;
+  user-select: none;
+}
+.ql-day-toggle-icon {
+  margin-left: auto;
+  padding-left: 0.4rem;
+  font-size: 0.65rem;
+  color: rgba(80, 40, 5, 0.45);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.ql-day-quests {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* BUG 5 FIX: Questlog-Rand – mehr Runen-Sichtbarkeit */
+.ql-margin-l span,
+.ql-margin-r span {
+  color: rgba(80, 40, 5, 0.18) !important;
+  animation: runeFadeQ 5s ease-in-out infinite !important;
 }

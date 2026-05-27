@@ -2561,38 +2561,44 @@ function openLogPopup(questId, questTitle) {
   document.querySelectorAll('.log-rating-btn').forEach(b => b.classList.remove('selected'));
   $('btn-log-save').disabled       = true;
 
-  // Tanzende Runen injizieren (position: absolute im Popup-Container)
+  // Tanzende Runen injizieren – NUR in Randbereichen (kein Überlappen des Inhalts)
   const popup = document.querySelector('#popup-quest-log .quest-log-popup');
   if (popup) {
     popup.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
-    const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚ';
-    // [top, bottom, left, right, size, duration, delay]  — all use runeOpacity, no transforms
+    const RUNES = 'ᚱᚢᚾᛖᚾᚠᚨᚷᛁᛉᛊᛏᛒᛗᛚᚦᚹᚺᚾᛃᛇᛈ';
+    // [top, bottom, left, right, size, duration, delay]
+    // Randbereiche: Oben 1-12%, Unten 88-99%, Links 1-8%, Rechts 92-99%
     const POS = [
-      // Top edge
-      ['5%',  null,  '8%',  null,  '1.1rem', '7s',  '0s'  ],
-      ['5%',  null,  '30%', null,  '0.9rem', '9s',  '1.5s'],
-      ['5%',  null,  '55%', null,  '1.3rem', '11s', '3s'  ],
-      ['5%',  null,  '78%', null,  '1.0rem', '8s',  '5s'  ],
-      // Bottom edge
-      [null,  '5%',  '12%', null,  '1.4rem', '9s',  '2s'  ],
-      [null,  '5%',  '38%', null,  '0.9rem', '7s',  '4s'  ],
-      [null,  '5%',  '62%', null,  '1.2rem', '11s', '1s'  ],
-      [null,  '5%',  '85%', null,  '1.3rem', '9s',  '6s'  ],
-      // Left edge
-      ['22%', null,  '4%',  null,  '1.0rem', '7s',  '0.5s'],
-      ['42%', null,  '4%',  null,  '1.5rem', '11s', '3.5s'],
-      ['62%', null,  '4%',  null,  '0.9rem', '9s',  '7s'  ],
-      ['78%', null,  '4%',  null,  '1.1rem', '7s',  '2.5s'],
-      // Right edge
-      ['18%', null,  null,  '4%',  '1.3rem', '9s',  '4.5s'],
-      ['38%', null,  null,  '4%',  '1.6rem', '11s', '1s'  ],
-      ['58%', null,  null,  '4%',  '0.9rem', '7s',  '5.5s'],
-      ['75%', null,  null,  '4%',  '1.2rem', '9s',  '8s'  ],
+      // Oben (top 1-12%)
+      ['3%',  null,  '5%',  null,  '1.1rem', '10s', '0s'  ],
+      ['7%',  null,  '22%', null,  '0.9rem', '14s', '1.5s'],
+      ['4%',  null,  '42%', null,  '1.3rem', '12s', '3s'  ],
+      ['9%',  null,  '62%', null,  '1.0rem', '16s', '5s'  ],
+      ['5%',  null,  '82%', null,  '1.2rem', '11s', '7s'  ],
+      ['2%',  null,  '95%', null,  '0.85rem','15s', '2s'  ],
+      // Unten (top 88-99% = bottom 1-12%)
+      [null,  '3%',  '8%',  null,  '1.4rem', '13s', '2s'  ],
+      [null,  '7%',  '28%', null,  '0.9rem', '9s',  '4s'  ],
+      [null,  '4%',  '50%', null,  '1.2rem', '17s', '1s'  ],
+      [null,  '8%',  '72%', null,  '1.3rem', '12s', '6s'  ],
+      [null,  '5%',  '90%', null,  '1.0rem', '14s', '3.5s'],
+      // Links (left 1-8%)
+      ['20%', null,  '3%',  null,  '1.0rem', '11s', '0.5s'],
+      ['35%', null,  '5%',  null,  '1.5rem', '18s', '3.5s'],
+      ['52%', null,  '4%',  null,  '0.9rem', '13s', '7s'  ],
+      ['70%', null,  '6%',  null,  '1.1rem', '10s', '2.5s'],
+      ['84%', null,  '3%',  null,  '1.3rem', '15s', '5.5s'],
+      // Rechts (right 1-8%)
+      ['15%', null,  null,  '4%',  '1.3rem', '12s', '4.5s'],
+      ['30%', null,  null,  '6%',  '1.6rem', '16s', '1s'  ],
+      ['48%', null,  null,  '3%',  '0.9rem', '11s', '5.5s'],
+      ['65%', null,  null,  '5%',  '1.2rem', '14s', '8s'  ],
+      ['80%', null,  null,  '4%',  '1.0rem', '17s', '2s'  ],
     ];
     POS.forEach(([top, bot, left, right, size, dur, delay], i) => {
       const s = document.createElement('span');
       s.className = 'popup-abs-rune';
-      let style = `font-size:${size};animation:runeOpacity ${dur} ease-in-out ${delay} infinite;animation-fill-mode:none;`;
+      let style = `font-size:${size};animation:runeOpacity ${dur} ease-in-out ${delay} infinite;animation-fill-mode:none;color:rgba(240,192,64,0.2);`;
       if (top)   style += `top:${top};`;
       if (bot)   style += `bottom:${bot};`;
       if (left)  style += `left:${left};`;
@@ -2823,21 +2829,41 @@ function _ruckPopTelescope() {
     }
     if (Array.isArray(appState.unlockedConstellations)) {
       compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
+      // check by id/name membership
+      CONSTELLATIONS.forEach((c, i) => {
+        if (appState.unlockedConstellations.includes(c.id) || appState.unlockedConstellations.includes(c.name)) {
+          compN_state = Math.max(compN_state, i + 1);
+        }
+      });
+    }
+    if (Array.isArray(appState.stars)) {
+      let cum2 = 0;
+      for (let i = 0; i < CONSTELLATIONS.length; i++) {
+        cum2 += CONSTELLATIONS[i].starsNeeded;
+        if (appState.stars.length >= cum2) compN_state = Math.max(compN_state, i + 1);
+      }
     }
     CONSTELLATIONS.forEach((c, i) => {
-      const sc = appState[c.id];
-      if (sc?.isComplete || sc?.isUnlocked) compN_state = Math.max(compN_state, i + 1);
+      const sc = appState[c.id] || appState[c.name];
+      if (sc) {
+        if (sc.isComplete || sc.isUnlocked || sc.completedAt || (sc.progress != null && sc.maxProgress != null && sc.progress >= sc.maxProgress)) {
+          compN_state = Math.max(compN_state, i + 1);
+        }
+      }
     });
   }
   const compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
   console.log('[Teleskop] Entdeckte Sternbilder:', compN, '| Sterne:', starCount, '| compN_stars:', compN_stars, '| compN_state:', compN_state);
+  console.log('[Teleskop] appState.unlockedConstellations:', appState?.unlockedConstellations);
+  console.log('[Teleskop] appState.completedConstellations:', appState?.completedConstellations);
+  console.log('[Teleskop] appState.stars (count):', Array.isArray(appState?.stars) ? appState.stars.length : 'n/a');
 
   // Tab-Leiste
   const tabBar = document.createElement('div');
   tabBar.className = 'tel-tab-bar';
   tabBar.innerHTML = `
     <button class="tel-tab active" data-tab="current">Aktuell</button>
-    <button class="tel-tab" data-tab="found">Entdeckt ✦</button>
+    <button class="tel-tab" data-tab="found">Entdeckt 🌟</button>
   `;
   list.appendChild(tabBar);
 
@@ -2912,7 +2938,15 @@ function _ruckPopTelescope() {
 
   // Entdeckt-Tab: abgeschlossene Sternbilder als tippbare Karten
   if (compN === 0) {
-    paneFoundEl.innerHTML = '<div class="tel-empty-found">Noch keine Sternbilder entdeckt.<br>Sammle Sterne durch das Abschließen von Quests.</div>';
+    const _dbgStars = loadStars().length;
+    const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
+    paneFoundEl.innerHTML = `<div class="tel-empty-found">
+      Noch keine Sternbilder entdeckt.<br>
+      Sammle Sterne durch das Abschließen von Quests.
+      <br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:0.4rem;display:block">
+        ⭐ ${_dbgStars} Sterne · ${_dbgNeeded} benötigt für erstes Sternbild
+      </small>
+    </div>`;
   } else {
     for (let i = 0; i < compN; i++) {
       const c = CONSTELLATIONS[i];
@@ -3139,8 +3173,14 @@ function _ruckPopQuestlog() {
       <div class="ql-outer">
         <div class="ql-roll"></div>
         <div class="ql-body">
-          <span class="ql-margin-l"><span>ᚱᚢᚾᛖᚾ</span><span>ᚠᚨᚷᛁᛉ</span><span>ᛊᛏᛒᛗᛚ</span></span>
-          <span class="ql-margin-r"><span>ᛚᛗᛒᛏᛊ</span><span>ᛉᛁᚷᚨᚠ</span><span>ᚾᛖᚾᚢᚱ</span></span>
+          <span class="ql-margin-l">
+            <span>ᚱᚢᚾᛖᚾ</span><span>ᚠᚨᚷᛁᛉ</span><span>ᛊᛏᛒᛗᛚ</span>
+            <span>ᚦᚹᚺᚾᛃ</span><span>ᛇᛈᛉᛊᛏ</span>
+          </span>
+          <span class="ql-margin-r">
+            <span>ᛚᛗᛒᛏᛊ</span><span>ᛉᛁᚷᚨᚠ</span><span>ᚾᛖᚾᚢᚱ</span>
+            <span>ᛏᛒᛗᛚᛜ</span><span>ᛞᛟᚠᚦᚹ</span>
+          </span>
           <div class="ql-vline-l"></div>
           <div class="ql-vline-r"></div>
           <div class="ql-content">${header}${inner}</div>
@@ -3177,15 +3217,22 @@ function _ruckPopQuestlog() {
         <div class="ql-ds-line"></div>
       </div>`;
 
+    const hasQuests = group.quests.length > 0;
+
     if (group.dayRating) {
       const r = group.dayRating;
       entriesHtml += `
-        <div class="ql-entry ql-day">
+        <div class="ql-entry ql-day${hasQuests ? ' ql-day-toggleable' : ''}" data-day-date="${date}">
           <div class="ql-e-top">
             <span class="ql-e-rating">${DR_ICONS[r.rating] || '⭐'}</span>
             <span class="ql-e-name">✦ Tag: ${DR_LABELS[r.rating] || r.rating}</span>
+            ${hasQuests ? '<span class="ql-day-toggle-icon">▼</span>' : ''}
           </div>
         </div>`;
+    }
+
+    if (hasQuests) {
+      entriesHtml += `<div class="ql-day-quests" data-day-date="${date}">`;
     }
 
     group.quests.forEach(e => {
@@ -3200,10 +3247,73 @@ function _ruckPopQuestlog() {
           ${e.note ? `<div class="ql-e-note">${e.note}</div>` : ''}
         </div>`;
     });
+
+    if (hasQuests) {
+      entriesHtml += `</div>`; // close ql-day-quests
+    }
   });
 
   entriesHtml += `<div class="ql-seal">✦ Ende der Einträge ✦ Mögen deine Quests glorreich sein ✦</div>`;
   scrollArea.innerHTML = buildScroll(entriesHtml);
+
+  // Toggle: Tagesbewertungs-Einträge können Quest-Einträge ein-/ausklappen
+  scrollArea.querySelectorAll('.ql-day-toggleable').forEach(dayEl => {
+    const date = dayEl.dataset.dayDate;
+    const questsEl = scrollArea.querySelector(`.ql-day-quests[data-day-date="${date}"]`);
+    if (!questsEl) return;
+    // Init: explizite Höhe setzen damit Transition funktioniert
+    questsEl.style.overflow = 'hidden';
+    questsEl.style.transition = 'max-height 0.3s ease, opacity 0.3s ease';
+    questsEl.style.maxHeight = questsEl.scrollHeight + 'px';
+    questsEl.style.opacity = '1';
+    let expanded = true;
+    dayEl.addEventListener('click', () => {
+      expanded = !expanded;
+      const icon = dayEl.querySelector('.ql-day-toggle-icon');
+      if (expanded) {
+        // Ausklappen: von 0 auf Höhe
+        questsEl.style.opacity = '1';
+        questsEl.style.maxHeight = questsEl.scrollHeight + 'px';
+        if (icon) icon.textContent = '▼';
+        // Nach Animation: große Fallback-Höhe damit dynamischer Inhalt passt
+        setTimeout(() => { if (expanded) questsEl.style.maxHeight = '9999px'; }, 320);
+      } else {
+        // Einklappen: von aktueller Höhe auf 0
+        questsEl.style.maxHeight = questsEl.scrollHeight + 'px';
+        void questsEl.offsetWidth; // Reflow erzwingen
+        requestAnimationFrame(() => {
+          questsEl.style.maxHeight = '0';
+          questsEl.style.opacity = '0';
+        });
+        if (icon) icon.textContent = '▶';
+      }
+    });
+  });
+}
+
+// ── Schatztruhe Blast-Animation (full-screen fixed overlay) ──────
+function _ruckTreasureBlast() {
+  const overlay = document.createElement('div');
+  overlay.className = 'ruck-treasure-blast';
+  const EMOJIS = ['💎', '💍', '✨', '🪙', '💎', '✨', '🪙', '💎', '💍', '✨', '🪙'];
+  const count = 42;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'ruck-treasure-blast-particle';
+    const tx    = Math.round(-200 + Math.random() * 400);
+    const ty    = Math.round(-400 + Math.random() * 300);
+    const rot   = Math.round(Math.random() * 720);
+    const sz    = Math.round(12 + Math.random() * 20);
+    const dur   = (1.5 + Math.random() * 1.0).toFixed(2);
+    const delay = (Math.random() * 0.4).toFixed(2);
+    const startX = (40 + Math.random() * 20).toFixed(1);
+    const startY = (72 + Math.random() * 18).toFixed(1);
+    p.style.cssText = `left:${startX}%;top:${startY}%;--tx:${tx}px;--ty:${ty}px;--rot:${rot}deg;--dur:${dur}s;--sz:${sz}px;--delay:${delay}s;`;
+    p.textContent = EMOJIS[i % EMOJIS.length];
+    overlay.appendChild(p);
+  }
+  document.body.appendChild(overlay);
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3200);
 }
 
 // ── Schatztruhe ───────────────────────────────────────────────────
@@ -3301,10 +3411,11 @@ function _ruckPopTreasure() {
     <div class="ruck-scattered-wrap" id="ruck-scattered-wrap"></div>
   </div>`;
 
-  // 1. Lid animation
+  // 1. Lid animation + full-screen blast
   requestAnimationFrame(() => {
     const lid = heroWrap.querySelector('.ruck-chest-lid-g');
     if (lid) { void lid.offsetWidth; lid.classList.add('ruck-lid-open'); }
+    _ruckTreasureBlast();
   });
 
   // 2. Münzregen (0.3s nach Öffnen)
