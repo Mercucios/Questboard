@@ -2804,42 +2804,44 @@ function _makeConstSvg(c, state) {
 }
 
 // ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
-function renderEntdecktTab() {
-  // Gleiche compN-Logik wie _ruckPopTelescope()
-  const starCount = loadStars().length;
-  const info = getConstellationInfo(starCount);
-  const compN_stars = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
-
-  let compN_state = 0;
-  if (appState) {
-    if (typeof appState.completedConstellations === 'number') {
-      compN_state = Math.max(compN_state, appState.completedConstellations);
-    }
-    if (Array.isArray(appState.unlockedConstellations)) {
-      compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
+function renderEntdecktTab(compNParam) {
+  // Verwende übergebenes compN oder berechne selbst als Fallback
+  let compN = compNParam;
+  if (compN === undefined) {
+    const starCount = loadStars().length;
+    const info = getConstellationInfo(starCount);
+    const compN_stars = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+    let compN_state = 0;
+    if (appState) {
+      if (typeof appState.completedConstellations === 'number') {
+        compN_state = Math.max(compN_state, appState.completedConstellations);
+      }
+      if (Array.isArray(appState.unlockedConstellations)) {
+        compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
+        CONSTELLATIONS.forEach((c, i) => {
+          if (appState.unlockedConstellations.includes(c.id) || appState.unlockedConstellations.includes(c.name)) {
+            compN_state = Math.max(compN_state, i + 1);
+          }
+        });
+      }
+      if (Array.isArray(appState.stars)) {
+        let cum2 = 0;
+        for (let i = 0; i < CONSTELLATIONS.length; i++) {
+          cum2 += CONSTELLATIONS[i].starsNeeded;
+          if (appState.stars.length >= cum2) compN_state = Math.max(compN_state, i + 1);
+        }
+      }
       CONSTELLATIONS.forEach((c, i) => {
-        if (appState.unlockedConstellations.includes(c.id) || appState.unlockedConstellations.includes(c.name)) {
-          compN_state = Math.max(compN_state, i + 1);
+        const sc = appState[c.id] || appState[c.name];
+        if (sc) {
+          if (sc.isComplete || sc.isUnlocked || sc.completedAt || (sc.progress != null && sc.maxProgress != null && sc.progress >= sc.maxProgress)) {
+            compN_state = Math.max(compN_state, i + 1);
+          }
         }
       });
     }
-    if (Array.isArray(appState.stars)) {
-      let cum2 = 0;
-      for (let i = 0; i < CONSTELLATIONS.length; i++) {
-        cum2 += CONSTELLATIONS[i].starsNeeded;
-        if (appState.stars.length >= cum2) compN_state = Math.max(compN_state, i + 1);
-      }
-    }
-    CONSTELLATIONS.forEach((c, i) => {
-      const sc = appState[c.id] || appState[c.name];
-      if (sc) {
-        if (sc.isComplete || sc.isUnlocked || sc.completedAt || (sc.progress != null && sc.maxProgress != null && sc.progress >= sc.maxProgress)) {
-          compN_state = Math.max(compN_state, i + 1);
-        }
-      }
-    });
+    compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
   }
-  const compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
 
   // Suche Container sowohl per ID als auch per Klasse als Fallback
   let container = $('const-view-entdeckt');
@@ -3081,7 +3083,7 @@ function _ruckPopTelescope() {
       tab.classList.add('active');
       list.querySelectorAll('.tel-tab-pane').forEach(p => p.classList.add('hidden'));
       list.querySelector('.tel-pane-' + tab.dataset.tab).classList.remove('hidden');
-      if (tab.dataset.tab === 'found') renderEntdecktTab();
+      if (tab.dataset.tab === 'found') renderEntdecktTab(compN);
     });
   });
 
@@ -3138,7 +3140,7 @@ function _ruckPopTelescope() {
   }
 
   // Entdeckt-Tab: beim Öffnen sofort rendern
-  renderEntdecktTab();
+  renderEntdecktTab(compN);
 
   // Fly-in: Hero zuerst, dann Sternbild-Einträge (±150px Startversatz, 0.05s Stagger)
   const hero = document.querySelector('.ruck-stars-hero');
