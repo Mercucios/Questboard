@@ -1068,7 +1068,9 @@ function _finalizeQuestCompletion(name, preReward, questObj) {
   appState.completedCount = (appState.completedCount || 0) + 1;
   saveDayState(appState);
   renderBoard();
-  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+  if (!getTodayDayRating() && appState.quests.filter(q => !q.rest).length === 0) {
+    setTimeout(showDayRatingPopup, 1500);
+  }
   if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
@@ -1748,6 +1750,7 @@ function init() {
     $('mood-badge').textContent = `${MOOD_GLYPH[saved.mood]} ${MOOD_LABEL[saved.mood]}`;
     renderBoard();
     showScreen('screen-board');
+    setTimeout(checkAndShowDayRating, 800);
   } else {
     showScreen('screen-mood');
     document.querySelectorAll('.mood-card').forEach(btn => {
@@ -2526,7 +2529,9 @@ function _finalizeSidequestCompletion(sqId, preReward, questObj) {
   appState.completedCount = (appState.completedCount || 0) + 1;
   saveDayState(appState);
   renderBoard();
-  if (appState.mana <= 0 && !getTodayDayRating()) showDayRatingPopup();
+  if (!getTodayDayRating() && appState.quests.filter(q => !q.rest).length === 0) {
+    setTimeout(showDayRatingPopup, 1500);
+  }
   if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
