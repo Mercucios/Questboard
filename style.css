@@ -5972,3 +5972,44 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   color: rgba(80, 40, 5, 0.18) !important;
   animation: runeFadeQ 5s ease-in-out infinite !important;
 }
+
+/* ═══ FIX 1 – Toggle-Ornamente (Kalligraphie) ═══ */
+.ql-day-toggle-icon {
+  margin-left: auto;
+  padding-left: 0.4rem;
+  font-size: 1rem !important;
+  color: rgba(100,50,0,0.55) !important;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: none;
+}
+
+/* ═══ FIX 2 – Einzug normalisieren: alle Einträge linksbündig ═══ */
+.ql-entry {
+  margin-left: 0 !important;
+  padding-left: 0.7rem !important;
+  text-indent: 0 !important;
+}
+.ql-entry.ql-day {
+  padding-left: 0.7rem !important;
+}
+.ql-day-quests {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* ═══ FIX 3 – Mystische Rand-Symbole ═══ */
+@keyframes symPulse {
+  0%, 100% { opacity: 0.22; }
+  50%       { opacity: 0.52; }
+}
+.ql-entry,
+.ql-entry.ql-day,
+.ql-date-sep {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.ql-content {
+  position: relative !important;
+  z-index: 3 !important;
+}

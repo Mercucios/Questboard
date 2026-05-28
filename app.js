@@ -3183,6 +3183,46 @@ function _ruckRatingLabel(type, rating) {
 // === BUGFIX & UI UPDATE === PUNKT 8: Kerzen entfernt
 function _injectQuestlogCandles() {}
 
+// ── Questlog: mystische Rand-Symbole (Alchemie + Runen) injizieren ────────────
+function _injectQlSymbols(qlBody) {
+  if (!qlBody || qlBody.dataset.symbolsInjected) return;
+  qlBody.dataset.symbolsInjected = '1';
+  const ALCH = ['☽','☾','♄','♃','⊕','⚴','⚶','☿'];
+  const RUNE = ['ᚠ','ᛟ','ᚦ','ᛞ','ᚨ','ᚹ','ᛈ','ᛜ'];
+  const SIZES = [1.1, 1.2, 1.3, 1.4];
+  const OPS   = [0.38, 0.40, 0.43, 0.45, 0.48];
+  for (let side = 0; side < 2; side++) {
+    for (let i = 0; i < 7; i++) {
+      const isAlch = i % 2 === 0;
+      const pool   = isAlch ? ALCH : RUNE;
+      const sym    = pool[Math.floor(Math.random() * pool.length)];
+      const top    = (5 + (i / 6) * 85).toFixed(1);
+      const edge   = 5 + Math.floor(Math.random() * 10);
+      const sz     = SIZES[Math.floor(Math.random() * SIZES.length)];
+      const op     = OPS[Math.floor(Math.random() * OPS.length)];
+      const dur    = (5 + Math.random() * 4).toFixed(1);
+      const delay  = (Math.random() * 4).toFixed(1);
+      const el     = document.createElement('span');
+      el.textContent = sym;
+      el.setAttribute('aria-hidden', 'true');
+      el.style.cssText = [
+        'position:absolute',
+        side === 0 ? `left:${edge}px` : `right:${edge}px`,
+        `top:${top}%`,
+        `font-size:${sz}rem`,
+        `color:rgba(80,40,5,${op})`,
+        'pointer-events:none',
+        'z-index:0',
+        `animation:symPulse ${dur}s ease-in-out infinite`,
+        `animation-delay:${delay}s`,
+        'line-height:1',
+        'user-select:none',
+      ].join(';');
+      qlBody.appendChild(el);
+    }
+  }
+}
+
 // === FEATURE – Questlog Episches Logbuch-Design ===
 function _ruckPopQuestlog() {
   const scrollArea = $('ruck-log-scroll');
@@ -3239,6 +3279,7 @@ function _ruckPopQuestlog() {
     scrollArea.innerHTML = buildScroll(
       `<div class="questlog-empty"><span>✦</span><p>Noch keine Abenteuer verzeichnet...</p></div>`
     );
+    _injectQlSymbols(scrollArea.querySelector('.ql-body'));
     return;
   }
 
@@ -3272,7 +3313,7 @@ function _ruckPopQuestlog() {
           <div class="ql-e-top">
             <span class="ql-e-rating">${DR_ICONS[r.rating] || '⭐'}</span>
             <span class="ql-e-name">✦ Tag: ${DR_LABELS[r.rating] || r.rating}</span>
-            ${hasQuests ? '<span class="ql-day-toggle-icon">▼</span>' : ''}
+            ${hasQuests ? '<span class="ql-day-toggle-icon">❧</span>' : ''}
           </div>
         </div>`;
     }
@@ -3301,6 +3342,7 @@ function _ruckPopQuestlog() {
 
   entriesHtml += `<div class="ql-seal">✦ Ende der Einträge ✦ Mögen deine Quests glorreich sein ✦</div>`;
   scrollArea.innerHTML = buildScroll(entriesHtml);
+  _injectQlSymbols(scrollArea.querySelector('.ql-body'));
 
   // Toggle: Tagesbewertungs-Einträge können Quest-Einträge ein-/ausklappen
   scrollArea.querySelectorAll('.ql-day-toggleable').forEach(dayEl => {
@@ -3320,7 +3362,7 @@ function _ruckPopQuestlog() {
         // Ausklappen: von 0 auf Höhe
         questsEl.style.opacity = '1';
         questsEl.style.maxHeight = questsEl.scrollHeight + 'px';
-        if (icon) icon.textContent = '▼';
+        if (icon) icon.textContent = '❧';
         // Nach Animation: große Fallback-Höhe damit dynamischer Inhalt passt
         setTimeout(() => { if (expanded) questsEl.style.maxHeight = '9999px'; }, 320);
       } else {
@@ -3331,7 +3373,7 @@ function _ruckPopQuestlog() {
           questsEl.style.maxHeight = '0';
           questsEl.style.opacity = '0';
         });
-        if (icon) icon.textContent = '▶';
+        if (icon) icon.textContent = '❦';
       }
     });
   });
