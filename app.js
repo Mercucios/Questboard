@@ -2805,23 +2805,15 @@ function _makeConstSvg(c, state) {
 
 // ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
 function renderEntdecktTab(compNParam) {
-  // compN wird von _ruckPopTelescope übergeben - IMMER verwenden wenn vorhanden
   const compN = (compNParam !== undefined && compNParam !== null) ? compNParam : 0;
 
   let container = document.getElementById('const-view-entdeckt');
   if (!container) container = document.querySelector('.tel-pane-found');
   if (!container) return;
 
-  // Alles leeren
   container.innerHTML = '';
 
   const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
-
-  // Debug-Zeile
-  const dbg = document.createElement('div');
-  dbg.style.cssText = 'color:#f0c040;font-size:0.7rem;padding:0.3rem 0.5rem;text-align:center';
-  dbg.textContent = 'compN=' + compN + ' | gefunden=' + discovered.length;
-  container.appendChild(dbg);
 
   if (discovered.length === 0) {
     const empty = document.createElement('div');
@@ -2831,49 +2823,46 @@ function renderEntdecktTab(compNParam) {
     return;
   }
 
+  const allStars = loadStars();
+  let cumulative = 0;
+  const unlockDates = {};
+  for (let i = 0; i < discovered.length; i++) {
+    cumulative += CONSTELLATIONS[i].starsNeeded;
+    const dateStr = allStars[cumulative - 1] || allStars[allStars.length - 1] || '';
+    if (dateStr) {
+      try {
+        unlockDates[discovered[i].name] = new Intl.DateTimeFormat('de-AT', {
+          timeZone: 'Europe/Vienna', day: 'numeric', month: 'long', year: 'numeric',
+        }).format(new Date(dateStr + 'T12:00:00'));
+      } catch { unlockDates[discovered[i].name] = dateStr; }
+    }
+  }
+
   discovered.forEach(function(c) {
     var item = document.createElement('div');
-    item.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;background:rgba(30,15,60,0.85);border:1px solid rgba(160,100,255,0.3);border-radius:12px;margin-bottom:8px;cursor:pointer;width:100%;box-sizing:border-box';
+    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(30,15,60,0.85);border:1px solid rgba(160,100,255,0.3);border-radius:12px;margin-bottom:8px;cursor:pointer;width:100%;box-sizing:border-box;-webkit-tap-highlight-color:transparent';
 
     var svgWrap = document.createElement('div');
     svgWrap.style.cssText = 'flex-shrink:0;pointer-events:none';
     svgWrap.innerHTML = _makeConstSvg(c, 'done');
 
-    var info = document.createElement('div');
-    info.style.cssText = 'flex:1;pointer-events:none';
-    info.innerHTML = '<div style="font-family:Cinzel,serif;font-size:0.82rem;font-weight:700;color:#e0c8ff">' + c.name + '</div><div style="font-size:0.6rem;color:rgba(180,140,255,0.5);margin-top:2px">🔭 Tippen für Lore</div>';
+    var infoDiv = document.createElement('div');
+    infoDiv.style.cssText = 'flex:1;pointer-events:none;min-width:0';
+    var dateLabel = unlockDates[c.name] ? '<div style="font-size:0.6rem;color:rgba(180,140,255,0.45);margin-top:2px">✦ Entdeckt am ' + unlockDates[c.name] + ' ✦</div>' : '';
+    infoDiv.innerHTML = '<div style="font-family:Cinzel,serif;font-size:0.82rem;font-weight:700;color:#e0c8ff">' + c.name + '</div>' + dateLabel + '<div style="font-size:0.6rem;color:rgba(196,160,48,0.5);margin-top:4px">🔭 Antippen für Details</div>';
 
-    var lore = document.createElement('div');
-    var loreText = (typeof CONSTELLATION_LORE[c.name] === 'string') ? CONSTELLATION_LORE[c.name] : (CONSTELLATION_LORE[c.name]?.lore || '✦ Die Sterne schweigen noch…');
-    lore.style.cssText = 'display:none;width:100%;margin-top:8px;padding-top:8px;border-top:1px solid rgba(196,160,48,0.2);font-size:0.8rem;color:rgba(240,220,160,0.9);line-height:1.65;white-space:pre-line';
-    lore.textContent = loreText;
+    var arrow = document.createElement('div');
+    arrow.style.cssText = 'color:rgba(196,160,48,0.4);font-size:1rem;flex-shrink:0;pointer-events:none';
+    arrow.textContent = '›';
 
     item.appendChild(svgWrap);
-    item.appendChild(info);
-    item.appendChild(lore);
+    item.appendChild(infoDiv);
+    item.appendChild(arrow);
 
-    item.addEventListener('click', function() {
-      var isOpen = lore.style.display === 'block';
-      // Alle anderen schließen
-      container.querySelectorAll('[data-lore]').forEach(function(el) {
-        el.style.display = 'none';
-      });
-      container.querySelectorAll('[data-hint]').forEach(function(el) {
-        el.textContent = '🔭 Tippen für Lore';
-      });
-      if (!isOpen) {
-        lore.style.display = 'block';
-        info.querySelector('[data-hint]') && (info.querySelector('[data-hint]').textContent = '‹ Schließen');
-      }
-    });
-
-    lore.setAttribute('data-lore', '1');
-
+    item.addEventListener('click', function() { _openConstDetail(c); });
     container.appendChild(item);
   });
-}
-
-// ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
+}// ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
 function renderDiscoveredConstellations(paneFoundEl) {
   if (!paneFoundEl) return;
   paneFoundEl.innerHTML = '';
