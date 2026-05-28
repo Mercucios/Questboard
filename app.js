@@ -2808,16 +2808,23 @@ function renderEntdecktTab() {
   const starCount = loadStars().length;
   const info = getConstellationInfo(starCount);
   const compN = info.allComplete ? CONSTELLATIONS.length : (info.completedCount || 0);
-  console.log('renderEntdecktTab: starCount=', starCount, 'compN=', compN);
-  const container = $('const-view-entdeckt');
+
+  // Suche Container sowohl per ID als auch per Klasse als Fallback
+  let container = $('const-view-entdeckt');
+  if (!container) {
+    container = document.querySelector('.tel-pane-found');
+  }
   if (!container) return;
+
   container.innerHTML = '';
-  const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
-  // DEBUG: sichtbarer Text am Handy
+
+  // DEBUG sichtbar
   const dbgEl = document.createElement('div');
-  dbgEl.style.cssText = 'color:#f0c040;font-size:0.75rem;padding:0.5rem;opacity:0.7;text-align:center';
-  dbgEl.textContent = `⭐ ${starCount} Sterne | compN: ${compN} | entdeckt: ${discovered.length}`;
+  dbgEl.style.cssText = 'color:#f0c040;font-size:0.75rem;padding:0.5rem;opacity:0.8;text-align:center;position:relative;z-index:99';
+  dbgEl.textContent = `⭐ ${starCount} Sterne | compN: ${compN} | entdeckt: ${CONSTELLATIONS.filter((c,i)=>i<compN).length}`;
   container.appendChild(dbgEl);
+
+  const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
   if (discovered.length === 0) {
     const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
     container.innerHTML = `<div class="tel-empty-found">
