@@ -2805,9 +2805,41 @@ function _makeConstSvg(c, state) {
 
 // ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
 function renderEntdecktTab() {
+  // Gleiche compN-Logik wie _ruckPopTelescope()
   const starCount = loadStars().length;
   const info = getConstellationInfo(starCount);
-  const compN = info.allComplete ? CONSTELLATIONS.length : (info.completedCount || 0);
+  const compN_stars = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+
+  let compN_state = 0;
+  if (appState) {
+    if (typeof appState.completedConstellations === 'number') {
+      compN_state = Math.max(compN_state, appState.completedConstellations);
+    }
+    if (Array.isArray(appState.unlockedConstellations)) {
+      compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
+      CONSTELLATIONS.forEach((c, i) => {
+        if (appState.unlockedConstellations.includes(c.id) || appState.unlockedConstellations.includes(c.name)) {
+          compN_state = Math.max(compN_state, i + 1);
+        }
+      });
+    }
+    if (Array.isArray(appState.stars)) {
+      let cum2 = 0;
+      for (let i = 0; i < CONSTELLATIONS.length; i++) {
+        cum2 += CONSTELLATIONS[i].starsNeeded;
+        if (appState.stars.length >= cum2) compN_state = Math.max(compN_state, i + 1);
+      }
+    }
+    CONSTELLATIONS.forEach((c, i) => {
+      const sc = appState[c.id] || appState[c.name];
+      if (sc) {
+        if (sc.isComplete || sc.isUnlocked || sc.completedAt || (sc.progress != null && sc.maxProgress != null && sc.progress >= sc.maxProgress)) {
+          compN_state = Math.max(compN_state, i + 1);
+        }
+      }
+    });
+  }
+  const compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
 
   // Suche Container sowohl per ID als auch per Klasse als Fallback
   let container = $('const-view-entdeckt');
