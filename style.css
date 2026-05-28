@@ -6013,3 +6013,18 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   position: relative !important;
   z-index: 3 !important;
 }
+
+/* FIX 1 – .ruck-perg-quest und parent-Container: Einzug korrigieren */
+.ruck-perg-quest {
+  margin-left: 0 !important;
+  padding-left: 0.7rem !important;
+}
+.ruck-perg-day-group {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+.ruck-scroll-body .ruck-perg-day-group,
+.ruck-scroll-body .ruck-perg-quest,
+.ruck-scroll-body .ruck-perg-day-hdr {
+  margin-left: 0 !important;
+}

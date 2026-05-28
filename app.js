@@ -2803,6 +2803,81 @@ function _makeConstSvg(c, state) {
   return `<svg viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" class="ci-svg">${linesHtml}${dotsHtml}</svg>`;
 }
 
+// ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
+function renderEntdecktTab() {
+  const starCount =
+    appState.totalStars ||
+    appState.stars ||
+    appState.collectedStars ||
+    appState.starCount || 0;
+  const info = getConstellationInfo(starCount);
+  const compN = info.allComplete ? CONSTELLATIONS.length : (info.completedCount || 0);
+  console.log('renderEntdecktTab: starCount=', starCount, 'compN=', compN, 'info=', JSON.stringify(info));
+  const container = $('const-view-entdeckt');
+  if (!container) return;
+  container.innerHTML = '';
+  const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
+  if (discovered.length === 0) {
+    const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
+    container.innerHTML = `<div class="tel-empty-found">
+      Noch keine Sternbilder entdeckt.<br>
+      Sammle Sterne durch das Abschließen von Quests.
+      <br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:0.4rem;display:block">
+        ⭐ ${starCount} Sterne · ${_dbgNeeded} benötigt für erstes Sternbild
+      </small>
+    </div>`;
+    return;
+  }
+  let expandedCard = null;
+  discovered.forEach((c) => {
+    const item = document.createElement('div');
+    item.className = 'const-list-item ruck-const-item ci-done tel-found-card';
+
+    const fullText = CONSTELLATION_LORE[c.name] || '';
+    const splitIdx = fullText.indexOf('\n\n');
+    const loreText = splitIdx >= 0 ? fullText.slice(0, splitIdx) : fullText;
+
+    item.innerHTML = `
+      <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
+      <div class="ci-info">
+        <span class="ruck-const-name">${c.name}</span>
+        <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
+        <span class="tel-found-hint">Tippen für Lore ›</span>
+        <div class="tel-found-lore" hidden></div>
+      </div>`;
+
+    item.querySelector('.tel-found-lore').textContent = loreText;
+
+    item.addEventListener('click', () => {
+      const loreEl = item.querySelector('.tel-found-lore');
+      const hintEl = item.querySelector('.tel-found-hint');
+      const isOpen = !loreEl.hidden;
+
+      if (expandedCard && expandedCard !== item) {
+        const prevLore = expandedCard.querySelector('.tel-found-lore');
+        const prevHint = expandedCard.querySelector('.tel-found-hint');
+        if (prevLore) prevLore.hidden = true;
+        if (prevHint) prevHint.textContent = 'Tippen für Lore ›';
+        expandedCard.classList.remove('tel-found-expanded');
+      }
+
+      if (isOpen) {
+        loreEl.hidden = true;
+        hintEl.textContent = 'Tippen für Lore ›';
+        item.classList.remove('tel-found-expanded');
+        expandedCard = null;
+      } else {
+        loreEl.hidden = false;
+        hintEl.textContent = '‹ Schließen';
+        item.classList.add('tel-found-expanded');
+        expandedCard = item;
+      }
+    });
+
+    container.appendChild(item);
+  });
+}
+
 // ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
 function renderDiscoveredConstellations(paneFoundEl) {
   if (!paneFoundEl) return;
@@ -2881,6 +2956,8 @@ function renderDiscoveredConstellations(paneFoundEl) {
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
   const starCount = loadStars().length;
+  console.log('starCount:', appState.totalStars, appState.stars, appState.collectedStars);
+  console.log('getConstellationInfo:', getConstellationInfo(starCount));
   const numEl     = $('ruck-star-num');
 
   if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
@@ -2939,10 +3016,12 @@ function _ruckPopTelescope() {
 
   const paneCurrentEl = document.createElement('div');
   paneCurrentEl.className = 'tel-tab-pane tel-pane-current';
+  paneCurrentEl.id = 'const-view-aktuell';
   list.appendChild(paneCurrentEl);
 
   const paneFoundEl = document.createElement('div');
   paneFoundEl.className = 'tel-tab-pane tel-pane-found hidden';
+  paneFoundEl.id = 'const-view-entdeckt';
   list.appendChild(paneFoundEl);
 
   tabBar.querySelectorAll('.tel-tab').forEach(tab => {
@@ -2951,7 +3030,7 @@ function _ruckPopTelescope() {
       tab.classList.add('active');
       list.querySelectorAll('.tel-tab-pane').forEach(p => p.classList.add('hidden'));
       list.querySelector('.tel-pane-' + tab.dataset.tab).classList.remove('hidden');
-      if (tab.dataset.tab === 'found') renderDiscoveredConstellations(paneFoundEl);
+      if (tab.dataset.tab === 'found') renderEntdecktTab();
     });
   });
 
@@ -3008,7 +3087,7 @@ function _ruckPopTelescope() {
   }
 
   // Entdeckt-Tab: beim Öffnen sofort rendern
-  renderDiscoveredConstellations(paneFoundEl);
+  renderEntdecktTab();
 
   // Fly-in: Hero zuerst, dann Sternbild-Einträge (±150px Startversatz, 0.05s Stagger)
   const hero = document.querySelector('.ruck-stars-hero');
@@ -3192,11 +3271,11 @@ function _injectQlSymbols(qlBody) {
   const SIZES = [1.1, 1.2, 1.3, 1.4];
   const OPS   = [0.38, 0.40, 0.43, 0.45, 0.48];
   for (let side = 0; side < 2; side++) {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       const isAlch = i % 2 === 0;
       const pool   = isAlch ? ALCH : RUNE;
       const sym    = pool[Math.floor(Math.random() * pool.length)];
-      const top    = (5 + (i / 6) * 85).toFixed(1);
+      const top    = (3 + (i / 7) * 92).toFixed(1);
       const edge   = 5 + Math.floor(Math.random() * 10);
       const sz     = SIZES[Math.floor(Math.random() * SIZES.length)];
       const op     = OPS[Math.floor(Math.random() * OPS.length)];
