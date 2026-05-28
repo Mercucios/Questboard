@@ -1750,6 +1750,7 @@ function init() {
     $('mood-badge').textContent = `${MOOD_GLYPH[saved.mood]} ${MOOD_LABEL[saved.mood]}`;
     renderBoard();
     showScreen('screen-board');
+    if (appState.dayRatingDismissedAt) _dayRatingDismissedAt = appState.dayRatingDismissedAt;
     setTimeout(checkAndShowDayRating, 800);
   } else {
     showScreen('screen-mood');
@@ -1809,6 +1810,7 @@ function init() {
         }
         if (el.id === 'popup-day-rating') {
           _dayRatingDismissedAt = Date.now();
+          if (appState) { appState.dayRatingDismissedAt = _dayRatingDismissedAt; saveDayState(appState); }
           el.querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
         }
         el.classList.add('hidden');
@@ -2306,6 +2308,7 @@ function initDayRatingPopup() {
 
   $('btn-day-rating-skip').addEventListener('click', () => {
     _dayRatingDismissedAt = Date.now();
+    if (appState) { appState.dayRatingDismissedAt = _dayRatingDismissedAt; saveDayState(appState); }
     $('popup-day-rating').querySelectorAll('.popup-abs-rune').forEach(r => r.remove());
     $('popup-day-rating').classList.add('hidden');
   });
