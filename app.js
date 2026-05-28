@@ -2805,130 +2805,72 @@ function _makeConstSvg(c, state) {
 
 // ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
 function renderEntdecktTab(compNParam) {
-  // Verwende übergebenes compN oder berechne selbst als Fallback
-  let compN = compNParam;
-  if (compN === undefined) {
-    const starCount = loadStars().length;
-    const info = getConstellationInfo(starCount);
-    const compN_stars = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
-    let compN_state = 0;
-    if (appState) {
-      if (typeof appState.completedConstellations === 'number') {
-        compN_state = Math.max(compN_state, appState.completedConstellations);
-      }
-      if (Array.isArray(appState.unlockedConstellations)) {
-        compN_state = Math.max(compN_state, appState.unlockedConstellations.length);
-        CONSTELLATIONS.forEach((c, i) => {
-          if (appState.unlockedConstellations.includes(c.id) || appState.unlockedConstellations.includes(c.name)) {
-            compN_state = Math.max(compN_state, i + 1);
-          }
-        });
-      }
-      if (Array.isArray(appState.stars)) {
-        let cum2 = 0;
-        for (let i = 0; i < CONSTELLATIONS.length; i++) {
-          cum2 += CONSTELLATIONS[i].starsNeeded;
-          if (appState.stars.length >= cum2) compN_state = Math.max(compN_state, i + 1);
-        }
-      }
-      CONSTELLATIONS.forEach((c, i) => {
-        const sc = appState[c.id] || appState[c.name];
-        if (sc) {
-          if (sc.isComplete || sc.isUnlocked || sc.completedAt || (sc.progress != null && sc.maxProgress != null && sc.progress >= sc.maxProgress)) {
-            compN_state = Math.max(compN_state, i + 1);
-          }
-        }
-      });
-    }
-    compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
-  }
+  // compN wird von _ruckPopTelescope übergeben - IMMER verwenden wenn vorhanden
+  const compN = (compNParam !== undefined && compNParam !== null) ? compNParam : 0;
 
-  // Suche Container sowohl per ID als auch per Klasse als Fallback
-  let container = $('const-view-entdeckt');
-  if (!container) {
-    container = document.querySelector('.tel-pane-found');
-  }
+  let container = document.getElementById('const-view-entdeckt');
+  if (!container) container = document.querySelector('.tel-pane-found');
   if (!container) return;
 
+  // Alles leeren
   container.innerHTML = '';
 
-  // DEBUG sichtbar
-  const dbgEl = document.createElement('div');
-  dbgEl.style.cssText = 'color:#f0c040;font-size:0.75rem;padding:0.5rem;opacity:0.8;text-align:center;position:relative;z-index:99';
-  dbgEl.textContent = `⭐ ${starCount} Sterne | compN: ${compN} | entdeckt: ${CONSTELLATIONS.filter((c,i)=>i<compN).length}`;
-  container.appendChild(dbgEl);
-
   const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
+
+  // Debug-Zeile
+  const dbg = document.createElement('div');
+  dbg.style.cssText = 'color:#f0c040;font-size:0.7rem;padding:0.3rem 0.5rem;text-align:center';
+  dbg.textContent = 'compN=' + compN + ' | gefunden=' + discovered.length;
+  container.appendChild(dbg);
+
   if (discovered.length === 0) {
-    const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
-    container.innerHTML = `<div class="tel-empty-found">
-      Noch keine Sternbilder entdeckt.<br>
-      Sammle Sterne durch das Abschließen von Quests.
-      <br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:0.4rem;display:block">
-        ⭐ ${starCount} Sterne · ${_dbgNeeded} benötigt für erstes Sternbild
-      </small>
-    </div>`;
+    const empty = document.createElement('div');
+    empty.className = 'tel-empty-found';
+    empty.innerHTML = 'Noch keine Sternbilder entdeckt.<br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem">Sammle ' + (CONSTELLATIONS[0]?.starsNeeded ?? 5) + ' Sterne für das erste Sternbild</small>';
+    container.appendChild(empty);
     return;
   }
-  discovered.forEach((c) => {
-    const item = document.createElement('div');
-    item.className = 'const-list-item ruck-const-item ci-done tel-found-card';
-    item.style.cssText = 'display:flex!important;flex-wrap:wrap;align-items:center;gap:0.6rem;padding:0.65rem 0.75rem;background:rgba(30,15,60,0.85);border:1px solid rgba(160,100,255,0.3);border-radius:12px;margin-bottom:8px;cursor:pointer;width:100%;box-sizing:border-box;position:relative;z-index:1';
 
-    const loreObj = CONSTELLATION_LORE[c.name];
-    const loreText = typeof loreObj === 'string'
-      ? loreObj
-      : (loreObj?.lore || '');
-    const personalText = typeof loreObj === 'object'
-      ? (loreObj?.personal || '')
-      : '';
+  discovered.forEach(function(c) {
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;background:rgba(30,15,60,0.85);border:1px solid rgba(160,100,255,0.3);border-radius:12px;margin-bottom:8px;cursor:pointer;width:100%;box-sizing:border-box';
 
-    item.innerHTML = `
-      <div class="ci-svg-wrap" style="pointer-events:none">${_makeConstSvg(c, 'done')}</div>
-      <div class="ci-info" style="pointer-events:none">
-        <span class="ruck-const-name">${c.name}</span>
-        <span class="tel-found-hint">🔭 Tippen für Lore</span>
-      </div>
-      <div class="tel-found-lore" style="display:none;width:100%;margin-top:0.6rem;padding-top:0.6rem;border-top:1px solid rgba(196,160,48,0.2);font-size:0.82rem;color:rgba(240,220,160,0.9);line-height:1.7;white-space:pre-line;box-sizing:border-box"></div>`;
+    var svgWrap = document.createElement('div');
+    svgWrap.style.cssText = 'flex-shrink:0;pointer-events:none';
+    svgWrap.innerHTML = _makeConstSvg(c, 'done');
 
-    const loreEl = item.querySelector('.tel-found-lore');
-    loreEl.textContent = loreText || '✦ Die Sterne schweigen noch über dieses Bild…';
-    if (personalText) {
-      const personalEl = document.createElement('div');
-      personalEl.className = 'tel-found-personal';
-      personalEl.textContent = personalText;
-      loreEl.appendChild(personalEl);
-    }
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;pointer-events:none';
+    info.innerHTML = '<div style="font-family:Cinzel,serif;font-size:0.82rem;font-weight:700;color:#e0c8ff">' + c.name + '</div><div style="font-size:0.6rem;color:rgba(180,140,255,0.5);margin-top:2px">🔭 Tippen für Lore</div>';
 
-    item.addEventListener('click', () => {
-      const hintEl = item.querySelector('.tel-found-hint');
-      const isOpen = loreEl.style.display === 'block';
+    var lore = document.createElement('div');
+    var loreText = (typeof CONSTELLATION_LORE[c.name] === 'string') ? CONSTELLATION_LORE[c.name] : (CONSTELLATION_LORE[c.name]?.lore || '✦ Die Sterne schweigen noch…');
+    lore.style.cssText = 'display:none;width:100%;margin-top:8px;padding-top:8px;border-top:1px solid rgba(196,160,48,0.2);font-size:0.8rem;color:rgba(240,220,160,0.9);line-height:1.65;white-space:pre-line';
+    lore.textContent = loreText;
 
-      container.querySelectorAll('.tel-found-lore').forEach(el => {
+    item.appendChild(svgWrap);
+    item.appendChild(info);
+    item.appendChild(lore);
+
+    item.addEventListener('click', function() {
+      var isOpen = lore.style.display === 'block';
+      // Alle anderen schließen
+      container.querySelectorAll('[data-lore]').forEach(function(el) {
         el.style.display = 'none';
       });
-      container.querySelectorAll('.tel-found-hint').forEach(el => {
+      container.querySelectorAll('[data-hint]').forEach(function(el) {
         el.textContent = '🔭 Tippen für Lore';
       });
-      container.querySelectorAll('.tel-found-expanded').forEach(el => {
-        el.classList.remove('tel-found-expanded');
-      });
-
       if (!isOpen) {
-        loreEl.style.display = 'block';
-        if (hintEl) hintEl.textContent = '‹ Schließen';
-        item.classList.add('tel-found-expanded');
+        lore.style.display = 'block';
+        info.querySelector('[data-hint]') && (info.querySelector('[data-hint]').textContent = '‹ Schließen');
       }
     });
 
+    lore.setAttribute('data-lore', '1');
+
     container.appendChild(item);
   });
-
-  // DEBUG: zeige wie viele items im container sind
-  const dbgEnd = document.createElement('div');
-  dbgEnd.style.cssText = 'color:#ff6060;font-size:0.75rem;padding:0.3rem;text-align:center;position:relative;z-index:99';
-  dbgEnd.textContent = `Items im Container: ${container.children.length}`;
-  container.appendChild(dbgEnd);
 }
 
 // ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
