@@ -6000,8 +6000,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 
 /* ═══ FIX 3 – Mystische Rand-Symbole ═══ */
 @keyframes symPulse {
-  0%, 100% { opacity: 0.22; }
-  50%       { opacity: 0.52; }
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.48; }
 }
 .ql-entry,
 .ql-entry.ql-day,
@@ -6014,17 +6014,54 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   z-index: 3 !important;
 }
 
-/* FIX 1 – .ruck-perg-quest und parent-Container: Einzug korrigieren */
-.ruck-perg-quest {
+/* FIX 1 – Questlog Einzug: alle Einträge exakt linksbündig (ql-* + ruck-perg-*) */
+
+/* Aktuelle Questlog-Klassen (.ql-*) */
+.ql-entry,
+.ql-entry.ql-day,
+.ql-entry.good,
+.ql-entry.ok,
+.ql-entry.bad {
   margin-left: 0 !important;
   padding-left: 0.7rem !important;
+  text-indent: 0 !important;
 }
-.ruck-perg-day-group {
-  padding-left: 0 !important;
+.ql-day-quests {
   margin-left: 0 !important;
+  padding-left: 0 !important;
+  text-indent: 0 !important;
 }
+
+/* Ältere Questlog-Klassen (.ruck-perg-*) – defensiv */
+.ruck-perg-entry,
+.ruck-perg-quest,
+.ruck-perg-day-rating {
+  margin-left: 0 !important;
+  padding-left: 0.7rem !important;
+  text-indent: 0 !important;
+}
+.ruck-perg-day-group,
+.ruck-log-entries,
+.entries-group,
+.log-entries-wrap {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  text-indent: 0 !important;
+}
+
+/* Parent-Container im Scroll-Körper: kein eigener Einzug */
 .ruck-scroll-body .ruck-perg-day-group,
 .ruck-scroll-body .ruck-perg-quest,
-.ruck-scroll-body .ruck-perg-day-hdr {
+.ruck-scroll-body .ruck-perg-day-hdr,
+.ruck-scroll-body .ruck-perg-entry,
+.ruck-scroll-body .ruck-perg-day-rating {
   margin-left: 0 !important;
+}
+
+/* Symbol-Ebene hinter Einträgen */
+.ruck-perg-entry,
+.ruck-perg-day-rating,
+.ruck-perg-quest {
+  position: relative !important;
+  z-index: 2 !important;
 }

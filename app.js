@@ -3262,32 +3262,29 @@ function _ruckRatingLabel(type, rating) {
 // === BUGFIX & UI UPDATE === PUNKT 8: Kerzen entfernt
 function _injectQuestlogCandles() {}
 
-// ── Questlog: mystische Rand-Symbole (Alchemie + Runen) injizieren ────────────
+// ── Questlog: mystische Rand-Symbole (Runen + Alchemie, keine Monde) ──────────
 function _injectQlSymbols(qlBody) {
   if (!qlBody || qlBody.dataset.symbolsInjected) return;
   qlBody.dataset.symbolsInjected = '1';
-  const ALCH = ['☽','☾','♄','♃','⊕','⚴','⚶','☿'];
-  const RUNE = ['ᚠ','ᛟ','ᚦ','ᛞ','ᚨ','ᚹ','ᛈ','ᛜ'];
-  const SIZES = [1.1, 1.2, 1.3, 1.4];
-  const OPS   = [0.38, 0.40, 0.43, 0.45, 0.48];
-  for (let side = 0; side < 2; side++) {
-    for (let i = 0; i < 8; i++) {
-      const isAlch = i % 2 === 0;
-      const pool   = isAlch ? ALCH : RUNE;
-      const sym    = pool[Math.floor(Math.random() * pool.length)];
-      const top    = (3 + (i / 7) * 92).toFixed(1);
-      const edge   = 5 + Math.floor(Math.random() * 10);
-      const sz     = SIZES[Math.floor(Math.random() * SIZES.length)];
-      const op     = OPS[Math.floor(Math.random() * OPS.length)];
-      const dur    = (5 + Math.random() * 4).toFixed(1);
-      const delay  = (Math.random() * 4).toFixed(1);
-      const el     = document.createElement('span');
+
+  // Kein ☽, kein ☾
+  const LEFT_SYMS  = ['ᚠ','♄','ᚦ','⊕','ᚨ','⚴','ᚹ','⚶'];
+  const RIGHT_SYMS = ['ᛟ','♃','ᛞ','☿','ᛈ','⚶','ᛜ','♄'];
+  const TOPS = [3, 15, 27, 39, 51, 63, 75, 87];
+
+  [[LEFT_SYMS, 'left'], [RIGHT_SYMS, 'right']].forEach(([syms, side]) => {
+    syms.forEach((sym, i) => {
+      const sz    = i % 2 === 0 ? 1.1 : 1.2;
+      const op    = i % 2 === 0 ? 0.38 : 0.42;
+      const dur   = (5 + (i / 7) * 4).toFixed(1);   // 5.0s → 9.0s
+      const delay = ((i / 7) * 3.8).toFixed(2);      // 0.00s → 3.80s
+      const el    = document.createElement('span');
       el.textContent = sym;
       el.setAttribute('aria-hidden', 'true');
       el.style.cssText = [
         'position:absolute',
-        side === 0 ? `left:${edge}px` : `right:${edge}px`,
-        `top:${top}%`,
+        `${side}:5px`,
+        `top:${TOPS[i]}%`,
         `font-size:${sz}rem`,
         `color:rgba(80,40,5,${op})`,
         'pointer-events:none',
@@ -3298,8 +3295,8 @@ function _injectQlSymbols(qlBody) {
         'user-select:none',
       ].join(';');
       qlBody.appendChild(el);
-    }
-  }
+    });
+  });
 }
 
 // === FEATURE – Questlog Episches Logbuch-Design ===
