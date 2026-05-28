@@ -2889,6 +2889,12 @@ function renderEntdecktTab() {
 
     container.appendChild(item);
   });
+
+  // DEBUG: zeige wie viele items im container sind
+  const dbgEnd = document.createElement('div');
+  dbgEnd.style.cssText = 'color:#ff6060;font-size:0.75rem;padding:0.3rem;text-align:center;position:relative;z-index:99';
+  dbgEnd.textContent = `Items im Container: ${container.children.length}`;
+  container.appendChild(dbgEnd);
 }
 
 // ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
