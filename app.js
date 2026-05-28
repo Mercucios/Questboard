@@ -2839,6 +2839,7 @@ function renderEntdecktTab() {
   discovered.forEach((c) => {
     const item = document.createElement('div');
     item.className = 'const-list-item ruck-const-item ci-done tel-found-card';
+    item.style.cssText = 'display:flex!important;flex-wrap:wrap;align-items:center;gap:0.6rem;padding:0.65rem 0.75rem;background:rgba(30,15,60,0.85);border:1px solid rgba(160,100,255,0.3);border-radius:12px;margin-bottom:8px;cursor:pointer;width:100%;box-sizing:border-box;position:relative;z-index:1';
 
     const loreObj = CONSTELLATION_LORE[c.name];
     const loreText = typeof loreObj === 'string'
