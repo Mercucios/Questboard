@@ -2803,6 +2803,80 @@ function _makeConstSvg(c, state) {
   return `<svg viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" class="ci-svg">${linesHtml}${dotsHtml}</svg>`;
 }
 
+// ── Entdeckt-Tab: discovered constellations list with tap-to-expand lore ──────
+function renderDiscoveredConstellations(paneFoundEl) {
+  if (!paneFoundEl) return;
+  paneFoundEl.innerHTML = '';
+
+  const starCount = loadStars().length;
+  const info = getConstellationInfo(starCount);
+  const compN = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
+  const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
+  console.log('compN:', compN, 'discovered:', discovered.length);
+
+  if (discovered.length === 0) {
+    const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
+    paneFoundEl.innerHTML = `<div class="tel-empty-found">
+      Noch keine Sternbilder entdeckt.<br>
+      Sammle Sterne durch das Abschließen von Quests.
+      <br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:0.4rem;display:block">
+        ⭐ ${starCount} Sterne · ${_dbgNeeded} benötigt für erstes Sternbild
+      </small>
+    </div>`;
+    return;
+  }
+
+  let expandedCard = null;
+
+  discovered.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'ruck-const-item ci-done tel-found-card';
+
+    const fullText = CONSTELLATION_LORE[c.name] || '';
+    const splitIdx = fullText.indexOf('\n\n');
+    const loreText = splitIdx >= 0 ? fullText.slice(0, splitIdx) : fullText;
+
+    card.innerHTML = `
+      <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
+      <div class="ci-info">
+        <span class="ruck-const-name">${c.name}</span>
+        <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
+        <span class="tel-found-hint">Tippen für Lore ›</span>
+        <div class="tel-found-lore" hidden></div>
+      </div>`;
+
+    card.querySelector('.tel-found-lore').textContent = loreText;
+
+    card.addEventListener('click', () => {
+      const loreEl = card.querySelector('.tel-found-lore');
+      const hintEl = card.querySelector('.tel-found-hint');
+      const isOpen = !loreEl.hidden;
+
+      if (expandedCard && expandedCard !== card) {
+        const prevLore = expandedCard.querySelector('.tel-found-lore');
+        const prevHint = expandedCard.querySelector('.tel-found-hint');
+        if (prevLore) prevLore.hidden = true;
+        if (prevHint) prevHint.textContent = 'Tippen für Lore ›';
+        expandedCard.classList.remove('tel-found-expanded');
+      }
+
+      if (isOpen) {
+        loreEl.hidden = true;
+        hintEl.textContent = 'Tippen für Lore ›';
+        card.classList.remove('tel-found-expanded');
+        expandedCard = null;
+      } else {
+        loreEl.hidden = false;
+        hintEl.textContent = '‹ Schließen';
+        card.classList.add('tel-found-expanded');
+        expandedCard = card;
+      }
+    });
+
+    paneFoundEl.appendChild(card);
+  });
+}
+
 // === FIX 6: Teleskop mit Aktuell/Entdeckt-Tabs ===
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
@@ -2877,6 +2951,7 @@ function _ruckPopTelescope() {
       tab.classList.add('active');
       list.querySelectorAll('.tel-tab-pane').forEach(p => p.classList.add('hidden'));
       list.querySelector('.tel-pane-' + tab.dataset.tab).classList.remove('hidden');
+      if (tab.dataset.tab === 'found') renderDiscoveredConstellations(paneFoundEl);
     });
   });
 
@@ -2932,33 +3007,8 @@ function _ruckPopTelescope() {
     });
   }
 
-  // Entdeckt-Tab: abgeschlossene Sternbilder als tippbare Karten
-  if (compN === 0) {
-    const _dbgStars = loadStars().length;
-    const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
-    paneFoundEl.innerHTML = `<div class="tel-empty-found">
-      Noch keine Sternbilder entdeckt.<br>
-      Sammle Sterne durch das Abschließen von Quests.
-      <br><small style="color:rgba(255,255,255,0.3);font-size:0.65rem;margin-top:0.4rem;display:block">
-        ⭐ ${_dbgStars} Sterne · ${_dbgNeeded} benötigt für erstes Sternbild
-      </small>
-    </div>`;
-  } else {
-    for (let i = 0; i < compN; i++) {
-      const c = CONSTELLATIONS[i];
-      const card = document.createElement('div');
-      card.className = 'ruck-const-item ci-done tel-found-card';
-      card.innerHTML = `
-        <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
-        <div class="ci-info">
-          <span class="ruck-const-name">${c.name}</span>
-          <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
-          <span class="tel-found-hint">Tippen für Lore ›</span>
-        </div>`;
-      card.addEventListener('click', () => _openConstDetail(c));
-      paneFoundEl.appendChild(card);
-    }
-  }
+  // Entdeckt-Tab: beim Öffnen sofort rendern
+  renderDiscoveredConstellations(paneFoundEl);
 
   // Fly-in: Hero zuerst, dann Sternbild-Einträge (±150px Startversatz, 0.05s Stagger)
   const hero = document.querySelector('.ruck-stars-hero');
