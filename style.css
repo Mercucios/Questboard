@@ -1956,6 +1956,7 @@ h1 {
 .ruck-const-item {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.6rem;
   padding: 0.5rem 0.72rem;
   background: rgba(8,4,28,0.5);
@@ -5974,6 +5975,8 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .ql-day-quests {
   overflow: hidden;
   transition: max-height 0.3s ease, opacity 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* BUG 5 FIX: Questlog-Rand – mehr Runen-Sichtbarkeit */

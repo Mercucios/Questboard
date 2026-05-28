@@ -2840,10 +2840,9 @@ function renderEntdecktTab() {
       <div class="ci-svg-wrap" style="pointer-events:none">${_makeConstSvg(c, 'done')}</div>
       <div class="ci-info" style="pointer-events:none">
         <span class="ruck-const-name">${c.name}</span>
-        <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
         <span class="tel-found-hint">🔭 Tippen für Lore</span>
-        <div class="tel-found-lore" style="display:none"></div>
-      </div>`;
+      </div>
+      <div class="tel-found-lore" style="display:none;width:100%;margin-top:0.6rem;padding-top:0.6rem;border-top:1px solid rgba(196,160,48,0.2);font-size:0.82rem;color:rgba(240,220,160,0.9);line-height:1.7;white-space:pre-line;box-sizing:border-box"></div>`;
 
     const loreEl = item.querySelector('.tel-found-lore');
     loreEl.textContent = loreText || '✦ Die Sterne schweigen noch über dieses Bild…';
