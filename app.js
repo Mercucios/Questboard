@@ -2849,7 +2849,7 @@ function renderEntdecktTab(compNParam) {
     var infoDiv = document.createElement('div');
     infoDiv.style.cssText = 'flex:1;pointer-events:none;min-width:0';
     var dateLabel = unlockDates[c.name] ? '<div style="font-size:0.6rem;color:rgba(180,140,255,0.45);margin-top:2px">✦ Entdeckt am ' + unlockDates[c.name] + ' ✦</div>' : '';
-    infoDiv.innerHTML = '<div style="font-family:Cinzel,serif;font-size:0.82rem;font-weight:700;color:#e0c8ff">' + c.name + '</div>' + dateLabel + '<div style="font-size:0.6rem;color:rgba(196,160,48,0.5);margin-top:4px">🔭 Antippen für Details</div>';
+    infoDiv.innerHTML = '<div style="font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:#e0c8ff">' + c.name + '</div>' + dateLabel;
 
     var arrow = document.createElement('div');
     arrow.style.cssText = 'color:rgba(196,160,48,0.4);font-size:1rem;flex-shrink:0;pointer-events:none';

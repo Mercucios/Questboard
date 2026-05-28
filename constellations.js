@@ -1,6 +1,6 @@
 const CONSTELLATIONS = [
   {
-    id: 1, name: 'Die stille Kriegerin', starsNeeded: 1,
+    id: 1, name: 'Die stille Kriegerin', starsNeeded: 5,
     stars: [
       { x: 0.50, y: 0.15 },
       { x: 0.44, y: 0.35 },
