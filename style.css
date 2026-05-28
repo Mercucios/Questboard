@@ -2359,7 +2359,7 @@ h1 {
 .star-msg { font-family: 'Star2', serif; }
 .rest-msg { font-family: 'Star2', serif; }
 .day-rating-sub { font-family: 'Star2', serif; }
-.day-rating-auto-hint { font-family: 'Star2', serif; }
+.day-rating-auto-hint { font-family: 'Crimson Text', Georgia, serif !important; }
 .dr-label { font-family: 'Star2', serif; }
 .dr-desc  { font-family: 'Star2', serif; }
 .subtle-skip-btn { font-family: 'Star2', serif; }
@@ -6074,4 +6074,19 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
 .ruck-perg-quest {
   position: relative !important;
   z-index: 2 !important;
+}
+
+/* === FIX: Tagesnachfrage – Buttons besser lesbar === */
+.day-rating-opt-btn {
+  background: rgba(255,255,255,0.08) !important;
+}
+.dr-label {
+  color: #ffffff !important;
+  font-size: 0.9rem !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+}
+.dr-desc {
+  color: #ffffff !important;
+  font-size: 0.75rem !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
 }
