@@ -1068,9 +1068,7 @@ function _finalizeQuestCompletion(name, preReward, questObj) {
   appState.completedCount = (appState.completedCount || 0) + 1;
   saveDayState(appState);
   renderBoard();
-  if (!getTodayDayRating() && appState.quests.filter(q => !q.rest).length === 0) {
-    setTimeout(showDayRatingPopup, 1500);
-  }
+  setTimeout(() => checkAndShowDayRating(), 1500);
   if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
@@ -2269,14 +2267,16 @@ function showDayRatingPopup() {
 function checkAndShowDayRating() {
   if (!appState) return;
   if (getTodayDayRating()) return;
-  // === MANA & REMINDER UPDATE === PUNKT 2B: 21:30 statt 21:00
-  const h = getViennaHour(), m = getViennaMinute();
-  if (h < 21 || (h === 21 && m < 30)) return;
   if (_dayRatingDismissedAt) {
     const minSince = (Date.now() - _dayRatingDismissedAt) / 60000;
     if (minSince < 30) return;
   }
-  showDayRatingPopup();
+  const h = getViennaHour(), m = getViennaMinute();
+  const afterHalfNine = h > 21 || (h === 21 && m >= 30);
+  const allActionQuestsDone = appState.quests &&
+    appState.quests.filter(q => !q.rest).length === 0 &&
+    (appState.completedCount || 0) > 0;
+  if (afterHalfNine || allActionQuestsDone) showDayRatingPopup();
 }
 
 function initDayRatingPopup() {
@@ -2532,9 +2532,7 @@ function _finalizeSidequestCompletion(sqId, preReward, questObj) {
   appState.completedCount = (appState.completedCount || 0) + 1;
   saveDayState(appState);
   renderBoard();
-  if (!getTodayDayRating() && appState.quests.filter(q => !q.rest).length === 0) {
-    setTimeout(showDayRatingPopup, 1500);
-  }
+  setTimeout(() => checkAndShowDayRating(), 1500);
   if ((appState.completedCount || 0) >= 2 && !appState.starAwarded) setTimeout(awardStar, 1800);
 }
 
