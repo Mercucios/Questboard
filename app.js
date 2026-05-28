@@ -2824,49 +2824,54 @@ function renderEntdecktTab() {
     </div>`;
     return;
   }
-  let expandedCard = null;
   discovered.forEach((c) => {
     const item = document.createElement('div');
     item.className = 'const-list-item ruck-const-item ci-done tel-found-card';
 
-    const fullText = CONSTELLATION_LORE[c.name] || '';
-    const splitIdx = fullText.indexOf('\n\n');
-    const loreText = splitIdx >= 0 ? fullText.slice(0, splitIdx) : fullText;
+    const loreObj = CONSTELLATION_LORE[c.name];
+    const loreText = typeof loreObj === 'string'
+      ? loreObj
+      : (loreObj?.lore || '');
+    const personalText = typeof loreObj === 'object'
+      ? (loreObj?.personal || '')
+      : '';
 
     item.innerHTML = `
-      <div class="ci-svg-wrap">${_makeConstSvg(c, 'done')}</div>
-      <div class="ci-info">
+      <div class="ci-svg-wrap" style="pointer-events:none">${_makeConstSvg(c, 'done')}</div>
+      <div class="ci-info" style="pointer-events:none">
         <span class="ruck-const-name">${c.name}</span>
         <span class="ruck-const-badge badge-done">Entdeckt ✦</span>
-        <span class="tel-found-hint">Tippen für Lore ›</span>
-        <div class="tel-found-lore" hidden></div>
+        <span class="tel-found-hint">🔭 Tippen für Lore</span>
+        <div class="tel-found-lore" style="display:none"></div>
       </div>`;
 
-    item.querySelector('.tel-found-lore').textContent = loreText;
+    const loreEl = item.querySelector('.tel-found-lore');
+    loreEl.textContent = loreText || '✦ Die Sterne schweigen noch über dieses Bild…';
+    if (personalText) {
+      const personalEl = document.createElement('div');
+      personalEl.className = 'tel-found-personal';
+      personalEl.textContent = personalText;
+      loreEl.appendChild(personalEl);
+    }
 
     item.addEventListener('click', () => {
-      const loreEl = item.querySelector('.tel-found-lore');
       const hintEl = item.querySelector('.tel-found-hint');
-      const isOpen = !loreEl.hidden;
+      const isOpen = loreEl.style.display === 'block';
 
-      if (expandedCard && expandedCard !== item) {
-        const prevLore = expandedCard.querySelector('.tel-found-lore');
-        const prevHint = expandedCard.querySelector('.tel-found-hint');
-        if (prevLore) prevLore.hidden = true;
-        if (prevHint) prevHint.textContent = 'Tippen für Lore ›';
-        expandedCard.classList.remove('tel-found-expanded');
-      }
+      container.querySelectorAll('.tel-found-lore').forEach(el => {
+        el.style.display = 'none';
+      });
+      container.querySelectorAll('.tel-found-hint').forEach(el => {
+        el.textContent = '🔭 Tippen für Lore';
+      });
+      container.querySelectorAll('.tel-found-expanded').forEach(el => {
+        el.classList.remove('tel-found-expanded');
+      });
 
-      if (isOpen) {
-        loreEl.hidden = true;
-        hintEl.textContent = 'Tippen für Lore ›';
-        item.classList.remove('tel-found-expanded');
-        expandedCard = null;
-      } else {
-        loreEl.hidden = false;
-        hintEl.textContent = '‹ Schließen';
+      if (!isOpen) {
+        loreEl.style.display = 'block';
+        if (hintEl) hintEl.textContent = '‹ Schließen';
         item.classList.add('tel-found-expanded');
-        expandedCard = item;
       }
     });
 
@@ -3332,12 +3337,12 @@ function _ruckPopQuestlog() {
         <div class="ql-roll"></div>
         <div class="ql-body">
           <span class="ql-margin-l">
-            <span>ᚱᚢᚾᛖᚾ</span><span>ᚠᚨᚷᛁᛉ</span><span>ᛊᛏᛒᛗᛚ</span>
-            <span>ᚦᚹᚺᚾᛃ</span><span>ᛇᛈᛉᛊᛏ</span>
+            <span>ᚱᚢᚾ</span><span>♄⊕♃</span><span>ᛖᚠᚨ</span><span>⚴ᚦᛞ</span>
+            <span>ᚷᛁᛉ</span><span>☿⚶ᛊ</span><span>ᛏᛒᛗ</span><span>ᛚᚹᛜ</span>
           </span>
           <span class="ql-margin-r">
-            <span>ᛚᛗᛒᛏᛊ</span><span>ᛉᛁᚷᚨᚠ</span><span>ᚾᛖᚾᚢᚱ</span>
-            <span>ᛏᛒᛗᛚᛜ</span><span>ᛞᛟᚠᚦᚹ</span>
+            <span>ᛚᛗᛒ</span><span>♃☿⊕</span><span>ᛏᛊᛉ</span><span>ᚦᛞᛟ</span>
+            <span>⚶♄ᚠ</span><span>ᛁᚷᚨ</span><span>ᚾᛖᚢ</span><span>ᚹᛈᛜ</span>
           </span>
           <div class="ql-vline-l"></div>
           <div class="ql-vline-r"></div>
