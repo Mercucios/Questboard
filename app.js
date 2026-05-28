@@ -2813,6 +2813,11 @@ function renderEntdecktTab() {
   if (!container) return;
   container.innerHTML = '';
   const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
+  // DEBUG: sichtbarer Text am Handy
+  const dbgEl = document.createElement('div');
+  dbgEl.style.cssText = 'color:#f0c040;font-size:0.75rem;padding:0.5rem;opacity:0.7;text-align:center';
+  dbgEl.textContent = `⭐ ${starCount} Sterne | compN: ${compN} | entdeckt: ${discovered.length}`;
+  container.appendChild(dbgEl);
   if (discovered.length === 0) {
     const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
     container.innerHTML = `<div class="tel-empty-found">
