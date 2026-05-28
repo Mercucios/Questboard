@@ -2805,14 +2805,10 @@ function _makeConstSvg(c, state) {
 
 // ── Entdeckt-Tab: Neuimplementierung mit benanntem Container ──────────────────
 function renderEntdecktTab() {
-  const starCount =
-    appState.totalStars ||
-    appState.stars ||
-    appState.collectedStars ||
-    appState.starCount || 0;
+  const starCount = loadStars().length;
   const info = getConstellationInfo(starCount);
   const compN = info.allComplete ? CONSTELLATIONS.length : (info.completedCount || 0);
-  console.log('renderEntdecktTab: starCount=', starCount, 'compN=', compN, 'info=', JSON.stringify(info));
+  console.log('renderEntdecktTab: starCount=', starCount, 'compN=', compN);
   const container = $('const-view-entdeckt');
   if (!container) return;
   container.innerHTML = '';
