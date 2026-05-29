@@ -1074,7 +1074,6 @@ function _finalizeQuestCompletion(name, preReward, questObj) {
 
 // === FIX: QUEST REMOVE ===
 function removeQuest(questId, onDone) {
-  console.log('questId:', questId, 'in array:', appState.quests.map(q => q.id));
 
   const element = document.querySelector(`[data-quest-id="${CSS.escape(questId)}"]`);
   if (!element) {
@@ -1120,15 +1119,13 @@ function removeQuestFromData(questId) {
   if (appState) {
     const before = appState.quests.length;
     appState.quests = appState.quests.filter(q => String(q.id) !== id && String(q.name) !== id);
-    console.log('Removed from quests:', before - appState.quests.length);
-    if (appState.quests.length !== before) saveDayState(appState);
+      if (appState.quests.length !== before) saveDayState(appState);
   }
   // Sidequests (questboard_sidequests)
   try {
     const all      = JSON.parse(localStorage.getItem(STORE_SIDEQUESTS)) || [];
     const filtered = all.filter(sq => String(sq.id) !== id);
-    console.log('Removed from sidequests:', all.length - filtered.length);
-    if (filtered.length !== all.length)
+      if (filtered.length !== all.length)
       localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
   } catch {}
 }
@@ -1146,8 +1143,7 @@ function cleanupOrphanedQuests() {
     });
     if (filtered.length !== all.length) {
       localStorage.setItem(STORE_SIDEQUESTS, JSON.stringify(filtered));
-      console.log('cleanupOrphanedQuests: removed', all.length - filtered.length, 'orphaned sidequests');
-    }
+        }
   } catch {}
 }
 
@@ -1213,7 +1209,7 @@ function awardStar() {
   saveDayState(appState);
   $('star-count').textContent = stars.length;
   // === VICTORY & REWARDS UPDATE === PUNKT 2: Zufällige Reaktion + Stern-Animation
-  $('star-msg').textContent = starReactions[Math.floor(Math.random() * starReactions.length)];
+  document.querySelector('.star-msg').textContent = starReactions[Math.floor(Math.random() * starReactions.length)];
   const popupStar = $('popup-star');
   popupStar.classList.remove('hidden');
   popupStar.classList.remove('active-star');
@@ -1225,8 +1221,7 @@ function getConstellationInfo(starCount) {
   for (let i = 0; i < CONSTELLATIONS.length; i++) {
     const c = CONSTELLATIONS[i];
     if (starCount < cumulative + c.starsNeeded) {
-      console.log('[Teleskop] Abgeschlossene Sternbilder:', i, '| Sterne:', starCount, '| Verdient in aktuellem:', starCount - cumulative, '/', c.starsNeeded);
-      return {
+          return {
         idx: i,
         constellation: c,
         earned: starCount - cumulative,
@@ -1793,10 +1788,6 @@ function init() {
     $('popup-starmap').classList.add('hidden');
     openRucksack();
     _ruckSetView('telescope', false);
-  });
-  $('btn-reset').addEventListener('click', () => {
-    localStorage.removeItem(STORE_STATE);
-    location.reload();
   });
 
   document.querySelectorAll('.overlay').forEach(el => {
@@ -2871,7 +2862,6 @@ function renderDiscoveredConstellations(paneFoundEl) {
   const info = getConstellationInfo(starCount);
   const compN = info.allComplete ? CONSTELLATIONS.length : info.completedCount;
   const discovered = CONSTELLATIONS.filter((c, i) => i < compN);
-  console.log('compN:', compN, 'discovered:', discovered.length);
 
   if (discovered.length === 0) {
     const _dbgNeeded = CONSTELLATIONS[0]?.starsNeeded ?? '?';
@@ -2940,8 +2930,6 @@ function renderDiscoveredConstellations(paneFoundEl) {
 // ── Telescope ─────────────────────────────────────────────────────
 function _ruckPopTelescope() {
   const starCount = loadStars().length;
-  console.log('starCount:', appState.totalStars, appState.stars, appState.collectedStars);
-  console.log('getConstellationInfo:', getConstellationInfo(starCount));
   const numEl     = $('ruck-star-num');
 
   if (_ruckCountRaf) cancelAnimationFrame(_ruckCountRaf);
@@ -2984,10 +2972,6 @@ function _ruckPopTelescope() {
     });
   }
   const compN = Math.min(Math.max(compN_stars, compN_state), CONSTELLATIONS.length);
-  console.log('[Teleskop] Entdeckte Sternbilder:', compN, '| Sterne:', starCount, '| compN_stars:', compN_stars, '| compN_state:', compN_state);
-  console.log('[Teleskop] appState.unlockedConstellations:', appState?.unlockedConstellations);
-  console.log('[Teleskop] appState.completedConstellations:', appState?.completedConstellations);
-  console.log('[Teleskop] appState.stars (count):', Array.isArray(appState?.stars) ? appState.stars.length : 'n/a');
 
   // Tab-Leiste
   const tabBar = document.createElement('div');

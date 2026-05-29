@@ -328,26 +328,6 @@ h1 {
   gap: 0.45rem;
 }
 
-.reset-btn {
-  width: 28px;
-  height: 28px;
-  background: none;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  color: rgba(255,255,255,0.25);
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.18s, border-color 0.18s, color 0.18s;
-}
-
-.reset-btn:hover {
-  background: rgba(255,80,80,0.1);
-  border-color: rgba(255,100,100,0.3);
-  color: rgba(255,130,130,0.7);
-}
 
 .board-title {
   font-family: 'Star2', serif;
