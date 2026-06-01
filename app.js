@@ -1769,7 +1769,9 @@ function init() {
   }
 
   $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
-  $('btn-star-close').addEventListener('click', () => {
+
+  // Stern-Popup: ganzer Screen schließt per Tap
+  $('popup-star').addEventListener('click', () => {
     $('popup-star').classList.add('hidden');
     openStarMap();
   });

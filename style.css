@@ -765,9 +765,19 @@ h1 {
   font-size: 1.1rem;
   color: #f0e4c0;
   line-height: 1.6;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   text-shadow: 0 1px 8px rgba(0,0,0,0.9);
 }
+
+.star-tap-hint {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: rgba(240,192,64,0.5);
+  letter-spacing: 0.1em;
+  animation: laterFade 2.5s ease-in-out infinite;
+}
+
+#popup-star { cursor: pointer; }
 
 /* ── Rest Popup entfernt ──────────────────────────────────── */
 .rest-popup, #popup-rest {
