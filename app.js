@@ -135,57 +135,108 @@ const REWARD_MSGS = [
   'Die Horde wächst — genau wie du.',
 ];
 
+const REWARD_DESCRIPTIONS = {
+  'Goldmünze':              'Geprägt im Feuer der Drachen',
+  'Silbermünze':            'Blank poliert wie der Mond',
+  'Bronzemünze':            'Geprägt aus altem Erz',
+  'Eisenmünze':             'Hart wie der Wille des Kriegers',
+  'Feuerstein':             'Funken des ersten Feuers',
+  'Karneol':                'Stein des Mutes und der Kraft',
+  'Citrin':                 'Sonnenstein der Händler',
+  'Meeresperle':            'Aus den Tiefen des Ozeans',
+  'Silberbarren':           'Reines Silber aus den Bergen',
+  'Silberdolch':            'Scharf wie ein Eishauch',
+  'Mithrilmünze':           'Seltenste aller Münzen',
+  'Citrin-Geode':           'Sonne im Stein gefangen',
+  'Rosenquarz-Geode':       'Stein der sanften Kräfte',
+  'Aquamarin-Geode':        'Kristallisiertes Meerwasser',
+  'Lavendel-Geode':         'Duft der Magie darin gefroren',
+  'Meerschuppe':            'Von einem Wasserwesen gefallen',
+  'Smaragdschliff':         'Meisterhaft geschliffener Stein',
+  'Manakristall':           'Kristallisierte Magie',
+  'Sternensplitter':        'Gefallen in einer stillen Nacht',
+  'Mondstein':              'Erschaffen aus Mondlicht',
+  'Rubin':                  'Flamme die nie erlischt',
+  'Smaragd':                'Grün wie der ewige Wald',
+  'Saphir':                 'Aus den Tiefen der Erde',
+  'Amethyst':               'Stein der Weissagung',
+  'Opal':                   'Tausend Farben in einem Stein',
+  'Amethyst-Geode':         'Violette Kristallhöhle',
+  'Smaragd-Geode':          'Herz des Waldgeistes',
+  'Saphir-Geode':           'Blaue Kristallwunderkammer',
+  'Rubin-Geode':            'Feuer im Stein',
+  'Golddolch':              'Geschmiedet von Elfenhand',
+  'Goldbarren':             '999 Au — reinsetes Gold',
+  'Goldamulett':            'Trägt alten Schutzzauber',
+  'Saphiramulett':          'Führt seinen Träger sicher heim',
+  'Abyssstein':             'Licht aus der Tiefsee',
+  'Diamant':                'Unvergängliche Reinheit',
+  'Rosa Diamant':           'Einzigartiger Herzenstein',
+  'Obsidian-Geode':         'Vulkanisches Glas im Innern',
+  'Kristallkugel':          'Zeigt was kommen wird',
+  'Pokal':                  'Symbol größter Leistung',
+  'Drachenschuppe rot':     'Noch warm von der Flamme',
+  'Drachenschuppe schwarz': 'Hart wie Dämonenstahl',
+  'Drachenzahn':            'Gezogen aus lebendem Drachen',
+  'Schattenkristall':       'Geformt aus reiner Dunkelheit',
+  'Greifen-Kralle':         'Schärfer als jedes Schwert',
+  'Drachen-Kralle':         'Stärker als Burgmauern',
+  'Phönixfeder':            'Aus dem Feuer wiedergeboren',
+  'Einhorn-Horn':           'Reinste Magie der Welt',
+  'Drachenschuppe grün':    'Jahrtausend alte Magie darin',
+  'Drachenei':              'Ein neues Leben schlummert darin',
+};
+
 const REWARDS = [
-  { name: 'Goldmünze',              rarity: 'common'   },
-  { name: 'Silbermünze',            rarity: 'common'   },
-  { name: 'Bronzemünze',            rarity: 'common'   },
-  { name: 'Mithrilmünze',           rarity: 'rare'     },
-  { name: 'Eisenmünze',             rarity: 'common'   },
-  { name: 'Rubin',                  rarity: 'rare'     },
-  { name: 'Smaragd',                rarity: 'rare'     },
-  { name: 'Saphir',                 rarity: 'rare'     },
-  { name: 'Amethyst',               rarity: 'rare'     },
-  { name: 'Diamant',                rarity: 'epic'     },
-  { name: 'Citrin',                 rarity: 'uncommon' },
-  { name: 'Opal',                   rarity: 'rare'     },
-  { name: 'Karneol',                rarity: 'uncommon' },
-  { name: 'Smaragdschliff',         rarity: 'rare'     },
-  { name: 'Rosa Diamant',           rarity: 'epic'     },
-  { name: 'Amethyst-Geode',         rarity: 'rare'     },
-  { name: 'Smaragd-Geode',          rarity: 'rare'     },
-  { name: 'Saphir-Geode',           rarity: 'rare'     },
-  { name: 'Citrin-Geode',           rarity: 'uncommon' },
-  { name: 'Rubin-Geode',            rarity: 'rare'     },
-  { name: 'Rosenquarz-Geode',       rarity: 'uncommon' },
-  { name: 'Obsidian-Geode',         rarity: 'epic'     },
-  { name: 'Aquamarin-Geode',        rarity: 'uncommon' },
-  { name: 'Lavendel-Geode',         rarity: 'uncommon' },
-  { name: 'Silberdolch',            rarity: 'uncommon' },
-  { name: 'Golddolch',              rarity: 'rare'     },
-  { name: 'Goldbarren',             rarity: 'rare'     },
-  { name: 'Silberbarren',           rarity: 'uncommon' },
-  { name: 'Pokal',                  rarity: 'epic'     },
-  { name: 'Goldamulett',            rarity: 'rare'     },
-  { name: 'Saphiramulett',          rarity: 'rare'     },
-  { name: 'Kristallkugel',          rarity: 'epic'     },
-  { name: 'Meeresperle',            rarity: 'uncommon' },
-  { name: 'Phönixfeder',            rarity: 'epic'     },
-  { name: 'Drachenschuppe grün',    rarity: 'rare'     },
-  { name: 'Drachenschuppe rot',     rarity: 'epic'     },
-  { name: 'Drachenschuppe schwarz', rarity: 'epic'     },
-  { name: 'Meerschuppe',            rarity: 'rare'     },
-  { name: 'Drachenzahn',            rarity: 'epic'     },
-  { name: 'Einhorn-Horn',           rarity: 'epic'     },
-  { name: 'Manakristall',           rarity: 'rare'     },
-  { name: 'Abyssstein',             rarity: 'epic'     },
-  { name: 'Schattenkristall',       rarity: 'epic'     },
-  { name: 'Greifen-Kralle',         rarity: 'epic'     },
-  { name: 'Drachen-Kralle',         rarity: 'epic'     },
-  { name: 'Feuerstein',             rarity: 'uncommon' },
-  { name: 'Mondstein',              rarity: 'rare'     },
-  { name: 'Sternensplitter',        rarity: 'epic'     },
-  { name: 'Drachenei',              rarity: 'epic'     },
-  { name: 'Goldpokal',              rarity: 'epic'     },
+  { name: 'Goldmünze',              rarity: 'common',    restOnly: false },
+  { name: 'Silbermünze',            rarity: 'common',    restOnly: false },
+  { name: 'Bronzemünze',            rarity: 'common',    restOnly: false },
+  { name: 'Eisenmünze',             rarity: 'common',    restOnly: false },
+  { name: 'Feuerstein',             rarity: 'common',    restOnly: false },
+  { name: 'Karneol',                rarity: 'common',    restOnly: false },
+  { name: 'Citrin',                 rarity: 'common',    restOnly: false },
+  { name: 'Meeresperle',            rarity: 'common',    restOnly: false },
+  { name: 'Silberbarren',           rarity: 'common',    restOnly: false },
+  { name: 'Silberdolch',            rarity: 'common',    restOnly: false },
+  { name: 'Mithrilmünze',           rarity: 'uncommon',  restOnly: false },
+  { name: 'Citrin-Geode',           rarity: 'uncommon',  restOnly: false },
+  { name: 'Rosenquarz-Geode',       rarity: 'uncommon',  restOnly: false },
+  { name: 'Aquamarin-Geode',        rarity: 'uncommon',  restOnly: false },
+  { name: 'Lavendel-Geode',         rarity: 'uncommon',  restOnly: false },
+  { name: 'Meerschuppe',            rarity: 'uncommon',  restOnly: false },
+  { name: 'Smaragdschliff',         rarity: 'uncommon',  restOnly: false },
+  { name: 'Manakristall',           rarity: 'uncommon',  restOnly: false },
+  { name: 'Sternensplitter',        rarity: 'uncommon',  restOnly: true  },
+  { name: 'Mondstein',              rarity: 'uncommon',  restOnly: true  },
+  { name: 'Rubin',                  rarity: 'rare',      restOnly: false },
+  { name: 'Smaragd',                rarity: 'rare',      restOnly: false },
+  { name: 'Saphir',                 rarity: 'rare',      restOnly: false },
+  { name: 'Amethyst',               rarity: 'rare',      restOnly: false },
+  { name: 'Opal',                   rarity: 'rare',      restOnly: false },
+  { name: 'Amethyst-Geode',         rarity: 'rare',      restOnly: false },
+  { name: 'Smaragd-Geode',          rarity: 'rare',      restOnly: false },
+  { name: 'Saphir-Geode',           rarity: 'rare',      restOnly: false },
+  { name: 'Rubin-Geode',            rarity: 'rare',      restOnly: false },
+  { name: 'Golddolch',              rarity: 'rare',      restOnly: false },
+  { name: 'Goldbarren',             rarity: 'rare',      restOnly: false },
+  { name: 'Goldamulett',            rarity: 'rare',      restOnly: false },
+  { name: 'Saphiramulett',          rarity: 'rare',      restOnly: false },
+  { name: 'Abyssstein',             rarity: 'rare',      restOnly: false },
+  { name: 'Diamant',                rarity: 'epic',      restOnly: false },
+  { name: 'Rosa Diamant',           rarity: 'epic',      restOnly: false },
+  { name: 'Obsidian-Geode',         rarity: 'epic',      restOnly: false },
+  { name: 'Kristallkugel',          rarity: 'epic',      restOnly: false },
+  { name: 'Pokal',                  rarity: 'epic',      restOnly: false },
+  { name: 'Drachenschuppe rot',     rarity: 'epic',      restOnly: false },
+  { name: 'Drachenschuppe schwarz', rarity: 'epic',      restOnly: false },
+  { name: 'Drachenzahn',            rarity: 'epic',      restOnly: false },
+  { name: 'Schattenkristall',       rarity: 'epic',      restOnly: false },
+  { name: 'Greifen-Kralle',         rarity: 'epic',      restOnly: false },
+  { name: 'Drachen-Kralle',         rarity: 'epic',      restOnly: false },
+  { name: 'Phönixfeder',            rarity: 'legendary', restOnly: false },
+  { name: 'Einhorn-Horn',           rarity: 'legendary', restOnly: false },
+  { name: 'Drachenschuppe grün',    rarity: 'legendary', restOnly: false },
+  { name: 'Drachenei',              rarity: 'legendary', restOnly: false },
 ];
 const REWARD_ICON_MAP = {
   'rubin': 'Rubin', 'smaragd': 'Smaragd', 'saphir': 'Saphir', 'amethyst': 'Amethyst',
@@ -195,9 +246,19 @@ const REWARD_ICON_MAP = {
   'goldmuenze': 'Goldmünze', 'schluessel': 'Sternensplitter', 'kristallkugel': 'Kristallkugel',
   'zauberstab': 'Schattenkristall'
 };
-function getRandomReward(questType) {
-  if (questType === 'rast') return null;
-  return REWARDS[Math.floor(Math.random() * REWARDS.length)].name;
+function getRandomReward(type) {
+  const isRest = (type === 'rest');
+  const pool = isRest
+    ? REWARDS
+    : REWARDS.filter(r => !r.restOnly);
+
+  const weights = { common: 50, uncommon: 28, rare: 15, epic: 6, legendary: 1 };
+  const weighted = [];
+  pool.forEach(r => {
+    const w = weights[r.rarity] || 1;
+    for (let i = 0; i < w; i++) weighted.push(r);
+  });
+  return weighted[Math.floor(Math.random() * weighted.length)];
 }
 
 // === VICTORY & REWARDS UPDATE === PUNKT 2: Stern-Reaktionen
@@ -1154,8 +1215,9 @@ function showVictoryScreen(quest, reward) {
   const vs = document.getElementById('victory-screen');
   if (!vs) { openLogPopup(quest.name, quest.name); return; }
 
-  // === BUGFIX & UI UPDATE === PUNKT 2: reward ist jetzt ein String (lowercase key)
-  const _rewardDisplayName = (reward && REWARD_ICON_MAP[reward]) || reward || '???';
+  const _rewardDisplayName = (reward && typeof reward === 'object')
+    ? reward.name
+    : ((reward && REWARD_ICON_MAP[reward]) || reward || '???');
   document.getElementById('victory-quest-name').textContent  = quest.name;
   document.getElementById('victory-reward-name').textContent = _rewardDisplayName;
   document.getElementById('victory-reward-icon').innerHTML   = _ruckTreasureIcon(_rewardDisplayName, 72);
@@ -1340,14 +1402,59 @@ function _finalizeRestQuestCompletion(name, manaGain) {
 
 // ── Popups ────────────────────────────────────────────────────────────────────
 
-function showRewardPopup(quest) {
-  const t = quest.treasure;
-  const glyph = $('reward-glyph');
-  glyph.className = 'reward-icon-wrap';
-  glyph.innerHTML = _ruckTreasureIcon(t.name, 72);
-  $('reward-loot-name').textContent = t.name;
-  $('reward-msg').textContent       = REWARD_MSGS[Math.floor(Math.random() * REWARD_MSGS.length)];
-  $('popup-reward').classList.remove('hidden');
+function showRewardPopup(reward) {
+  if (!reward || !reward.name) return;
+  const r = typeof reward === 'object' ? reward : { name: reward, rarity: 'common' };
+
+  const badge = $('reward-rarity-badge');
+  if (badge) {
+    badge.textContent =
+      r.rarity === 'legendary' ? '✦ Legendär'     :
+      r.rarity === 'epic'      ? '◆ Episch'        :
+      r.rarity === 'rare'      ? '◆ Selten'        :
+      r.rarity === 'uncommon'  ? '◆ Ungewöhnlich'  :
+                                 '◆ Gewöhnlich';
+    badge.className = 'reward-rarity-badge rarity-' + r.rarity;
+  }
+
+  const iconEl = $('reward-item-icon');
+  if (iconEl) iconEl.innerHTML = _ruckTreasureIcon(r.name, 72);
+
+  const nameEl = $('reward-item-name');
+  if (nameEl) nameEl.textContent = r.name;
+
+  const descEl = $('reward-item-desc');
+  if (descEl) descEl.textContent = REWARD_DESCRIPTIONS[r.name] || '';
+
+  const popup = $('popup-reward');
+  popup.className = 'overlay reward-popup-' + r.rarity;
+  popup.classList.remove('hidden');
+
+  if (r.rarity === 'epic' || r.rarity === 'legendary') {
+    _spawnRewardParticles(r.rarity);
+  }
+}
+
+function _spawnRewardParticles(rarity) {
+  const container = $('reward-particles');
+  if (!container) return;
+  container.innerHTML = '';
+  const colors = rarity === 'legendary'
+    ? ['#f0c040','#ffdd80','#ffd060','#ffee88']
+    : ['#cc66ff','#aa44ff','#dd88ff','#ff88ff'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'reward-particle';
+    p.style.cssText =
+      `left:${(10 + Math.random() * 80).toFixed(1)}%;` +
+      `top:${(60 + Math.random() * 30).toFixed(1)}%;` +
+      `background:${colors[i % colors.length]};` +
+      `width:${(2 + Math.random() * 4).toFixed(1)}px;` +
+      `height:${(2 + Math.random() * 4).toFixed(1)}px;` +
+      `animation-delay:${(Math.random() * 1.5).toFixed(2)}s;` +
+      `animation-duration:${(1.5 + Math.random()).toFixed(2)}s;`;
+    container.appendChild(p);
+  }
 }
 
 function awardStar() {
@@ -2786,6 +2893,10 @@ function initLogPopup() {
       _finalizeQuestCompletion(pending.id, pending.reward, pending.questObj);
     } else {
       _finalizeSidequestCompletion(pending.id, pending.reward, pending.questObj);
+    }
+
+    if (pending.reward && typeof pending.reward === 'object') {
+      showRewardPopup(pending.reward);
     }
   });
 }

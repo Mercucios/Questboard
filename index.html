@@ -281,12 +281,14 @@
 
   <!-- REWARD POPUP -->
   <div id="popup-reward" class="overlay hidden" role="dialog" aria-modal="true">
-    <div class="popup">
+    <div class="popup reward-popup-inner">
+      <div id="reward-particles" class="reward-particles"></div>
       <div class="popup-sparkle">✦ ✨ ✦</div>
-      <div id="reward-glyph" class="reward-glyph"></div>
+      <div id="reward-rarity-badge" class="reward-rarity-badge"></div>
+      <div id="reward-item-icon" class="reward-item-icon"></div>
       <p class="reward-loot-label">Du hast erbeutet</p>
-      <h3 id="reward-loot-name" class="reward-loot-name"></h3>
-      <p id="reward-msg" class="reward-msg"></p>
+      <div id="reward-item-name" class="reward-item-name"></div>
+      <div id="reward-item-desc" class="reward-item-desc"></div>
       <button id="btn-reward-close" class="btn-action">Weiter ✦</button>
     </div>
   </div>
@@ -329,23 +331,19 @@
       <div class="day-rating-options">
         <button class="day-rating-opt-btn" data-rating="too_little">
           <span class="dr-icon">🌱</span>
-          <span class="dr-label">Zu wenig</span>
-          <span class="dr-desc">Hätte mehr geschafft</span>
+          <span class="dr-text"><span class="dr-label">Zu wenig</span><span class="dr-desc">Hätte mehr geschafft</span></span>
         </button>
         <button class="day-rating-opt-btn" data-rating="just_right">
           <span class="dr-icon">⭐</span>
-          <span class="dr-label">Genau richtig</span>
-          <span class="dr-desc">Perfekte Balance</span>
+          <span class="dr-text"><span class="dr-label">Genau richtig</span><span class="dr-desc">Perfekte Balance</span></span>
         </button>
         <button class="day-rating-opt-btn" data-rating="much">
           <span class="dr-icon">🔥</span>
-          <span class="dr-label">Viel</span>
-          <span class="dr-desc">Anstrengend aber machbar</span>
+          <span class="dr-text"><span class="dr-label">Viel</span><span class="dr-desc">Anstrengend aber machbar</span></span>
         </button>
         <button class="day-rating-opt-btn" data-rating="too_much">
           <span class="dr-icon">💀</span>
-          <span class="dr-label">Zu viel</span>
-          <span class="dr-desc">War überwältigend</span>
+          <span class="dr-text"><span class="dr-label">Zu viel</span><span class="dr-desc">War überwältigend</span></span>
         </button>
       </div>
       <button id="btn-day-rating-save" class="btn-action" disabled>🌑 Ins Schicksal schreiben 🌑</button>

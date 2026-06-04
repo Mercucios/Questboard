@@ -6087,6 +6087,93 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
 }
 
+/* === Reward Popup Rarity System === */
+.reward-popup-inner {
+  position: relative;
+  overflow: hidden;
+}
+
+.reward-rarity-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.rarity-common    { background: rgba(100,90,80,0.4);  color: #b0a898; border: 1px solid rgba(120,110,90,0.5);  }
+.rarity-uncommon  { background: rgba(20,100,50,0.4);  color: #60d880; border: 1px solid rgba(40,140,70,0.5);   }
+.rarity-rare      { background: rgba(15,40,160,0.4);  color: #6699ff; border: 1px solid rgba(40,100,220,0.5);  }
+.rarity-epic      { background: rgba(100,20,200,0.4); color: #cc66ff; border: 1px solid rgba(140,50,240,0.5);
+  animation: epicPulse 2.5s ease-in-out infinite; }
+.rarity-legendary { background: rgba(180,120,0,0.4);  color: #f0c040; border: 1px solid rgba(220,160,0,0.6);
+  animation: legPulse 2s ease-in-out infinite; }
+
+@keyframes epicPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(160,60,255,0); }
+  50%       { box-shadow: 0 0 12px rgba(160,60,255,0.5); }
+}
+@keyframes legPulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(240,192,64,0.2); }
+  50%       { box-shadow: 0 0 20px rgba(240,192,64,0.6); }
+}
+
+.reward-popup-epic .popup,
+.reward-popup-legendary .popup {
+  border-color: rgba(160,60,255,0.6);
+}
+.reward-popup-legendary .popup {
+  border-color: rgba(240,192,64,0.8);
+}
+
+.reward-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  margin-bottom: 0.5rem;
+  animation: bounce-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s both;
+  filter: drop-shadow(0 0 12px rgba(240,192,64,0.5));
+}
+
+.reward-item-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f0e4c0;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.reward-item-desc {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: rgba(200,180,140,0.55);
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.reward-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.reward-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: pfloat linear infinite;
+}
+@keyframes pfloat {
+  0%   { transform: translateY(0) scale(1); opacity: 0.9; }
+  100% { transform: translateY(-70px) scale(0); opacity: 0; }
+}
+
 /* === TEIL 1+2: Scatter-Item Drag & Drop === */
 .ruck-scatter-item {
   cursor: grab;
