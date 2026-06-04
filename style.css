@@ -6259,14 +6259,11 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   50%       { opacity: 0.8; }
 }
 
-/* === Holzboden SVG === */
-.ruck-wood-floor {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  display: block;
+/* === Holzboden SVG (via JS createElementNS) – alte Boden-Hintergründe entfernen === */
+.ruck-chest-floor {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* === Seltenheits-Glanz auf Scatter-Items === */
