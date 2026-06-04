@@ -6087,6 +6087,22 @@ input[type="number"]        { font-family: 'Cinzel', 'Star2', serif; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
 }
 
+/* === TEIL 1+2: Scatter-Item Drag & Drop === */
+.ruck-scatter-item {
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.ruck-scatter-item.dragging {
+  z-index: 999 !important;
+  cursor: grabbing !important;
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 14px rgba(240,192,64,0.65));
+  animation: none !important;
+  transition: none !important;
+}
+
 /* === TEIL 2: Item-Name Popup (Schatztruhe) === */
 #ruck-item-popup {
   position: absolute;

@@ -2808,17 +2808,23 @@ function rucksackLoadTreasures() {
   catch { return []; }
 }
 
+function rucksackSaveTreasures(all) {
+  localStorage.setItem(STORE_TREASURES, JSON.stringify(all));
+}
+
 function rucksackRecordTreasure(questTitle, treasure, type) {
   const all = rucksackLoadTreasures();
   all.push({
-    date:    todayStr(),
+    date:      todayStr(),
     questTitle,
-    name:    treasure.name,
-    color:   treasure.color,
-    special: treasure.special || null,
+    name:      treasure.name,
+    color:     treasure.color,
+    special:   treasure.special || null,
     type,
+    left:      (5 + Math.random() * 80).toFixed(1),
+    top:       (5 + Math.random() * 80).toFixed(1),
   });
-  localStorage.setItem(STORE_TREASURES, JSON.stringify(all));
+  rucksackSaveTreasures(all);
 }
 
 // ── State ─────────────────────────────────────────────────────────
@@ -3622,6 +3628,96 @@ function _ruckSpawnParticles() {
   setTimeout(() => { wrap.innerHTML = ''; }, 2200);
 }
 
+function _attachItemDrag(item, idx, allItems, floorEl) {
+  let dragStartX = 0, dragStartY = 0;
+  let dragOffX = 0, dragOffY = 0;
+  let dragging = false, hasMoved = false;
+
+  function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+
+  function computePos(clientX, clientY) {
+    const r  = floorEl.getBoundingClientRect();
+    const lp = clamp((clientX - r.left  - dragOffX) / r.width  * 100, 2, 88);
+    const tp = clamp((clientY - r.top   - dragOffY) / r.height * 100, 2, 88);
+    return { lp, tp };
+  }
+
+  function startDrag(clientX, clientY) {
+    const r  = floorEl.getBoundingClientRect();
+    dragOffX   = clientX - r.left  - parseFloat(item.style.left)  / 100 * r.width;
+    dragOffY   = clientY - r.top   - parseFloat(item.style.top)   / 100 * r.height;
+    dragStartX = clientX;
+    dragStartY = clientY;
+    dragging   = true;
+    hasMoved   = false;
+  }
+
+  function applyPos(clientX, clientY) {
+    const { lp, tp } = computePos(clientX, clientY);
+    item.style.left = lp.toFixed(1) + '%';
+    item.style.top  = tp.toFixed(1) + '%';
+    return { lp, tp };
+  }
+
+  function finishDrag(clientX, clientY) {
+    if (!dragging) return;
+    dragging = false;
+    item.classList.remove('dragging');
+    if (hasMoved) {
+      const { lp, tp } = applyPos(clientX, clientY);
+      allItems[idx].left = lp.toFixed(1);
+      allItems[idx].top  = tp.toFixed(1);
+      rucksackSaveTreasures(allItems);
+    } else {
+      showTreasureItemName(item.dataset.name);
+    }
+  }
+
+  // Touch
+  item.addEventListener('touchstart', e => {
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  item.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const t = e.touches[0];
+    if (!hasMoved && Math.hypot(t.clientX - dragStartX, t.clientY - dragStartY) < 5) return;
+    e.preventDefault();
+    hasMoved = true;
+    item.classList.add('dragging');
+    applyPos(t.clientX, t.clientY);
+  }, { passive: false });
+
+  item.addEventListener('touchend', e => {
+    finishDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+  }, { passive: true });
+
+  item.addEventListener('touchcancel', () => {
+    dragging = false;
+    item.classList.remove('dragging');
+  }, { passive: true });
+
+  // Mouse
+  item.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startDrag(e.clientX, e.clientY);
+    const onMove = mv => {
+      if (!dragging) return;
+      if (!hasMoved && Math.hypot(mv.clientX - dragStartX, mv.clientY - dragStartY) < 5) return;
+      hasMoved = true;
+      item.classList.add('dragging');
+      applyPos(mv.clientX, mv.clientY);
+    };
+    const onUp = up => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      finishDrag(up.clientX, up.clientY);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
 function showTreasureItemName(name) {
   const popup = document.getElementById('ruck-item-popup');
   if (!popup) return;
@@ -3695,6 +3791,17 @@ function _ruckPopTreasure() {
     });
   }
   const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
+
+  // Ensure every item has a fixed position; assign once for old/extra items
+  let _posNeedsSave = false;
+  all.forEach(t => {
+    if (t.left == null || t.top == null) {
+      t.left = (5 + Math.random() * 80).toFixed(1);
+      t.top  = (5 + Math.random() * 80).toFixed(1);
+      _posNeedsSave = true;
+    }
+  });
+  if (_posNeedsSave) rucksackSaveTreasures(all);
 
   if (all.length === 0) {
     container.innerHTML = '<div class="ruck-chest-empty">Die Truhe wartet auf deine Heldentaten...</div>';
@@ -3813,30 +3920,17 @@ function _ruckPopTreasure() {
     requestAnimationFrame(() => bgL.classList.add('bg-fade-in'));
   }, 1000));
 
-  // 5. Belohnungs-Icons (1.4s) – prozentuale Positionen, kein Scrollen
+  // 5. Belohnungs-Icons (1.4s) – fixe persistierte Positionen
   _ruckChestTimers.push(setTimeout(() => {
     const sw = document.getElementById('ruck-scattered-wrap');
     if (!sw) return;
-    // 6×8 grid (48 cells), seeded shuffle, ±5% jitter per cell
-    const GCOLS = 6, GROWS = 8;
-    const _gsr  = s => { const x = Math.sin(s * 127.1) * 10000; return x - Math.floor(x); };
-    const gCells = [];
-    for (let gr = 0; gr < GROWS; gr++)
-      for (let gc = 0; gc < GCOLS; gc++)
-        gCells.push([5 + (gc / (GCOLS - 1)) * 85, 5 + (gr / (GROWS - 1)) * 82]);
-    for (let i = gCells.length - 1; i > 0; i--) {
-      const j = Math.floor(_gsr(i + 300) * (i + 1));
-      [gCells[i], gCells[j]] = [gCells[j], gCells[i]];
-    }
+    const _gsr = s => { const x = Math.sin(s * 127.1) * 10000; return x - Math.floor(x); };
     let scatterHtml = '';
     all.forEach((t, i) => {
-      const cell    = gCells[i % gCells.length];
-      const leftPct = Math.max(1, Math.min(88, cell[0] + (_gsr(i + 400) - 0.5) * 10));
-      const topPct  = Math.max(1, Math.min(88, cell[1] + (_gsr(i + 500) - 0.5) * 10));
-      const rot     = -22 + _gsr(i + 600) * 44;
-      const zIdx    = 2 + Math.floor(_gsr(i + 700) * 7);
-      const delay   = (i * 0.08 + 0.1).toFixed(2);
-      scatterHtml += `<div class="ruck-scatter-item pop-in" data-name="${t.name}" style="left:${leftPct.toFixed(1)}%;top:${topPct.toFixed(1)}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
+      const rot   = -22 + _gsr(i + 600) * 44;
+      const zIdx  = 2 + Math.floor(_gsr(i + 700) * 7);
+      const delay = (i * 0.08 + 0.1).toFixed(2);
+      scatterHtml += `<div class="ruck-scatter-item pop-in" data-name="${t.name}" data-idx="${i}" style="left:${t.left}%;top:${t.top}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
     sw.innerHTML = scatterHtml;
 
@@ -3852,11 +3946,9 @@ function _ruckPopTreasure() {
         popupEl.style.pointerEvents = 'none';
       });
     }
+    // Attach drag+tap handlers to each item
     sw.querySelectorAll('.ruck-scatter-item').forEach(item => {
-      item.addEventListener('click', e => {
-        e.stopPropagation();
-        showTreasureItemName(item.dataset.name);
-      });
+      _attachItemDrag(item, parseInt(item.dataset.idx, 10), all, floorEl);
     });
   }, 1400));
 }
