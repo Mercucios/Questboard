@@ -135,24 +135,69 @@ const REWARD_MSGS = [
   'Die Horde wächst — genau wie du.',
 ];
 
-// === BUGFIX & UI UPDATE === PUNKT 2: Zufällige Belohnungen (lowercase keys)
 const REWARDS = [
-  'rubin', 'smaragd', 'saphir', 'amethyst', 'geode',
-  'goldnugget', 'zaubertrank', 'drachenschuppe', 'phoenixfeder',
-  'mondstein', 'krone', 'drachenzahn', 'goldmuenze',
-  'schluessel', 'kristallkugel', 'zauberstab'
+  { name: 'Goldmünze',              rarity: 'common'   },
+  { name: 'Silbermünze',            rarity: 'common'   },
+  { name: 'Bronzemünze',            rarity: 'common'   },
+  { name: 'Mithrilmünze',           rarity: 'rare'     },
+  { name: 'Eisenmünze',             rarity: 'common'   },
+  { name: 'Rubin',                  rarity: 'rare'     },
+  { name: 'Smaragd',                rarity: 'rare'     },
+  { name: 'Saphir',                 rarity: 'rare'     },
+  { name: 'Amethyst',               rarity: 'rare'     },
+  { name: 'Diamant',                rarity: 'epic'     },
+  { name: 'Citrin',                 rarity: 'uncommon' },
+  { name: 'Opal',                   rarity: 'rare'     },
+  { name: 'Karneol',                rarity: 'uncommon' },
+  { name: 'Smaragdschliff',         rarity: 'rare'     },
+  { name: 'Rosa Diamant',           rarity: 'epic'     },
+  { name: 'Amethyst-Geode',         rarity: 'rare'     },
+  { name: 'Smaragd-Geode',          rarity: 'rare'     },
+  { name: 'Saphir-Geode',           rarity: 'rare'     },
+  { name: 'Citrin-Geode',           rarity: 'uncommon' },
+  { name: 'Rubin-Geode',            rarity: 'rare'     },
+  { name: 'Rosenquarz-Geode',       rarity: 'uncommon' },
+  { name: 'Obsidian-Geode',         rarity: 'epic'     },
+  { name: 'Aquamarin-Geode',        rarity: 'uncommon' },
+  { name: 'Lavendel-Geode',         rarity: 'uncommon' },
+  { name: 'Silberdolch',            rarity: 'uncommon' },
+  { name: 'Golddolch',              rarity: 'rare'     },
+  { name: 'Goldbarren',             rarity: 'rare'     },
+  { name: 'Silberbarren',           rarity: 'uncommon' },
+  { name: 'Pokal',                  rarity: 'epic'     },
+  { name: 'Goldamulett',            rarity: 'rare'     },
+  { name: 'Saphiramulett',          rarity: 'rare'     },
+  { name: 'Kristallkugel',          rarity: 'epic'     },
+  { name: 'Meeresperle',            rarity: 'uncommon' },
+  { name: 'Phönixfeder',            rarity: 'epic'     },
+  { name: 'Drachenschuppe grün',    rarity: 'rare'     },
+  { name: 'Drachenschuppe rot',     rarity: 'epic'     },
+  { name: 'Drachenschuppe schwarz', rarity: 'epic'     },
+  { name: 'Meerschuppe',            rarity: 'rare'     },
+  { name: 'Drachenzahn',            rarity: 'epic'     },
+  { name: 'Einhorn-Horn',           rarity: 'epic'     },
+  { name: 'Manakristall',           rarity: 'rare'     },
+  { name: 'Abyssstein',             rarity: 'epic'     },
+  { name: 'Schattenkristall',       rarity: 'epic'     },
+  { name: 'Greifen-Kralle',         rarity: 'epic'     },
+  { name: 'Drachen-Kralle',         rarity: 'epic'     },
+  { name: 'Feuerstein',             rarity: 'uncommon' },
+  { name: 'Mondstein',              rarity: 'rare'     },
+  { name: 'Sternensplitter',        rarity: 'epic'     },
+  { name: 'Drachenei',              rarity: 'epic'     },
+  { name: 'Goldpokal',              rarity: 'epic'     },
 ];
 const REWARD_ICON_MAP = {
   'rubin': 'Rubin', 'smaragd': 'Smaragd', 'saphir': 'Saphir', 'amethyst': 'Amethyst',
-  'geode': 'Geode', 'goldnugget': 'Goldnugget', 'zaubertrank': 'Zaubertrank',
-  'drachenschuppe': 'Drachenschuppe', 'phoenixfeder': 'Phönixfeder',
-  'mondstein': 'Mondstein', 'krone': 'Königskrone', 'drachenzahn': 'Drachenzahn',
-  'goldmuenze': 'Goldmünze', 'schluessel': 'Schlüssel', 'kristallkugel': 'Kristallkugel',
-  'zauberstab': 'Zauberstab'
+  'geode': 'Amethyst-Geode', 'goldnugget': 'Goldbarren', 'zaubertrank': 'Manakristall',
+  'drachenschuppe': 'Drachenschuppe grün', 'phoenixfeder': 'Phönixfeder',
+  'mondstein': 'Mondstein', 'krone': 'Goldpokal', 'drachenzahn': 'Drachenzahn',
+  'goldmuenze': 'Goldmünze', 'schluessel': 'Sternensplitter', 'kristallkugel': 'Kristallkugel',
+  'zauberstab': 'Schattenkristall'
 };
 function getRandomReward(questType) {
   if (questType === 'rast') return null;
-  return REWARDS[Math.floor(Math.random() * REWARDS.length)];
+  return REWARDS[Math.floor(Math.random() * REWARDS.length)].name;
 }
 
 // === VICTORY & REWARDS UPDATE === PUNKT 2: Stern-Reaktionen
@@ -301,241 +346,350 @@ function gemDotHtml(t, size) {
   return `<span class="gem-dot gem-dot--${size}${cls}" style="--gem-color:${color}"></span>`;
 }
 
-// === RUCKSACK: 24 Belohnungs-Icons als inline SVG ===
 let _ruckIconSeq = 0;
 function _ruckTreasureIcon(name, size) {
   const u = 'ri' + (++_ruckIconSeq);
   const s = size || 52;
+  const W = `width="${s}" height="${s}" viewBox="0 0 54 54"`;
+  const F = `<filter id="${u}f"><feDropShadow dx="1.5" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.65)"/></filter>`;
+  const flt = `filter="url(#${u}f)"`;
+
+  const wrap = c => `<svg ${W} xmlns="http://www.w3.org/2000/svg">${c}</svg>`;
+
+  const rg = (id, cx, cy, r, stops) =>
+    `<radialGradient id="${u}${id}" cx="${cx}%" cy="${cy}%" r="${r}%">${stops.map(([o,c]) => `<stop offset="${o}%" stop-color="${c}"/>`).join('')}</radialGradient>`;
+
+  const lg = (id, x1, y1, x2, y2, stops) =>
+    `<linearGradient id="${u}${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops.map(([o,c]) => `<stop offset="${o}%" stop-color="${c}"/>`).join('')}</linearGradient>`;
+
+  const coin = (c1, c2, c3, sym = '✦', sc = '#504000') => wrap(
+    `<defs>${F}${rg('a',35,25,68,[[0,c1],[40,c2],[100,c3]])}</defs>` +
+    `<circle cx="27" cy="27" r="22" fill="url(#${u}a)" stroke="${c2}" stroke-width="1.5" ${flt}/>` +
+    `<circle cx="27" cy="27" r="16" fill="none" stroke="${c2}" stroke-width="0.7" opacity="0.5"/>` +
+    `<text x="27" y="32" text-anchor="middle" font-size="14" fill="${sc}" opacity="0.85">${sym}</text>` +
+    `<ellipse cx="18" cy="18" rx="7" ry="3.5" fill="white" opacity="0.4" transform="rotate(-25 18 18)"/>`
+  );
+
+  const gem6 = (c1, c2, c3, strokeC) => wrap(
+    `<defs>${F}${rg('a',32,22,75,[[0,c1],[35,c2],[100,c3]])}</defs>` +
+    `<polygon points="27,5 43,15 43,39 27,49 11,39 11,15" fill="url(#${u}a)" stroke="${strokeC}" stroke-width="0.5" ${flt}/>` +
+    `<polygon points="27,5 41,13 41,35 27,43 13,35 13,13" fill="white" opacity="0.1"/>` +
+    `<ellipse cx="18" cy="16" rx="6.5" ry="3.5" fill="white" opacity="0.45" transform="rotate(-20 18 16)"/>`
+  );
+
+  const gem5 = (c1, c2, c3) => wrap(
+    `<defs>${F}${rg('a',32,22,75,[[0,c1],[35,c2],[100,c3]])}</defs>` +
+    `<polygon points="27,5 45,18 40,42 14,42 9,18" fill="url(#${u}a)" ${flt}/>` +
+    `<polygon points="27,5 41,16 37,38 17,38 13,16" fill="white" opacity="0.1"/>` +
+    `<ellipse cx="18" cy="15" rx="6" ry="3.5" fill="white" opacity="0.45" transform="rotate(-20 18 15)"/>`
+  );
+
+  const geode = (c1, c2, strokeC) => wrap(
+    `<defs>${F}</defs>` +
+    `<ellipse cx="27" cy="30" rx="22" ry="18" fill="#7a6040" stroke="#5a3818" stroke-width="1.5" ${flt}/>` +
+    `<ellipse cx="27" cy="28" rx="17" ry="14" fill="#08021a"/>` +
+    `<polygon points="16,28 13,20 20,27" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="21,25 19,14 24,24" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="27,24 26,12 30,24" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="33,25 35,14 30,24" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="38,28 41,20 34,27" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<ellipse cx="16" cy="20" rx="5.5" ry="2.5" fill="white" opacity="0.22" transform="rotate(-20 16 20)"/>`
+  );
+
+  const scale = (c1, c2, strokeC, tipC) => wrap(
+    `<defs>${F}${rg('a',32,22,68,[[0,c1],[40,c2],[100,c2]])}</defs>` +
+    `<path d="M27 7 Q37 17 38 30 Q38 44 27 48 Q16 44 16 30 Q16 17 27 7Z" fill="url(#${u}a)" stroke="${strokeC}" stroke-width="1" ${flt}/>` +
+    `<path d="M27 7 L24 12 L27 10 L30 12 Z" fill="${tipC}" opacity="0.85"/>` +
+    `<line x1="27" y1="9" x2="27" y2="46" stroke="rgba(255,255,255,0.18)" stroke-width="1.8"/>` +
+    `<path d="M18 24 Q27 22 36 24" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>` +
+    `<path d="M17 32 Q27 30 37 32" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>` +
+    `<ellipse cx="18" cy="18" rx="5.5" ry="3" fill="white" opacity="0.35" transform="rotate(-10 18 18)"/>`
+  );
+
+  const ingot = (c1, c2, c3) => wrap(
+    `<defs>${F}${lg('a','0','0','0','1',[[0,c1],[50,c2],[100,c3]])}</defs>` +
+    `<rect x="8" y="17" width="38" height="20" rx="4" fill="url(#${u}a)" stroke="${c2}" stroke-width="1.2" ${flt}/>` +
+    `<line x1="17" y1="17" x2="17" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
+    `<line x1="27" y1="17" x2="27" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
+    `<line x1="37" y1="17" x2="37" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
+    `<ellipse cx="16" cy="24" rx="5" ry="2.5" fill="white" opacity="0.28" transform="rotate(-10 16 24)"/>`
+  );
+
+  const claw = (c1, c2, glow) => wrap(
+    `<defs>${F}${lg('a','0','0','1','1',[[0,c1],[55,c2],[100,c2]])}</defs>` +
+    `<path d="M18 44 Q10 31 13 15 Q15 9 20 11 Q22 17 17 29 Q20 38 22 44 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6" ${flt}/>` +
+    `<path d="M27 46 Q24 30 25 11 Q26 6 28 6 Q30 9 29 23 Q29 36 30 46 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6"/>` +
+    `<path d="M36 44 Q44 31 41 15 Q39 9 34 11 Q32 17 37 29 Q34 38 32 44 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6"/>` +
+    `<path d="M19 44 Q22 48 27 49 Q32 48 35 44 L32 44 Q30 47 27 47 Q24 47 22 44 Z" fill="${c2}" opacity="0.8"/>` +
+    `<ellipse cx="13" cy="18" rx="2.5" ry="5" fill="${glow}" opacity="0.3" transform="rotate(-15 13 18)"/>`
+  );
+
   const icons = {
-    'Rubin': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#ff9aaa"/><stop offset="30%" stop-color="#e81e38"/><stop offset="65%" stop-color="#a00018"/><stop offset="100%" stop-color="#500008"/></radialGradient>
-      </defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <polygon points="22,4 32,10 28,20 16,20 12,10" fill="#ff6070" opacity="0.3"/>
-      <polygon points="22,4 30,9 24,7" fill="#ffb0be" opacity="0.55"/>
-      <ellipse cx="15" cy="13" rx="5.5" ry="3" fill="white" opacity="0.45" transform="rotate(-20 15 13)"/></svg>`,
+    // ── MÜNZEN ─────────────────────────────────────────────────────────
+    'Goldmünze':    () => coin('#fffab0','#e4b030','#503808'),
+    'Silbermünze':  () => coin('#f0f4ff','#c0c8e0','#404860','✦','#404860'),
+    'Bronzemünze':  () => coin('#ffe8b0','#c87030','#4a2000','✦','#4a2000'),
+    'Mithrilmünze': () => wrap(
+      `<defs>${F}${rg('a',32,25,68,[[0,'#d8f0ff'],[35,'#60a8e0'],[70,'#1840a0'],[100,'#08103c']])}</defs>` +
+      `<circle cx="27" cy="27" r="22" fill="url(#${u}a)" stroke="#80c0ff" stroke-width="1.5" ${flt}/>` +
+      `<circle cx="27" cy="27" r="16" fill="none" stroke="#80c0ff" stroke-width="0.7" opacity="0.5"/>` +
+      `<text x="27" y="32" text-anchor="middle" font-size="11" fill="#c0e8ff" opacity="0.9">ᛗ</text>` +
+      `<ellipse cx="18" cy="18" rx="7" ry="3.5" fill="white" opacity="0.5" transform="rotate(-25 18 18)"/>`
+    ),
+    'Eisenmünze':   () => coin('#d8d8d8','#909090','#303030','✦','#303030'),
 
-    'Smaragd': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#90ffaa"/><stop offset="30%" stop-color="#12a852"/><stop offset="65%" stop-color="#046830"/><stop offset="100%" stop-color="#012a10"/></radialGradient>
-      </defs><polygon points="22,4 36,12 36,32 22,40 8,32 8,12" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <polygon points="22,4 33,10 30,22 14,22 11,10" fill="#50ff80" opacity="0.25"/>
-      <polygon points="22,4 31,9 25,7" fill="#c0ffcc" opacity="0.5"/>
-      <ellipse cx="15" cy="12" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-15 15 12)"/></svg>`,
+    // ── EDELSTEINE ─────────────────────────────────────────────────────
+    'Rubin':    () => gem6('#ff9aaa','#e81e38','#500008','#ff6070'),
+    'Smaragd':  () => gem6('#90ffaa','#12a852','#012a10','#50d870'),
+    'Saphir':   () => gem5('#90d0ff','#1848d8','#040e50'),
+    'Amethyst': () => gem6('#e8a0ff','#7820c8','#1e0448','#c060ff'),
+    'Diamant':  () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#f8f8ff'],[30,'#c8d8f8'],[65,'#8090c0'],[100,'#303060']])}</defs>` +
+      `<polygon points="27,4 44,17 38,46 16,46 10,17" fill="url(#${u}a)" ${flt}/>` +
+      `<polygon points="27,4 40,14 36,26 18,26 14,14" fill="white" opacity="0.2"/>` +
+      `<line x1="27" y1="4" x2="16" y2="46" stroke="rgba(200,210,255,0.15)" stroke-width="1"/>` +
+      `<line x1="27" y1="4" x2="38" y2="46" stroke="rgba(200,210,255,0.15)" stroke-width="1"/>` +
+      `<ellipse cx="19" cy="15" rx="6" ry="3" fill="white" opacity="0.55" transform="rotate(-20 19 15)"/>`
+    ),
+    'Citrin':         () => gem6('#ffe868','#d08010','#503000','#e8a030'),
+    'Opal':           () => wrap(
+      `<defs>${F}${rg('a',40,35,65,[[0,'#f8f0ff'],[25,'#b0c8f8'],[55,'#80d8c0'],[100,'#504878']])}</defs>` +
+      `<ellipse cx="27" cy="27" rx="20" ry="18" fill="url(#${u}a)" stroke="#c0b0e0" stroke-width="1" ${flt}/>` +
+      `<ellipse cx="20" cy="21" rx="5" ry="3" fill="rgba(255,200,255,0.35)" transform="rotate(-20 20 21)"/>` +
+      `<ellipse cx="33" cy="31" rx="4.5" ry="2.5" fill="rgba(140,255,200,0.3)" transform="rotate(15 33 31)"/>` +
+      `<ellipse cx="18" cy="17" rx="6" ry="3" fill="white" opacity="0.4" transform="rotate(-25 18 17)"/>`
+    ),
+    'Karneol':        () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#ffa878'],[35,'#e84020'],[70,'#a01808'],[100,'#380600']])}</defs>` +
+      `<ellipse cx="27" cy="27" rx="20" ry="18" fill="url(#${u}a)" stroke="#e06030" stroke-width="1" ${flt}/>` +
+      `<ellipse cx="18" cy="19" rx="7" ry="4" fill="white" opacity="0.4" transform="rotate(-20 18 19)"/>`
+    ),
+    'Smaragdschliff': () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#90ffb0'],[30,'#12b852'],[65,'#047030'],[100,'#011e10']])}</defs>` +
+      `<polygon points="14,13 40,13 46,21 46,33 40,41 14,41 8,33 8,21" fill="url(#${u}a)" ${flt}/>` +
+      `<polygon points="14,13 40,13 44,20 44,34 40,41 14,41 10,34 10,20" fill="none" stroke="#60d880" stroke-width="0.6" opacity="0.4"/>` +
+      `<ellipse cx="18" cy="20" rx="7" ry="4" fill="white" opacity="0.4" transform="rotate(-15 18 20)"/>`
+    ),
+    'Rosa Diamant':   () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#ffe0f0'],[30,'#f080b8'],[65,'#b83080'],[100,'#500030']])}</defs>` +
+      `<polygon points="27,4 44,17 38,46 16,46 10,17" fill="url(#${u}a)" ${flt}/>` +
+      `<polygon points="27,4 40,14 36,26 18,26 14,14" fill="rgba(255,200,235,0.22)"/>` +
+      `<ellipse cx="19" cy="15" rx="6" ry="3" fill="white" opacity="0.5" transform="rotate(-20 19 15)"/>`
+    ),
 
-    'Saphir': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#90d0ff"/><stop offset="30%" stop-color="#1848d8"/><stop offset="65%" stop-color="#0828a0"/><stop offset="100%" stop-color="#040e50"/></radialGradient>
-      </defs><polygon points="22,3 40,16 34,38 10,38 4,16" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <polygon points="22,3 34,12 30,26 14,26 10,12" fill="#4090ff" opacity="0.25"/>
-      <polygon points="22,3 32,10 26,7" fill="#c0e0ff" opacity="0.5"/>
-      <ellipse cx="14" cy="14" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-20 14 14)"/></svg>`,
+    // ── GEODEN ─────────────────────────────────────────────────────────
+    'Amethyst-Geode':   () => geode('#c060ff','#9030d0','#e0a0ff'),
+    'Smaragd-Geode':    () => geode('#40d870','#10a840','#80ffb0'),
+    'Saphir-Geode':     () => geode('#4090ff','#1050d0','#80c0ff'),
+    'Citrin-Geode':     () => geode('#e8b020','#c08010','#ffe068'),
+    'Rubin-Geode':      () => geode('#e82030','#a01018','#ff8090'),
+    'Rosenquarz-Geode': () => geode('#f0a8c0','#d06090','#ffd0e8'),
+    'Obsidian-Geode':   () => wrap(
+      `<defs>${F}</defs>` +
+      `<ellipse cx="27" cy="30" rx="22" ry="18" fill="#2a1020" stroke="#8040a0" stroke-width="1.5" ${flt}/>` +
+      `<ellipse cx="27" cy="28" rx="17" ry="14" fill="#04000a"/>` +
+      `<polygon points="16,28 13,20 20,27" fill="#a060d0" stroke="#c080ff" stroke-width="0.5"/>` +
+      `<polygon points="21,25 19,14 24,24" fill="#600040" stroke="#c040a0" stroke-width="0.5"/>` +
+      `<polygon points="27,24 26,12 30,24" fill="#180018" stroke="#8000a0" stroke-width="0.5"/>` +
+      `<polygon points="33,25 35,14 30,24" fill="#600040" stroke="#c040a0" stroke-width="0.5"/>` +
+      `<polygon points="38,28 41,20 34,27" fill="#a060d0" stroke="#c080ff" stroke-width="0.5"/>` +
+      `<ellipse cx="16" cy="20" rx="5.5" ry="2.5" fill="white" opacity="0.18" transform="rotate(-20 16 20)"/>`
+    ),
+    'Aquamarin-Geode':  () => geode('#40d0c0','#0890a0','#80ffe0'),
+    'Lavendel-Geode':   () => geode('#d0a0ff','#9060d0','#e8c8ff'),
 
-    'Amethyst': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="20%" r="78%"><stop offset="0%" stop-color="#e8a0ff"/><stop offset="30%" stop-color="#7820c8"/><stop offset="65%" stop-color="#4a0890"/><stop offset="100%" stop-color="#1e0448"/></radialGradient>
-      </defs><polygon points="22,4 37,13 37,31 22,40 7,31 7,13" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <polygon points="22,4 33,10 30,22 14,22 11,10" fill="#c060ff" opacity="0.25"/>
-      <polygon points="22,4 31,9 25,7" fill="#ddb0ff" opacity="0.5"/>
-      <ellipse cx="15" cy="12" rx="5.5" ry="3" fill="white" opacity="0.42" transform="rotate(-20 15 12)"/></svg>`,
+    // ── DOLCHE ─────────────────────────────────────────────────────────
+    'Silberdolch': () => wrap(
+      `<defs>${F}${rg('a',30,22,70,[[0,'#e8f0f8'],[40,'#b0b8c8'],[100,'#505868']])}${rg('b',40,30,60,[[0,'#5a5a6a'],[100,'#2a2a3a']])}</defs>` +
+      `<polygon points="12,12 15,9 42,38 40,41 38,40" fill="url(#${u}a)" ${flt}/>` +
+      `<line x1="14" y1="12" x2="40" y2="38" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>` +
+      `<ellipse cx="31" cy="25" rx="8" ry="3.5" fill="#b0b8c8" stroke="#e8f0f8" stroke-width="0.8" transform="rotate(45 31 25)"/>` +
+      `<path d="M35 29 Q46 42 44 47 Q41 49 39 46 L28 35 Z" fill="url(#${u}b)" stroke="#5a5a6a" stroke-width="0.8"/>` +
+      `<circle cx="43" cy="45" r="4" fill="#b0b8c8" stroke="#e8f0f8" stroke-width="0.8"/>`
+    ),
+    'Golddolch': () => wrap(
+      `<defs>${F}${rg('a',30,22,70,[[0,'#ffe898'],[40,'#c89020'],[100,'#7a4e08']])}${rg('b',40,30,60,[[0,'#8a5010'],[100,'#4a2800']])}</defs>` +
+      `<polygon points="12,12 15,9 42,38 40,41 38,40" fill="url(#${u}a)" ${flt}/>` +
+      `<line x1="14" y1="12" x2="40" y2="38" stroke="rgba(255,255,200,0.4)" stroke-width="1.2"/>` +
+      `<ellipse cx="31" cy="25" rx="8" ry="3.5" fill="#c89020" stroke="#ffe898" stroke-width="0.8" transform="rotate(45 31 25)"/>` +
+      `<path d="M35 29 Q46 42 44 47 Q41 49 39 46 L28 35 Z" fill="url(#${u}b)" stroke="#8a5010" stroke-width="0.8"/>` +
+      `<circle cx="43" cy="45" r="4" fill="#c89020" stroke="#ffe898" stroke-width="0.8"/>`
+    ),
 
-    'Geode': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c8a8ff" stop-opacity="0.95"/><stop offset="50%" stop-color="#5030a0"/><stop offset="100%" stop-color="#0a0420"/></radialGradient>
-      <radialGradient id="${u}b" cx="35%" cy="25%" r="50%"><stop offset="0%" stop-color="rgba(220,190,255,0.6)"/><stop offset="100%" stop-color="rgba(220,190,255,0)"/></radialGradient>
-      </defs><ellipse cx="22" cy="22" rx="20" ry="20" fill="#060214" stroke="#3a1878" stroke-width="1.2" filter="url(#${u}f)"/>
-      <ellipse cx="22" cy="22" rx="15" ry="15" fill="#1e0c58" stroke="#7050c0" stroke-width="0.8"/>
-      <ellipse cx="22" cy="22" rx="10" ry="10" fill="url(#${u}a)"/>
-      <polygon points="22,14 26,20 22,26 18,20" fill="url(#${u}b)" stroke="#e0c0ff" stroke-width="0.6"/>
-      <ellipse cx="16" cy="15" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-30 16 15)"/></svg>`,
+    // ── BARREN ─────────────────────────────────────────────────────────
+    'Goldbarren':   () => ingot('#ffe898','#c89020','#7a4e08'),
+    'Silberbarren': () => ingot('#f0f4ff','#b0b8c8','#505868'),
 
-    'Goldnugget': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#ffe898"/><stop offset="35%" stop-color="#d4a030"/><stop offset="70%" stop-color="#9a6808"/><stop offset="100%" stop-color="#4a2e00"/></radialGradient>
-      </defs><ellipse cx="18" cy="20" rx="12" ry="10" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <ellipse cx="28" cy="26" rx="11" ry="9" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <ellipse cx="22" cy="15" rx="9" ry="8" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <ellipse cx="14" cy="16" rx="4.5" ry="2.5" fill="white" opacity="0.45" transform="rotate(-25 14 16)"/>
-      <ellipse cx="24" cy="12" rx="3.5" ry="2" fill="white" opacity="0.35" transform="rotate(-15 24 12)"/></svg>`,
+    // ── POKALE ─────────────────────────────────────────────────────────
+    'Pokal': () => wrap(
+      `<defs>${F}${lg('a','0','0','0','1',[[0,'#e8c870'],[50,'#c09828'],[100,'#5a3800']])}</defs>` +
+      `<path d="M16 11 Q12 24 16 34 Q20 44 27 46 Q34 44 38 34 Q42 24 38 11 Z" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1.2" ${flt}/>` +
+      `<path d="M16 15 Q8 17 8 24 Q8 31 16 31" fill="none" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round"/>` +
+      `<path d="M38 15 Q46 17 46 24 Q46 31 38 31" fill="none" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round"/>` +
+      `<rect x="20" y="46" width="14" height="4" rx="2" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1"/>` +
+      `<rect x="16" y="49" width="22" height="4" rx="2" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1"/>` +
+      `<text x="27" y="31" text-anchor="middle" font-size="12" fill="#ffe080" opacity="0.8">★</text>` +
+      `<ellipse cx="20" cy="18" rx="4.5" ry="7" fill="white" opacity="0.2" transform="rotate(-10 20 18)"/>`
+    ),
+    'Goldpokal': () => wrap(
+      `<defs>${F}${lg('a','0','0','0','1',[[0,'#ffe898'],[35,'#f0c040'],[65,'#c09028'],[100,'#5a3800']])}</defs>` +
+      `<path d="M16 10 Q12 24 16 34 Q20 45 27 47 Q34 45 38 34 Q42 24 38 10 Z" fill="url(#${u}a)" stroke="#f0c040" stroke-width="1.5" ${flt}/>` +
+      `<path d="M16 14 Q8 16 8 24 Q8 32 16 32" fill="none" stroke="url(#${u}a)" stroke-width="4.5" stroke-linecap="round"/>` +
+      `<path d="M38 14 Q46 16 46 24 Q46 32 38 32" fill="none" stroke="url(#${u}a)" stroke-width="4.5" stroke-linecap="round"/>` +
+      `<rect x="21" y="47" width="12" height="4" rx="2" fill="url(#${u}a)" stroke="#f0c040" stroke-width="1"/>` +
+      `<rect x="17" y="50" width="20" height="3.5" rx="2" fill="url(#${u}a)" stroke="#f0c040" stroke-width="1"/>` +
+      `<path d="M23 20 L24 13 L27 21 L30 13 L31 20 L27 18 Z" fill="#ffe080" opacity="0.9"/>` +
+      `<ellipse cx="21" cy="17" rx="4.5" ry="7" fill="white" opacity="0.18" transform="rotate(-10 21 17)"/>`
+    ),
 
-    'Zaubertrank': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#a0e0ff"/><stop offset="35%" stop-color="#1870c8"/><stop offset="70%" stop-color="#0838a0"/><stop offset="100%" stop-color="#020e3c"/></radialGradient>
-      </defs><rect x="18" y="5" width="8" height="7" rx="2" fill="#6a4212" stroke="#a06820" stroke-width="0.8"/>
-      <path d="M16 12 Q12 20 12 28 Q12 38 22 38 Q32 38 32 28 Q32 20 28 12Z" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <path d="M16 12 Q12 20 12 28 Q12 38 22 38" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
-      <ellipse cx="19" cy="25" rx="4.5" ry="3" fill="white" opacity="0.55"/>
-      <circle cx="27" cy="30" r="2.5" fill="white" opacity="0.4"/>
-      <ellipse cx="16" cy="18" rx="3" ry="1.5" fill="white" opacity="0.3" transform="rotate(-20 16 18)"/></svg>`,
+    // ── AMULETTE ───────────────────────────────────────────────────────
+    'Goldamulett': () => wrap(
+      `<defs>${F}${rg('a',32,22,68,[[0,'#ffe898'],[35,'#d4a030'],[70,'#9a6808'],[100,'#4a2c00']])}</defs>` +
+      `<polygon points="27,5 30,17 41,17 32,24 35,34 27,28 19,34 22,24 13,17 24,17" fill="url(#${u}a)" stroke="#f0c040" stroke-width="0.8" ${flt}/>` +
+      `<circle cx="27" cy="20" r="5.5" fill="url(#${u}a)" stroke="#f0c040" stroke-width="0.8" opacity="0.85"/>` +
+      `<text x="27" y="24" text-anchor="middle" font-size="7" fill="#ffe080">✦</text>` +
+      `<ellipse cx="20" cy="12" rx="4" ry="2" fill="white" opacity="0.35" transform="rotate(-20 20 12)"/>`
+    ),
+    'Saphiramulett': () => wrap(
+      `<defs>${F}${rg('a',32,22,68,[[0,'#ffe898'],[35,'#d4a030'],[70,'#9a6808'],[100,'#4a2c00']])}${rg('b',32,22,68,[[0,'#90d0ff'],[35,'#1848d8'],[100,'#040e50']])}</defs>` +
+      `<polygon points="27,5 30,17 41,17 32,24 35,34 27,28 19,34 22,24 13,17 24,17" fill="url(#${u}a)" stroke="#f0c040" stroke-width="0.8" ${flt}/>` +
+      `<circle cx="27" cy="20" r="5.5" fill="url(#${u}b)" stroke="#80b0ff" stroke-width="0.8"/>` +
+      `<ellipse cx="24" cy="17" rx="2.5" ry="1.5" fill="white" opacity="0.45"/>` +
+      `<ellipse cx="20" cy="12" rx="4" ry="2" fill="white" opacity="0.3" transform="rotate(-20 20 12)"/>`
+    ),
 
-    'Zauberstab': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.6)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d090ff"/><stop offset="100%" stop-color="#3808a8"/></linearGradient>
-      <radialGradient id="${u}b" cx="40%" cy="30%" r="55%"><stop offset="0%" stop-color="#ffffd0"/><stop offset="45%" stop-color="#f0c040"/><stop offset="100%" stop-color="#a06000"/></radialGradient>
-      </defs><line x1="8" y1="36" x2="32" y2="12" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round" filter="url(#${u}f)"/>
-      <polygon points="32,12 29,5 33,10 40,7 35,13 39,19 33,15 32,23 30,14 24,18" fill="url(#${u}b)" filter="url(#${u}f)"/>
-      <line x1="29" y1="5" x2="40" y2="7" stroke="#ffe068" stroke-width="0.9" opacity="0.7"/>
-      <line x1="37" y1="15" x2="39" y2="21" stroke="#ffe068" stroke-width="0.9" opacity="0.7"/>
-      <ellipse cx="33" cy="10" rx="4" ry="2" fill="white" opacity="0.4" transform="rotate(-30 33 10)"/></svg>`,
+    // ── KUGEL / PERLE ──────────────────────────────────────────────────
+    'Kristallkugel': () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#b080f0'],[35,'#3010a0'],[70,'#140460'],[100,'#04010e']])}${rg('b',28,20,45,[[0,'rgba(230,210,255,0.55)'],[100,'rgba(230,210,255,0)']])}</defs>` +
+      `<circle cx="27" cy="24" r="20" fill="url(#${u}a)" ${flt}/>` +
+      `<circle cx="27" cy="24" r="20" fill="url(#${u}b)"/>` +
+      `<ellipse cx="27" cy="24" rx="16" ry="6" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>` +
+      `<ellipse cx="27" cy="24" rx="6" ry="16" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>` +
+      `<ellipse cx="18" cy="15" rx="7" ry="3.5" fill="white" opacity="0.45" transform="rotate(-25 18 15)"/>` +
+      `<rect x="19" y="43" width="16" height="5" rx="2.5" fill="#28104a" stroke="#5020a0" stroke-width="0.8"/>`
+    ),
+    'Meeresperle': () => wrap(
+      `<defs>${F}${rg('a',38,25,65,[[0,'#f8f8ff'],[25,'#d0e8f8'],[55,'#8ab0d0'],[100,'#304860']])}</defs>` +
+      `<path d="M14 32 Q10 20 20 12 Q27 6 34 12 Q44 20 40 32 Q36 40 27 42 Q18 40 14 32Z" fill="#b8d0b0" stroke="#80a060" stroke-width="1" ${flt}/>` +
+      `<path d="M15 31 Q14 24 20 18" fill="none" stroke="#a0b890" stroke-width="1" opacity="0.6"/>` +
+      `<path d="M39 31 Q40 24 34 18" fill="none" stroke="#a0b890" stroke-width="1" opacity="0.6"/>` +
+      `<circle cx="27" cy="28" r="10" fill="url(#${u}a)" stroke="#a0b8c8" stroke-width="0.8"/>` +
+      `<ellipse cx="22" cy="23" rx="5" ry="3" fill="white" opacity="0.5" transform="rotate(-20 22 23)"/>`
+    ),
 
-    'Hexenkessel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#5a2890"/><stop offset="55%" stop-color="#1a0640"/><stop offset="100%" stop-color="#06020e"/></radialGradient>
-      </defs><path d="M8 20 Q8 38 22 38 Q36 38 36 20 Q36 14 22 14 Q8 14 8 20Z" fill="url(#${u}a)" stroke="#9050d0" stroke-width="1.5" filter="url(#${u}f)"/>
-      <ellipse cx="22" cy="20" rx="14" ry="6" fill="#200840"/>
-      <path d="M14 20 Q17 17 22 21 Q26 17 30 20" fill="none" stroke="#80ff90" stroke-width="1.5" opacity="0.85"/>
-      <path d="M17 20 Q19 14 22 18" fill="none" stroke="#c0ffb0" stroke-width="0.9" opacity="0.65"/>
-      <line x1="8" y1="18" x2="2" y2="12" stroke="#7030a8" stroke-width="2" stroke-linecap="round"/>
-      <line x1="36" y1="18" x2="42" y2="12" stroke="#7030a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="6" y="36" width="32" height="5" rx="2.5" fill="#180430"/>
-      <ellipse cx="14" cy="16" rx="4" ry="2" fill="white" opacity="0.2" transform="rotate(-15 14 16)"/></svg>`,
+    // ── PHÖNIXFEDER ────────────────────────────────────────────────────
+    'Phönixfeder': () => wrap(
+      `<defs>${F}${lg('a','0.2','0','0.8','1',[[0,'#ffe878'],[35,'#f06818'],[70,'#c02010'],[100,'#600008']])}</defs>` +
+      `<path d="M27 5 Q35 11 38 20 Q42 29 36 35 Q32 39 27 41 Q22 39 20 35 Q16 29 18 20 Q20 11 27 5Z" fill="url(#${u}a)" ${flt}/>` +
+      `<line x1="27" y1="7" x2="27" y2="39" stroke="#ffe890" stroke-width="1.2" opacity="0.5"/>` +
+      `<line x1="27" y1="14" x2="18" y2="24" stroke="#ffe890" stroke-width="0.7" opacity="0.28"/>` +
+      `<line x1="27" y1="18" x2="36" y2="27" stroke="#ffe890" stroke-width="0.7" opacity="0.28"/>` +
+      `<ellipse cx="20" cy="14" rx="5.5" ry="2.5" fill="white" opacity="0.42" transform="rotate(-30 20 14)"/>` +
+      `<path d="M24 41 L27 50 L30 41 Q28 44 27 44 Q26 44 24 41Z" fill="#f06818" opacity="0.7"/>`
+    ),
 
-    'Kristallkugel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="70%"><stop offset="0%" stop-color="#b080f0"/><stop offset="35%" stop-color="#3010a0"/><stop offset="70%" stop-color="#140460"/><stop offset="100%" stop-color="#04010e"/></radialGradient>
-      <radialGradient id="${u}b" cx="28%" cy="20%" r="45%"><stop offset="0%" stop-color="rgba(230,210,255,0.55)"/><stop offset="100%" stop-color="rgba(230,210,255,0)"/></radialGradient>
-      </defs><circle cx="22" cy="20" r="18" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <circle cx="22" cy="20" r="18" fill="url(#${u}b)"/>
-      <ellipse cx="22" cy="20" rx="14" ry="5.5" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>
-      <ellipse cx="22" cy="20" rx="5.5" ry="14" fill="none" stroke="#b070ff" stroke-width="0.7" opacity="0.4"/>
-      <ellipse cx="15" cy="13" rx="6" ry="3" fill="white" opacity="0.45" transform="rotate(-25 15 13)"/>
-      <rect x="14" y="37" width="16" height="5" rx="2.5" fill="#28104a"/></svg>`,
+    // ── DRACHENSCHUPPEN ────────────────────────────────────────────────
+    'Drachenschuppe grün':    () => scale('#80ffa0','#0ea058','#1aaa58','#20c850'),
+    'Drachenschuppe rot':     () => scale('#ffa080','#e02020','#d03020','#ff5030'),
+    'Drachenschuppe schwarz': () => wrap(
+      `<defs>${F}${rg('a',32,22,68,[[0,'#808090'],[35,'#303040'],[70,'#181820'],[100,'#040408']])}</defs>` +
+      `<path d="M27 7 Q37 17 38 30 Q38 44 27 48 Q16 44 16 30 Q16 17 27 7Z" fill="url(#${u}a)" stroke="#5050a0" stroke-width="1" ${flt}/>` +
+      `<path d="M27 7 L24 12 L27 10 L30 12 Z" fill="#6060c0" opacity="0.8"/>` +
+      `<line x1="27" y1="9" x2="27" y2="46" stroke="rgba(100,100,180,0.25)" stroke-width="1.8"/>` +
+      `<path d="M18 24 Q27 22 36 24" fill="none" stroke="rgba(100,100,160,0.3)" stroke-width="1"/>` +
+      `<path d="M17 32 Q27 30 37 32" fill="none" stroke="rgba(100,100,160,0.3)" stroke-width="1"/>` +
+      `<ellipse cx="18" cy="18" rx="5.5" ry="3" fill="rgba(150,150,200,0.3)" transform="rotate(-10 18 18)"/>`
+    ),
+    'Meerschuppe': () => scale('#80fff0','#0090a0','#00c0b0','#40e8d0'),
 
-    'Zauberbuch': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6a1e90"/><stop offset="100%" stop-color="#1a0430"/></linearGradient>
-      </defs><rect x="8" y="6" width="28" height="34" rx="2.5" fill="url(#${u}a)" stroke="#9050c8" stroke-width="1" filter="url(#${u}f)"/>
-      <rect x="8" y="6" width="6" height="34" rx="2.5" fill="#1c0438" stroke="#6030a0" stroke-width="0.5"/>
-      <polygon points="25,13 27,20 25,27 23,20" fill="#f0c040" opacity="0.9" stroke="#ffd050" stroke-width="0.4"/>
-      <circle cx="25" cy="20" r="2.5" fill="#ffe050" opacity="0.6"/>
-      <line x1="15" y1="18" x2="34" y2="18" stroke="#d080ff" stroke-width="0.6" opacity="0.3"/>
-      <line x1="15" y1="24" x2="34" y2="24" stroke="#d080ff" stroke-width="0.6" opacity="0.3"/>
-      <ellipse cx="12" cy="10" rx="3" ry="1.5" fill="white" opacity="0.25" transform="rotate(-10 12 10)"/></svg>`,
+    // ── DRACHENZAHN ────────────────────────────────────────────────────
+    'Drachenzahn': () => wrap(
+      `<defs>${F}${lg('a','0.2','0','0.8','1',[[0,'#f4ecd8'],[40,'#d0b880'],[75,'#9a7848'],[100,'#5a4220']])}</defs>` +
+      `<path d="M27 5 Q33 12 34 24 Q35 36 27 44 Q19 36 20 24 Q21 12 27 5Z" fill="url(#${u}a)" stroke="#a88850" stroke-width="1" ${flt}/>` +
+      `<line x1="27" y1="7" x2="27" y2="42" stroke="rgba(255,255,220,0.3)" stroke-width="1.5"/>` +
+      `<ellipse cx="20" cy="16" rx="5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-20 20 16)"/>`
+    ),
 
-    'Amulett': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(60,30,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="20%" r="68%"><stop offset="0%" stop-color="#ffe8a0"/><stop offset="35%" stop-color="#d4a030"/><stop offset="70%" stop-color="#9a6808"/><stop offset="100%" stop-color="#4a2c00"/></radialGradient>
-      <radialGradient id="${u}b" cx="35%" cy="25%" r="60%"><stop offset="0%" stop-color="#f0a8ff"/><stop offset="55%" stop-color="#6818c8"/><stop offset="100%" stop-color="#20085a"/></radialGradient>
-      </defs><polygon points="22,4 25,14 35,14 27,20 30,30 22,24 14,30 17,20 9,14 19,14" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <circle cx="22" cy="19" r="6.5" fill="url(#${u}b)" stroke="#d070ff" stroke-width="0.7"/>
-      <ellipse cx="19" cy="16" rx="3" ry="1.8" fill="white" opacity="0.45"/>
-      <ellipse cx="10" cy="11" rx="3.5" ry="2" fill="white" opacity="0.25" transform="rotate(-15 10 11)"/></svg>`,
+    // ── EINHORN-HORN ───────────────────────────────────────────────────
+    'Einhorn-Horn': () => wrap(
+      `<defs>${F}${lg('a','0','0','1','1',[[0,'#fff0ff'],[35,'#e8b0f8'],[70,'#9040c8'],[100,'#4008a0']])}</defs>` +
+      `<polygon points="27,5 34,48 20,48" fill="url(#${u}a)" stroke="#d080ff" stroke-width="0.8" ${flt}/>` +
+      `<path d="M24,44 Q26,32 25,22 Q26,14 27,7" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.8"/>` +
+      `<path d="M30,44 Q28,32 29,22 Q28,14 27,7" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>` +
+      `<ellipse cx="21" cy="40" rx="4" ry="2" fill="white" opacity="0.28" transform="rotate(10 21 40)"/>`
+    ),
 
-    'Drachenschuppe': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#80ffa0"/><stop offset="35%" stop-color="#0ea058"/><stop offset="70%" stop-color="#046030"/><stop offset="100%" stop-color="#011810"/></radialGradient>
-      </defs><ellipse cx="22" cy="24" rx="16" ry="18" fill="url(#${u}a)" stroke="#1aaa58" stroke-width="1" filter="url(#${u}f)"/>
-      <path d="M22 6 L18 16 L22 14 L26 16 Z" fill="#20c850" opacity="0.8"/>
-      <line x1="22" y1="8" x2="22" y2="40" stroke="rgba(0,255,80,0.15)" stroke-width="2"/>
-      <ellipse cx="15" cy="17" rx="5.5" ry="3" fill="white" opacity="0.35" transform="rotate(-10 15 17)"/></svg>`,
+    // ── MANAKRISTALL ───────────────────────────────────────────────────
+    'Manakristall': () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#a0e0ff'],[30,'#2060d0'],[65,'#0838a0'],[100,'#020e40']])}</defs>` +
+      `<polygon points="27,5 35,14 35,40 27,49 19,40 19,14" fill="url(#${u}a)" stroke="#4090ff" stroke-width="0.8" ${flt}/>` +
+      `<polygon points="27,12 32,18 32,36 27,42 22,36 22,18" fill="rgba(100,200,255,0.25)"/>` +
+      `<circle cx="27" cy="27" r="4" fill="rgba(100,180,255,0.5)"/>` +
+      `<ellipse cx="21" cy="19" rx="4" ry="6" fill="white" opacity="0.4" transform="rotate(15 21 19)"/>`
+    ),
 
-    'Ritterschild': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.65)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0%" stop-color="#3a40b0"/><stop offset="50%" stop-color="#1a1e6a"/><stop offset="100%" stop-color="#060830"/></linearGradient>
-      </defs><path d="M6 6 L38 6 L38 26 Q38 40 22 42 Q6 40 6 26 Z" fill="url(#${u}a)" stroke="#d4b040" stroke-width="2" filter="url(#${u}f)"/>
-      <line x1="22" y1="6" x2="22" y2="42" stroke="#d4b040" stroke-width="1.5"/>
-      <line x1="6" y1="20" x2="38" y2="20" stroke="#d4b040" stroke-width="1.5"/>
-      <polygon points="22,14 26,18 22,22 18,18" fill="#d4b040"/>
-      <ellipse cx="13" cy="10" rx="5.5" ry="3" fill="white" opacity="0.25" transform="rotate(-20 13 10)"/></svg>`,
+    // ── ABYSSSTEIN ─────────────────────────────────────────────────────
+    'Abyssstein': () => wrap(
+      `<defs>${F}</defs>` +
+      `<ellipse cx="27" cy="27" rx="21" ry="21" fill="#04000c" stroke="#4010a0" stroke-width="1.5" ${flt}/>` +
+      `<ellipse cx="27" cy="27" rx="15" ry="15" fill="#080018" stroke="#6010c0" stroke-width="0.8"/>` +
+      `<text x="27" y="32" text-anchor="middle" font-size="16" fill="#8020e0" opacity="0.9">✦</text>` +
+      `<circle cx="27" cy="27" r="5" fill="rgba(100,0,200,0.55)"/>` +
+      `<ellipse cx="19" cy="18" rx="5.5" ry="2.5" fill="rgba(160,100,255,0.3)" transform="rotate(-25 19 18)"/>`
+    ),
 
-    'Königskrone': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.65)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="45%" stop-color="#c89820"/><stop offset="100%" stop-color="#7a4e08"/></linearGradient>
-      </defs><path d="M4 30 L4 14 L14 22 L22 8 L30 22 L40 14 L40 30 Z" fill="url(#${u}a)" stroke="#ffd050" stroke-width="1" filter="url(#${u}f)"/>
-      <rect x="4" y="30" width="36" height="8" rx="2" fill="url(#${u}a)" stroke="#ffd050" stroke-width="1"/>
-      <circle cx="14" cy="26" r="3.5" fill="#e02838" stroke="#ff8090" stroke-width="0.5"/>
-      <circle cx="22" cy="26" r="3.5" fill="#2060ff" stroke="#80a8ff" stroke-width="0.5"/>
-      <circle cx="30" cy="26" r="3.5" fill="#10a840" stroke="#60ff90" stroke-width="0.5"/>
-      <ellipse cx="9" cy="16" rx="4" ry="2.2" fill="white" opacity="0.3" transform="rotate(-25 9 16)"/></svg>`,
+    // ── SCHATTENKRISTALL ───────────────────────────────────────────────
+    'Schattenkristall': () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#c0a0d0'],[30,'#401060'],[65,'#180830'],[100,'#060010']])}</defs>` +
+      `<polygon points="27,4 37,14 40,30 32,46 22,46 14,30 17,14" fill="url(#${u}a)" stroke="#7030a0" stroke-width="0.8" ${flt}/>` +
+      `<polygon points="27,10 34,18 36,28 30,40 24,40 18,28 20,18" fill="rgba(80,20,120,0.4)"/>` +
+      `<ellipse cx="19" cy="17" rx="5.5" ry="3" fill="rgba(200,150,255,0.3)" transform="rotate(-15 19 17)"/>`
+    ),
 
-    'Pergament': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(40,20,0,0.6)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e8d090"/><stop offset="50%" stop-color="#c8a848"/><stop offset="100%" stop-color="#9a7828"/></linearGradient>
-      </defs><rect x="6" y="10" width="32" height="28" rx="1.5" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <ellipse cx="22" cy="10" rx="16" ry="4.5" fill="#b89050"/>
-      <ellipse cx="22" cy="38" rx="16" ry="4.5" fill="#b89050"/>
-      <line x1="11" y1="17" x2="33" y2="17" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
-      <line x1="11" y1="22" x2="33" y2="22" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
-      <line x1="11" y1="27" x2="33" y2="27" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
-      <line x1="11" y1="32" x2="26" y2="32" stroke="#7a5018" stroke-width="0.8" opacity="0.55"/>
-      <ellipse cx="10" cy="13" rx="4" ry="2" fill="white" opacity="0.25" transform="rotate(-15 10 13)"/></svg>`,
+    // ── KRALLEN ────────────────────────────────────────────────────────
+    'Greifen-Kralle': () => claw('#c8c0b0','#706050','rgba(255,255,200,0.25)'),
+    'Drachen-Kralle': () => claw('#d06030','#802010','rgba(255,180,100,0.3)'),
 
-    'Schlüssel': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(40,20,0,0.7)"/></filter>
-      <linearGradient id="${u}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="50%" stop-color="#c89820"/><stop offset="100%" stop-color="#7a4e08"/></linearGradient>
-      </defs><circle cx="14" cy="14" r="9.5" fill="none" stroke="url(#${u}a)" stroke-width="4" filter="url(#${u}f)"/>
-      <circle cx="14" cy="14" r="5" fill="none" stroke="url(#${u}a)" stroke-width="2"/>
-      <line x1="21" y1="20" x2="38" y2="36" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round" filter="url(#${u}f)"/>
-      <line x1="30" y1="30" x2="34" y2="26" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
-      <line x1="34" y1="34" x2="38" y2="30" stroke="url(#${u}a)" stroke-width="3" stroke-linecap="round"/>
-      <ellipse cx="10" cy="10" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-30 10 10)"/></svg>`,
-
-    'Drachenzahn': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" flood-color="rgba(40,30,0,0.65)"/></filter>
-      <linearGradient id="${u}a" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#f4ecd8"/><stop offset="40%" stop-color="#d0b880"/><stop offset="75%" stop-color="#9a7848"/><stop offset="100%" stop-color="#5a4220"/></linearGradient>
-      </defs><path d="M22 4 Q28 10 30 22 Q32 34 22 40 Q12 34 14 22 Q16 10 22 4Z" fill="url(#${u}a)" stroke="#a88850" stroke-width="1" filter="url(#${u}f)"/>
-      <line x1="22" y1="6" x2="22" y2="38" stroke="rgba(255,255,220,0.3)" stroke-width="1.5"/>
-      <ellipse cx="16" cy="14" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-20 16 14)"/></svg>`,
-
-    'Goldmünze': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,30,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="68%"><stop offset="0%" stop-color="#fffab0"/><stop offset="30%" stop-color="#e4b030"/><stop offset="65%" stop-color="#a07010"/><stop offset="100%" stop-color="#503808"/></radialGradient>
-      </defs><circle cx="22" cy="22" r="18" fill="url(#${u}a)" stroke="#c89030" stroke-width="1.5" filter="url(#${u}f)"/>
-      <circle cx="22" cy="22" r="13" fill="none" stroke="#c89030" stroke-width="0.8" opacity="0.5"/>
-      <text x="22" y="27" text-anchor="middle" font-size="13" fill="#8a5800" opacity="0.9">✦</text>
-      <ellipse cx="14" cy="14" rx="6" ry="3.5" fill="white" opacity="0.4" transform="rotate(-30 14 14)"/></svg>`,
-
-    'Feenstaub': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="rgba(200,140,255,0.5)"/></filter>
-      <radialGradient id="${u}a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.95)"/><stop offset="40%" stop-color="rgba(245,200,80,0.5)"/><stop offset="100%" stop-color="rgba(245,200,80,0)"/></radialGradient>
-      </defs><circle cx="22" cy="22" r="13" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <text x="10" y="15" font-size="9" fill="#f0c040">✦</text>
-      <text x="30" y="13" font-size="7" fill="#c080ff">✧</text>
-      <text x="35" y="27" font-size="8" fill="#80c0ff">✦</text>
-      <text x="27" y="38" font-size="8" fill="#f0c040">✧</text>
-      <text x="10" y="36" font-size="7" fill="#c080ff">✦</text>
-      <text x="4" y="25" font-size="8" fill="#80c0ff">✧</text>
-      <text x="18" y="9" font-size="6" fill="#f0e4c0">✦</text>
-      <circle cx="22" cy="22" r="3.5" fill="white" opacity="0.95" filter="url(#${u}f)"/></svg>`,
-
-    'Phönixfeder': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="rgba(80,0,0,0.65)"/></filter>
-      <linearGradient id="${u}a" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stop-color="#ffe878"/><stop offset="35%" stop-color="#f06818"/><stop offset="70%" stop-color="#c02010"/><stop offset="100%" stop-color="#600008"/></linearGradient>
-      </defs><path d="M22 4 Q30 10 34 18 Q38 26 32 32 Q28 36 22 38 Q18 36 16 32 Q12 26 14 18 Q16 10 22 4Z" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <line x1="22" y1="6" x2="22" y2="36" stroke="#ffe890" stroke-width="1.2" opacity="0.5"/>
-      <line x1="22" y1="12" x2="14" y2="22" stroke="#ffe890" stroke-width="0.8" opacity="0.3"/>
-      <line x1="22" y1="16" x2="30" y2="24" stroke="#ffe890" stroke-width="0.8" opacity="0.3"/>
-      <ellipse cx="16" cy="11" rx="5" ry="2.5" fill="white" opacity="0.42" transform="rotate(-30 16 11)"/></svg>`,
-
-    'Mondstein': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(20,20,60,0.65)"/></filter>
-      <radialGradient id="${u}a" cx="32%" cy="22%" r="70%"><stop offset="0%" stop-color="#f4f4ff"/><stop offset="30%" stop-color="#c0c8e8"/><stop offset="65%" stop-color="#8088b8"/><stop offset="100%" stop-color="#404870"/></radialGradient>
-      </defs><ellipse cx="22" cy="22" rx="17" ry="20" fill="url(#${u}a)" stroke="#a0a8c8" stroke-width="1" filter="url(#${u}f)"/>
-      <ellipse cx="17" cy="16" rx="6" ry="3" fill="white" opacity="0.4"/>
-      <ellipse cx="21" cy="28" rx="5" ry="2.5" fill="white" opacity="0.25"/>
-      <ellipse cx="28" cy="20" rx="4" ry="2" fill="rgba(90,90,160,0.35)"/>
-      <ellipse cx="13" cy="11" rx="4.5" ry="2.5" fill="white" opacity="0.45" transform="rotate(-15 13 11)"/></svg>`,
-
-    'Drachenkristall': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="rgba(60,0,0,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="22%" r="70%"><stop offset="0%" stop-color="#ff90a0"/><stop offset="30%" stop-color="#d01030"/><stop offset="65%" stop-color="#880010"/><stop offset="100%" stop-color="#300006"/></radialGradient>
-      </defs><polygon points="22,2 26,8 34,6 30,14 38,18 30,20 34,28 26,26 22,34 18,26 10,28 14,20 6,18 14,14 10,6 18,8" fill="url(#${u}a)" filter="url(#${u}f)"/>
-      <circle cx="22" cy="18" r="5.5" fill="#ff2040" opacity="0.65"/>
-      <ellipse cx="15" cy="10" rx="4.5" ry="2.5" fill="white" opacity="0.4" transform="rotate(-10 15 10)"/></svg>`,
-
-    'Mystische Essenz': () => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs>
-      <filter id="${u}f"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(20,10,60,0.7)"/></filter>
-      <radialGradient id="${u}a" cx="30%" cy="22%" r="68%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="30%" stop-color="#2038c0"/><stop offset="65%" stop-color="#0a16a0"/><stop offset="100%" stop-color="#020618"/></radialGradient>
-      <radialGradient id="${u}b" cx="30%" cy="20%" r="45%"><stop offset="0%" stop-color="rgba(180,210,255,0.6)"/><stop offset="100%" stop-color="rgba(180,210,255,0)"/></radialGradient>
-      </defs><ellipse cx="22" cy="27" rx="12" ry="14" fill="url(#${u}a)" stroke="#3858d8" stroke-width="1" filter="url(#${u}f)"/>
-      <ellipse cx="22" cy="27" rx="12" ry="14" fill="url(#${u}b)"/>
-      <path d="M18 13 Q18 9 22 7 Q26 9 26 13" fill="none" stroke="#4870e0" stroke-width="1.8" stroke-linecap="round"/>
-      <line x1="22" y1="7" x2="22" y2="13" stroke="#4870e0" stroke-width="1.4"/>
-      <ellipse cx="15" cy="20" rx="5" ry="2.5" fill="white" opacity="0.38" transform="rotate(-15 15 20)"/></svg>`,
+    // ── STEINE ─────────────────────────────────────────────────────────
+    'Feuerstein': () => wrap(
+      `<defs>${F}${rg('a',40,30,65,[[0,'#ffe060'],[25,'#f08010'],[55,'#d03010'],[100,'#600810']])}</defs>` +
+      `<ellipse cx="27" cy="27" rx="20" ry="20" fill="url(#${u}a)" stroke="#e06020" stroke-width="1" ${flt}/>` +
+      `<ellipse cx="27" cy="27" rx="12" ry="12" fill="rgba(255,200,80,0.4)"/>` +
+      `<circle cx="27" cy="27" r="5" fill="rgba(255,240,100,0.6)"/>` +
+      `<ellipse cx="18" cy="18" rx="6.5" ry="3.5" fill="white" opacity="0.45" transform="rotate(-25 18 18)"/>`
+    ),
+    'Mondstein': () => wrap(
+      `<defs>${F}${rg('a',32,22,70,[[0,'#f4f4ff'],[30,'#c0c8e8'],[65,'#8088b8'],[100,'#404870']])}</defs>` +
+      `<ellipse cx="27" cy="27" rx="20" ry="22" fill="url(#${u}a)" stroke="#a0a8c8" stroke-width="1" ${flt}/>` +
+      `<ellipse cx="21" cy="20" rx="6" ry="3" fill="white" opacity="0.4"/>` +
+      `<ellipse cx="25" cy="30" rx="5" ry="2.5" fill="white" opacity="0.25"/>` +
+      `<ellipse cx="32" cy="23" rx="4" ry="2" fill="rgba(90,90,160,0.35)"/>` +
+      `<ellipse cx="16" cy="13" rx="5" ry="2.5" fill="white" opacity="0.5" transform="rotate(-15 16 13)"/>`
+    ),
+    'Sternensplitter': () => wrap(
+      `<defs>${F}${rg('a',35,25,65,[[0,'#fffff0'],[25,'#f0e860'],[55,'#c0a020'],[100,'#604800']])}</defs>` +
+      `<polygon points="27,4 31,17 44,14 35,24 48,28 35,32 42,44 28,36 24,50 20,36 6,44 14,32 2,28 17,24 6,14 23,17" fill="url(#${u}a)" stroke="#e0c030" stroke-width="0.6" ${flt}/>` +
+      `<ellipse cx="20" cy="16" rx="5" ry="2.5" fill="white" opacity="0.5" transform="rotate(-20 20 16)"/>`
+    ),
+    'Drachenei': () => wrap(
+      `<defs>${F}${rg('a',35,30,65,[[0,'#d0e8a0'],[30,'#7ab040'],[60,'#4a7820'],[100,'#182808']])}</defs>` +
+      `<ellipse cx="27" cy="30" rx="18" ry="22" fill="url(#${u}a)" stroke="#6a9830" stroke-width="1.2" ${flt}/>` +
+      `<ellipse cx="20" cy="22" rx="6" ry="4" fill="rgba(100,160,40,0.35)" stroke="rgba(80,130,30,0.5)" stroke-width="0.5"/>` +
+      `<ellipse cx="32" cy="22" rx="6" ry="4" fill="rgba(100,160,40,0.35)" stroke="rgba(80,130,30,0.5)" stroke-width="0.5"/>` +
+      `<ellipse cx="20" cy="34" rx="6" ry="4" fill="rgba(100,160,40,0.35)" stroke="rgba(80,130,30,0.5)" stroke-width="0.5"/>` +
+      `<ellipse cx="32" cy="34" rx="6" ry="4" fill="rgba(100,160,40,0.35)" stroke="rgba(80,130,30,0.5)" stroke-width="0.5"/>` +
+      `<ellipse cx="26" cy="28" rx="6" ry="4" fill="rgba(120,180,50,0.3)" stroke="rgba(80,130,30,0.5)" stroke-width="0.5"/>` +
+      `<ellipse cx="20" cy="16" rx="7" ry="4" fill="white" opacity="0.3" transform="rotate(-15 20 16)"/>` +
+      `<path d="M27 8 L25 16 L28 20 L26 26" fill="none" stroke="rgba(255,220,100,0.5)" stroke-width="1.2" stroke-linecap="round"/>`
+    ),
   };
+
+  // ── LOOKUP ────────────────────────────────────────────────────────
+
+
   const fn = icons[name];
   if (!fn) {
-    return `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><defs><radialGradient id="${u}x" cx="35%" cy="25%" r="70%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="100%" stop-color="#400080"/></radialGradient></defs><polygon points="22,4 38,14 38,30 22,40 6,30 6,14" fill="url(#${u}x)"/></svg>`;
+    return wrap(`<defs><radialGradient id="${u}x" cx="35%" cy="25%" r="70%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="100%" stop-color="#400080"/></radialGradient></defs><polygon points="27,5 43,15 43,39 27,49 11,39 11,15" fill="url(#${u}x)"/>`);
   }
   return fn();
 }
@@ -3468,6 +3622,18 @@ function _ruckSpawnParticles() {
   setTimeout(() => { wrap.innerHTML = ''; }, 2200);
 }
 
+function showTreasureItemName(name) {
+  const popup = document.getElementById('ruck-item-popup');
+  if (!popup) return;
+  popup.innerHTML = `<div class="ruck-item-name-popup">
+    <span class="ripn-runes">ᚱ ᚢ ᚾ</span>
+    <span class="ripn-name">✦ ${name} ✦</span>
+    <span class="ripn-runes">ᛖ ᚾ ᚠ</span>
+  </div>`;
+  popup.style.pointerEvents = 'auto';
+  popup.classList.add('visible');
+}
+
 // === TRUHE & QUESTLOG UPDATE – PUNKT 1+2+3: kein Scrollen, Münzregen, voller Boden ===
 function _ruckPopTreasure() {
   _ruckChestTimers.forEach(clearTimeout);
@@ -3670,9 +3836,28 @@ function _ruckPopTreasure() {
       const rot     = -22 + _gsr(i + 600) * 44;
       const zIdx    = 2 + Math.floor(_gsr(i + 700) * 7);
       const delay   = (i * 0.08 + 0.1).toFixed(2);
-      scatterHtml += `<div class="ruck-scatter-item pop-in" style="left:${leftPct.toFixed(1)}%;top:${topPct.toFixed(1)}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
+      scatterHtml += `<div class="ruck-scatter-item pop-in" data-name="${t.name}" style="left:${leftPct.toFixed(1)}%;top:${topPct.toFixed(1)}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
     sw.innerHTML = scatterHtml;
+
+    // Popup overlay
+    const floorEl = sw.parentNode;
+    if (floorEl && !floorEl.querySelector('#ruck-item-popup')) {
+      const popupEl = document.createElement('div');
+      popupEl.id = 'ruck-item-popup';
+      floorEl.appendChild(popupEl);
+      popupEl.addEventListener('click', () => {
+        popupEl.classList.remove('visible');
+        popupEl.innerHTML = '';
+        popupEl.style.pointerEvents = 'none';
+      });
+    }
+    sw.querySelectorAll('.ruck-scatter-item').forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        showTreasureItemName(item.dataset.name);
+      });
+    });
   }, 1400));
 }
 
