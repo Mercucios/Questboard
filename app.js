@@ -2932,8 +2932,9 @@ function rucksackRecordTreasure(questTitle, treasure, type) {
     color:     treasure.color,
     special:   treasure.special || null,
     type,
-    left:      (5 + Math.random() * 80).toFixed(1),
-    top:       (5 + Math.random() * 80).toFixed(1),
+    left:      (4 + Math.random() * 82).toFixed(1),
+    top:       (4 + Math.random() * 82).toFixed(1),
+    rot:       (Math.random() * 30 - 15).toFixed(1),
   });
   rucksackSaveTreasures(all);
 }
@@ -3832,13 +3833,24 @@ function _attachItemDrag(item, idx, allItems, floorEl) {
 function showTreasureItemName(name) {
   const popup = document.getElementById('ruck-item-popup');
   if (!popup) return;
-  popup.innerHTML = `<div class="ruck-item-name-popup">
-    <span class="ripn-runes">ᚱ ᚢ ᚾ</span>
-    <span class="ripn-name">✦ ${name} ✦</span>
-    <span class="ripn-runes">ᛖ ᚾ ᚠ</span>
+  const rwObj  = REWARDS.find(r => r.name === name);
+  const rarity = rwObj ? rwObj.rarity : 'common';
+  const desc   = REWARD_DESCRIPTIONS[name] || '';
+  const badge  =
+    rarity === 'legendary' ? '✦ Legendär'    :
+    rarity === 'epic'      ? '◆ Episch'       :
+    rarity === 'rare'      ? '◆ Selten'       :
+    rarity === 'uncommon'  ? '◆ Ungewöhnlich' :
+                             '◆ Gewöhnlich';
+  popup.innerHTML = `<div class="ritp-inner rarity-bg-${rarity}">
+    <span class="ritp-runes">ᚱ ᚢ ᚾ</span>
+    <span class="ritp-badge rarity-${rarity}">${badge}</span>
+    <span class="ritp-name">✦ ${name} ✦</span>
+    <span class="ritp-desc">${desc}</span>
+    <span class="ritp-runes">ᛖ ᚾ ᚠ</span>
   </div>`;
-  popup.style.pointerEvents = 'auto';
   popup.classList.add('visible');
+  popup.onclick = () => popup.classList.remove('visible');
 }
 
 // === TRUHE & QUESTLOG UPDATE – PUNKT 1+2+3: kein Scrollen, Münzregen, voller Boden ===
@@ -3903,12 +3915,16 @@ function _ruckPopTreasure() {
   }
   const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
 
-  // Ensure every item has a fixed position; assign once for old/extra items
+  // Ensure every item has fixed position + rotation; assign once for old/extra items
   let _posNeedsSave = false;
   all.forEach(t => {
     if (t.left == null || t.top == null) {
-      t.left = (5 + Math.random() * 80).toFixed(1);
-      t.top  = (5 + Math.random() * 80).toFixed(1);
+      t.left = (4 + Math.random() * 82).toFixed(1);
+      t.top  = (4 + Math.random() * 82).toFixed(1);
+      _posNeedsSave = true;
+    }
+    if (t.rot == null) {
+      t.rot = (Math.random() * 30 - 15).toFixed(1);
       _posNeedsSave = true;
     }
   });
@@ -3925,6 +3941,95 @@ function _ruckPopTreasure() {
 
   // Build floor structure immediately (coin rain needs container)
   container.innerHTML = `<div class="ruck-chest-floor">
+    <svg class="ruck-wood-floor" viewBox="0 0 200 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wfp1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7a4a22"/><stop offset="100%" stop-color="#5c3318"/></linearGradient>
+        <linearGradient id="wfp2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8a5528"/><stop offset="100%" stop-color="#6a3e1c"/></linearGradient>
+        <linearGradient id="wfp3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6e4020"/><stop offset="100%" stop-color="#542e14"/></linearGradient>
+        <linearGradient id="wfp4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#804c24"/><stop offset="100%" stop-color="#623818"/></linearGradient>
+        <linearGradient id="wfp5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#724220"/><stop offset="100%" stop-color="#5a3016"/></linearGradient>
+        <linearGradient id="wfsl" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(0,0,0,0.38)"/><stop offset="22%" stop-color="rgba(0,0,0,0)"/></linearGradient>
+        <linearGradient id="wfsr" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="rgba(0,0,0,0.38)"/><stop offset="22%" stop-color="rgba(0,0,0,0)"/></linearGradient>
+        <linearGradient id="wfst" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0.32)"/><stop offset="18%" stop-color="rgba(0,0,0,0)"/></linearGradient>
+        <linearGradient id="wfsb" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="rgba(0,0,0,0.28)"/><stop offset="18%" stop-color="rgba(0,0,0,0)"/></linearGradient>
+        <radialGradient id="wfnl" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffe898"/><stop offset="100%" stop-color="#9a7010"/></radialGradient>
+        <linearGradient id="wfcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c860"/><stop offset="100%" stop-color="#8a6010"/></linearGradient>
+      </defs>
+      <rect x="0" y="0"   width="200" height="32" fill="url(#wfp1)"/>
+      <rect x="0" y="32"  width="200" height="32" fill="url(#wfp2)"/>
+      <rect x="0" y="64"  width="200" height="32" fill="url(#wfp3)"/>
+      <rect x="0" y="96"  width="200" height="32" fill="url(#wfp4)"/>
+      <rect x="0" y="128" width="200" height="32" fill="url(#wfp5)"/>
+      <line x1="0" y1="8"   x2="200" y2="10"  stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+      <line x1="0" y1="18"  x2="200" y2="16"  stroke="rgba(0,0,0,0.09)" stroke-width="0.6"/>
+      <line x1="0" y1="26"  x2="200" y2="28"  stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+      <line x1="0" y1="40"  x2="200" y2="42"  stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
+      <line x1="0" y1="52"  x2="200" y2="50"  stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+      <line x1="0" y1="60"  x2="200" y2="62"  stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+      <line x1="0" y1="72"  x2="200" y2="74"  stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
+      <line x1="0" y1="82"  x2="200" y2="80"  stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+      <line x1="0" y1="90"  x2="200" y2="92"  stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+      <line x1="0" y1="104" x2="200" y2="106" stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
+      <line x1="0" y1="114" x2="200" y2="112" stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+      <line x1="0" y1="122" x2="200" y2="124" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+      <line x1="0" y1="136" x2="200" y2="138" stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
+      <line x1="0" y1="146" x2="200" y2="144" stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+      <line x1="0" y1="154" x2="200" y2="156" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>
+      <ellipse cx="44" cy="16" rx="7" ry="4.5" fill="rgba(0,0,0,0.14)" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>
+      <ellipse cx="44" cy="16" rx="3.5" ry="2"   fill="rgba(0,0,0,0.10)"/>
+      <ellipse cx="145" cy="48" rx="6" ry="3.5" fill="rgba(0,0,0,0.11)" stroke="rgba(0,0,0,0.17)" stroke-width="0.5"/>
+      <ellipse cx="78"  cy="80" rx="8" ry="5"   fill="rgba(0,0,0,0.13)" stroke="rgba(0,0,0,0.19)" stroke-width="0.5"/>
+      <ellipse cx="78"  cy="80" rx="4" ry="2.5"  fill="rgba(0,0,0,0.09)"/>
+      <ellipse cx="165" cy="112" rx="5.5" ry="3.5" fill="rgba(0,0,0,0.12)" stroke="rgba(0,0,0,0.18)" stroke-width="0.5"/>
+      <ellipse cx="30"  cy="145" rx="7" ry="4.5" fill="rgba(0,0,0,0.13)" stroke="rgba(0,0,0,0.19)" stroke-width="0.5"/>
+      <ellipse cx="30"  cy="145" rx="3" ry="2"   fill="rgba(0,0,0,0.08)"/>
+      <rect x="0"   y="31"  width="200" height="2" fill="#2a1208" opacity="0.65"/>
+      <rect x="0"   y="63"  width="200" height="2" fill="#2a1208" opacity="0.65"/>
+      <rect x="0"   y="95"  width="200" height="2" fill="#2a1208" opacity="0.65"/>
+      <rect x="0"   y="127" width="200" height="2" fill="#2a1208" opacity="0.65"/>
+      <circle cx="20"  cy="32"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="100" cy="32"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="180" cy="32"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="20"  cy="64"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="100" cy="64"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="180" cy="64"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="20"  cy="96"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="100" cy="96"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="180" cy="96"  r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="20"  cy="128" r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="100" cy="128" r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="180" cy="128" r="3.5" fill="url(#wfnl)" stroke="#8a6010" stroke-width="0.5"/>
+      <circle cx="19" cy="31" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="99" cy="31" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="179" cy="31" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="19" cy="63" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="99" cy="63" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="179" cy="63" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="19" cy="95" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="99" cy="95" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="179" cy="95" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="19" cy="127" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="99" cy="127" r="1.5" fill="white" opacity="0.5"/>
+      <circle cx="179" cy="127" r="1.5" fill="white" opacity="0.5"/>
+      <rect x="0"   y="0"   width="22" height="22" rx="2" fill="url(#wfcg)" stroke="#c49030" stroke-width="1.2"/>
+      <circle cx="11" cy="11" r="5" fill="url(#wfnl)" stroke="#9a7010" stroke-width="0.8"/>
+      <circle cx="10" cy="10" r="2" fill="white" opacity="0.55"/>
+      <rect x="178" y="0"   width="22" height="22" rx="2" fill="url(#wfcg)" stroke="#c49030" stroke-width="1.2"/>
+      <circle cx="189" cy="11" r="5" fill="url(#wfnl)" stroke="#9a7010" stroke-width="0.8"/>
+      <circle cx="188" cy="10" r="2" fill="white" opacity="0.55"/>
+      <rect x="0"   y="138" width="22" height="22" rx="2" fill="url(#wfcg)" stroke="#c49030" stroke-width="1.2"/>
+      <circle cx="11" cy="149" r="5" fill="url(#wfnl)" stroke="#9a7010" stroke-width="0.8"/>
+      <circle cx="10" cy="148" r="2" fill="white" opacity="0.55"/>
+      <rect x="178" y="138" width="22" height="22" rx="2" fill="url(#wfcg)" stroke="#c49030" stroke-width="1.2"/>
+      <circle cx="189" cy="149" r="5" fill="url(#wfnl)" stroke="#9a7010" stroke-width="0.8"/>
+      <circle cx="188" cy="148" r="2" fill="white" opacity="0.55"/>
+      <rect x="0" y="0" width="200" height="160" fill="url(#wfsl)"/>
+      <rect x="0" y="0" width="200" height="160" fill="url(#wfsr)"/>
+      <rect x="0" y="0" width="200" height="160" fill="url(#wfst)"/>
+      <rect x="0" y="0" width="200" height="160" fill="url(#wfsb)"/>
+      <rect x="0" y="0" width="200" height="160" fill="none" stroke="#c49030" stroke-width="3"/>
+      <rect x="2" y="2" width="196" height="156" fill="none" stroke="rgba(255,220,100,0.28)" stroke-width="1"/>
+    </svg>
     <div class="ruck-chest-bg-layer" id="ruck-bg-layer"></div>
     <div class="ruck-scattered-wrap" id="ruck-scattered-wrap"></div>
   </div>`;
@@ -4038,10 +4143,12 @@ function _ruckPopTreasure() {
     const _gsr = s => { const x = Math.sin(s * 127.1) * 10000; return x - Math.floor(x); };
     let scatterHtml = '';
     all.forEach((t, i) => {
-      const rot   = -22 + _gsr(i + 600) * 44;
-      const zIdx  = 2 + Math.floor(_gsr(i + 700) * 7);
-      const delay = (i * 0.08 + 0.1).toFixed(2);
-      scatterHtml += `<div class="ruck-scatter-item pop-in" data-name="${t.name}" data-idx="${i}" style="left:${t.left}%;top:${t.top}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
+      const rot     = t.rot != null ? parseFloat(t.rot) : (-22 + _gsr(i + 600) * 44);
+      const zIdx    = 2 + Math.floor(_gsr(i + 700) * 7);
+      const delay   = (i * 0.08 + 0.1).toFixed(2);
+      const rwObj   = REWARDS.find(r => r.name === t.name);
+      const rarity  = rwObj ? rwObj.rarity : 'common';
+      scatterHtml += `<div class="ruck-scatter-item pop-in" data-name="${t.name}" data-idx="${i}" data-rarity="${rarity}" style="left:${t.left}%;top:${t.top}%;--rot:${rot.toFixed(1)}deg;z-index:${zIdx};animation-delay:${delay}s">${_ruckTreasureIcon(t.name, 52)}</div>`;
     });
     sw.innerHTML = scatterHtml;
 
@@ -4051,11 +4158,6 @@ function _ruckPopTreasure() {
       const popupEl = document.createElement('div');
       popupEl.id = 'ruck-item-popup';
       floorEl.appendChild(popupEl);
-      popupEl.addEventListener('click', () => {
-        popupEl.classList.remove('visible');
-        popupEl.innerHTML = '';
-        popupEl.style.pointerEvents = 'none';
-      });
     }
     // Attach drag+tap handlers to each item
     sw.querySelectorAll('.ruck-scatter-item').forEach(item => {
