@@ -1418,8 +1418,7 @@ function showRewardPopup(reward) {
     badge.className = 'reward-rarity-badge rarity-' + r.rarity;
   }
 
-  const iconEl = $('reward-item-icon');
-  if (iconEl) iconEl.innerHTML = _ruckTreasureIcon(r.name, 72);
+  $('reward-item-icon').innerHTML = _ruckTreasureIcon(reward.name, 72);
 
   const nameEl = $('reward-item-name');
   if (nameEl) nameEl.textContent = r.name;
