@@ -1375,6 +1375,7 @@ function _finalizeRestQuestCompletion(name, manaGain) {
 
   quest.done     = true;
   quest.treasure = TREASURE_ITEMS[Math.floor(Math.random() * TREASURE_ITEMS.length)];
+  rucksackRecordTreasure(quest.name, quest.treasure, 'quest');
 
   if (!appState.maxMana) appState.maxMana = MAX_MANA;
   appState.maxMana = Math.min(appState.maxMana + manaGain, 80);
@@ -3905,15 +3906,7 @@ function _ruckPopTreasure() {
 
   // Collect items
   const stored = rucksackLoadTreasures();
-  const today  = todayStr();
-  const extra  = [];
-  if (appState) {
-    appState.quests.filter(q => q.done && q.treasure).forEach(q => {
-      const already = stored.some(t => t.date === today && t.questTitle === q.name && t.type === 'quest');
-      if (!already) extra.push({ date: today, questTitle: q.name, name: q.treasure.name, type: 'quest' });
-    });
-  }
-  const all = [...stored, ...extra].sort((a, b) => b.date.localeCompare(a.date));
+  const all = stored.sort((a, b) => b.date.localeCompare(a.date));
 
   // Ensure every item has fixed position + rotation; assign once for old/extra items
   let _posNeedsSave = false;
