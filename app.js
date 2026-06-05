@@ -446,15 +446,22 @@ function _ruckTreasureIcon(name, size) {
   );
 
   const geode = (c1, c2, strokeC) => wrap(
-    `<defs>${F}</defs>` +
-    `<ellipse cx="27" cy="30" rx="22" ry="18" fill="#7a6040" stroke="#5a3818" stroke-width="1.5" ${flt}/>` +
-    `<ellipse cx="27" cy="28" rx="17" ry="14" fill="#08021a"/>` +
-    `<polygon points="16,28 13,20 20,27" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
-    `<polygon points="21,25 19,14 24,24" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
-    `<polygon points="27,24 26,12 30,24" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
-    `<polygon points="33,25 35,14 30,24" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
-    `<polygon points="38,28 41,20 34,27" fill="${c1}" stroke="${strokeC}" stroke-width="0.5"/>` +
-    `<ellipse cx="16" cy="20" rx="5.5" ry="2.5" fill="white" opacity="0.22" transform="rotate(-20 16 20)"/>`
+    `<defs>${F}${rg('go',50,50,55,[[0,c1],[55,c2],[100,c2]])}</defs>` +
+    // Äußere Gestein-Schale
+    `<ellipse cx="27" cy="28" rx="22" ry="20" fill="#5a3c18" stroke="#3a2008" stroke-width="1.5" ${flt}/>` +
+    // Innere Kristallhöhle
+    `<path d="M9 26 Q10 12 27 10 Q44 12 45 26 Q45 40 27 44 Q9 40 9 26Z" fill="#0a0418"/>` +
+    // Kristall-Cluster aufragend
+    `<polygon points="27,12 29.5,24 27,28 24.5,24" fill="${c1}" stroke="${strokeC}" stroke-width="0.6"/>` +
+    `<polygon points="20,16 22,26 20,29 18,26" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="34,16 36,26 34,29 32,26" fill="${c2}" stroke="${strokeC}" stroke-width="0.5"/>` +
+    `<polygon points="15,22 17,30 15,33 13,30" fill="${c1}" stroke="${strokeC}" stroke-width="0.5" opacity="0.85"/>` +
+    `<polygon points="39,22 41,30 39,33 37,30" fill="${c1}" stroke="${strokeC}" stroke-width="0.5" opacity="0.85"/>` +
+    `<polygon points="23,14 25,22 23,25 21,22" fill="${c1}" stroke="${strokeC}" stroke-width="0.5" opacity="0.9"/>` +
+    `<polygon points="31,14 33,22 31,25 29,22" fill="${c2}" stroke="${strokeC}" stroke-width="0.5" opacity="0.9"/>` +
+    // Glanzlichter
+    `<ellipse cx="22" cy="18" rx="2" ry="1" fill="white" opacity="0.4"/>` +
+    `<ellipse cx="27" cy="14" rx="1.5" ry="0.8" fill="white" opacity="0.35"/>`
   );
 
   const scale = (c1, c2, strokeC, tipC) => wrap(
@@ -468,21 +475,30 @@ function _ruckTreasureIcon(name, size) {
   );
 
   const ingot = (c1, c2, c3) => wrap(
-    `<defs>${F}${lg('a','0','0','0','1',[[0,c1],[50,c2],[100,c3]])}</defs>` +
-    `<rect x="8" y="17" width="38" height="20" rx="4" fill="url(#${u}a)" stroke="${c2}" stroke-width="1.2" ${flt}/>` +
-    `<line x1="17" y1="17" x2="17" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
-    `<line x1="27" y1="17" x2="27" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
-    `<line x1="37" y1="17" x2="37" y2="37" stroke="${c2}" stroke-width="0.6" opacity="0.5"/>` +
-    `<ellipse cx="16" cy="24" rx="5" ry="2.5" fill="white" opacity="0.28" transform="rotate(-10 16 24)"/>`
+    `<defs>${F}${lg('top','0%','0%','100%','0%',[[0,c2],[50,c1],[100,c2]])}${lg('front','0%','0%','0%','100%',[[0,c1],[50,c2],[100,c3]])}${lg('side','0%','0%','0%','100%',[[0,c2],[100,c3]])}</defs>` +
+    // Frontfläche
+    `<polygon points="8,22 46,22 42,38 12,38" fill="url(#${u}front)" stroke="${c2}" stroke-width="1" ${flt}/>` +
+    // Oberfläche
+    `<polygon points="12,16 42,16 46,22 8,22" fill="url(#${u}top)" stroke="${c2}" stroke-width="1"/>` +
+    // Rechte Seite
+    `<polygon points="42,16 46,22 42,38 38,32" fill="url(#${u}side)" stroke="${c3}" stroke-width="0.8"/>` +
+    // Text auf Front
+    `<text x="27" y="32" text-anchor="middle" font-size="5" fill="${c3}" font-weight="bold" font-family="serif" opacity="0.7">999</text>` +
+    // Glanzlicht oben
+    `<ellipse cx="22" cy="19" rx="9" ry="2" fill="white" opacity="0.25"/>`
   );
 
   const claw = (c1, c2, glow) => wrap(
-    `<defs>${F}${lg('a','0','0','1','1',[[0,c1],[55,c2],[100,c2]])}</defs>` +
-    `<path d="M18 44 Q10 31 13 15 Q15 9 20 11 Q22 17 17 29 Q20 38 22 44 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6" ${flt}/>` +
-    `<path d="M27 46 Q24 30 25 11 Q26 6 28 6 Q30 9 29 23 Q29 36 30 46 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6"/>` +
-    `<path d="M36 44 Q44 31 41 15 Q39 9 34 11 Q32 17 37 29 Q34 38 32 44 Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.6"/>` +
-    `<path d="M19 44 Q22 48 27 49 Q32 48 35 44 L32 44 Q30 47 27 47 Q24 47 22 44 Z" fill="${c2}" opacity="0.8"/>` +
-    `<ellipse cx="13" cy="18" rx="2.5" ry="5" fill="${glow}" opacity="0.3" transform="rotate(-15 13 18)"/>`
+    `<defs>${F}${lg('a','30%','0%','70%','100%',[[0,c1],[45,c2],[100,c2]])}</defs>` +
+    // Linke Kralle - spitz zulaufend, gebogen
+    `<path d="M14 50 Q8 38 10 24 Q11 15 15 10 Q17 7 18 9 Q17 14 17 24 Q17 36 20 48 Q18 51 16 51 Q14 51 14 50Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.7" ${flt}/>` +
+    // Mittlere Kralle - gerade, längste
+    `<path d="M24 52 Q23 38 24 22 Q25 11 27 6 Q29 11 30 22 Q31 38 30 52 Q28 54 27 54 Q26 54 24 52Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.7"/>` +
+    // Rechte Kralle - spitz, nach außen gebogen
+    `<path d="M40 50 Q46 38 44 24 Q43 15 39 10 Q37 7 36 9 Q37 14 37 24 Q37 36 34 48 Q36 51 38 51 Q40 51 40 50Z" fill="url(#${u}a)" stroke="${c2}" stroke-width="0.7"/>` +
+    // Pfoten-Basis
+    `<path d="M15 50 Q20 46 27 46 Q34 46 39 50 Q36 53 27 54 Q18 53 15 50Z" fill="${c2}" opacity="0.7"/>` +
+    `<ellipse cx="27" cy="48" rx="12" ry="3" fill="${c1}" opacity="0.4"/>`
   );
 
   const icons = {
@@ -561,20 +577,42 @@ function _ruckTreasureIcon(name, size) {
 
     // ── DOLCHE ─────────────────────────────────────────────────────────
     'Silberdolch': () => wrap(
-      `<defs>${F}${rg('a',30,22,70,[[0,'#e8f0f8'],[40,'#b0b8c8'],[100,'#505868']])}${rg('b',40,30,60,[[0,'#5a5a6a'],[100,'#2a2a3a']])}</defs>` +
-      `<polygon points="12,12 15,9 42,38 40,41 38,40" fill="url(#${u}a)" ${flt}/>` +
-      `<line x1="14" y1="12" x2="40" y2="38" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>` +
-      `<ellipse cx="31" cy="25" rx="8" ry="3.5" fill="#b0b8c8" stroke="#e8f0f8" stroke-width="0.8" transform="rotate(45 31 25)"/>` +
-      `<path d="M35 29 Q46 42 44 47 Q41 49 39 46 L28 35 Z" fill="url(#${u}b)" stroke="#5a5a6a" stroke-width="0.8"/>` +
-      `<circle cx="43" cy="45" r="4" fill="#b0b8c8" stroke="#e8f0f8" stroke-width="0.8"/>`
+      `<defs>${F}${lg('a','45%','0%','55%','100%',[[0,'#f0f4ff'],[30,'#c8d0e0'],[65,'#8890a8'],[100,'#404858']])}${lg('b','0%','0%','100%','100%',[[0,'#c0c8d8'],[100,'#6070a0']])}</defs>` +
+      // Klinge - aufrecht, spitz
+      `<polygon points="27,4 30,5 31,36 27,40 23,36 24,5" fill="url(#${u}a)" stroke="#a0a8c0" stroke-width="0.8" ${flt}/>` +
+      // Mittelgrat
+      `<line x1="27" y1="6" x2="27" y2="38" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>` +
+      // Parierstange
+      `<rect x="17" y="36" width="20" height="4" rx="2" fill="url(#${u}b)" stroke="#d0d8f0" stroke-width="0.8"/>` +
+      // Griff
+      `<rect x="24" y="40" width="6" height="12" rx="1.5" fill="#5a4020" stroke="#3a2a10" stroke-width="0.8"/>` +
+      `<rect x="23" y="42" width="8" height="1.5" rx="0.5" fill="#8a6030" opacity="0.6"/>` +
+      `<rect x="23" y="45" width="8" height="1.5" rx="0.5" fill="#8a6030" opacity="0.6"/>` +
+      `<rect x="23" y="48" width="8" height="1.5" rx="0.5" fill="#8a6030" opacity="0.6"/>` +
+      // Knauf
+      `<ellipse cx="27" cy="53" rx="5" ry="3" fill="url(#${u}b)" stroke="#d0d8f0" stroke-width="0.8"/>` +
+      // Glanzlicht Klinge
+      `<ellipse cx="25" cy="14" rx="1.5" ry="8" fill="white" opacity="0.3" transform="rotate(-3 25 14)"/>`
     ),
     'Golddolch': () => wrap(
-      `<defs>${F}${rg('a',30,22,70,[[0,'#ffe898'],[40,'#c89020'],[100,'#7a4e08']])}${rg('b',40,30,60,[[0,'#8a5010'],[100,'#4a2800']])}</defs>` +
-      `<polygon points="12,12 15,9 42,38 40,41 38,40" fill="url(#${u}a)" ${flt}/>` +
-      `<line x1="14" y1="12" x2="40" y2="38" stroke="rgba(255,255,200,0.4)" stroke-width="1.2"/>` +
-      `<ellipse cx="31" cy="25" rx="8" ry="3.5" fill="#c89020" stroke="#ffe898" stroke-width="0.8" transform="rotate(45 31 25)"/>` +
-      `<path d="M35 29 Q46 42 44 47 Q41 49 39 46 L28 35 Z" fill="url(#${u}b)" stroke="#8a5010" stroke-width="0.8"/>` +
-      `<circle cx="43" cy="45" r="4" fill="#c89020" stroke="#ffe898" stroke-width="0.8"/>`
+      `<defs>${F}${lg('a','45%','0%','55%','100%',[[0,'#fff8c0'],[30,'#e8c040'],[65,'#b88010'],[100,'#6a4400']])}${lg('b','0%','0%','100%','100%',[[0,'#f0c030'],[100,'#9a6808']])}</defs>` +
+      // Klinge - aufrecht, spitz
+      `<polygon points="27,4 30,5 31,36 27,40 23,36 24,5" fill="url(#${u}a)" stroke="#d4a020" stroke-width="0.8" ${flt}/>` +
+      // Mittelgrat
+      `<line x1="27" y1="6" x2="27" y2="38" stroke="rgba(255,255,200,0.45)" stroke-width="1"/>` +
+      // Parierstange
+      `<rect x="17" y="36" width="20" height="4" rx="2" fill="url(#${u}b)" stroke="#ffe080" stroke-width="0.8"/>` +
+      // Kleines Edelstein in Parierstange
+      `<circle cx="27" cy="38" r="2" fill="#e04040" stroke="#ff8080" stroke-width="0.5"/>` +
+      // Griff
+      `<rect x="24" y="40" width="6" height="12" rx="1.5" fill="#3a1800" stroke="#2a1000" stroke-width="0.8"/>` +
+      `<rect x="23" y="42" width="8" height="1.5" rx="0.5" fill="#c08020" opacity="0.7"/>` +
+      `<rect x="23" y="45" width="8" height="1.5" rx="0.5" fill="#c08020" opacity="0.7"/>` +
+      `<rect x="23" y="48" width="8" height="1.5" rx="0.5" fill="#c08020" opacity="0.7"/>` +
+      // Knauf
+      `<ellipse cx="27" cy="53" rx="5" ry="3" fill="url(#${u}b)" stroke="#ffe080" stroke-width="0.8"/>` +
+      // Glanzlicht
+      `<ellipse cx="25" cy="14" rx="1.5" ry="8" fill="white" opacity="0.28" transform="rotate(-3 25 14)"/>`
     ),
 
     // ── BARREN ─────────────────────────────────────────────────────────
@@ -583,14 +621,26 @@ function _ruckTreasureIcon(name, size) {
 
     // ── POKALE ─────────────────────────────────────────────────────────
     'Pokal': () => wrap(
-      `<defs>${F}${lg('a','0','0','0','1',[[0,'#e8c870'],[50,'#c09828'],[100,'#5a3800']])}</defs>` +
-      `<path d="M16 11 Q12 24 16 34 Q20 44 27 46 Q34 44 38 34 Q42 24 38 11 Z" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1.2" ${flt}/>` +
-      `<path d="M16 15 Q8 17 8 24 Q8 31 16 31" fill="none" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round"/>` +
-      `<path d="M38 15 Q46 17 46 24 Q46 31 38 31" fill="none" stroke="url(#${u}a)" stroke-width="4" stroke-linecap="round"/>` +
-      `<rect x="20" y="46" width="14" height="4" rx="2" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1"/>` +
-      `<rect x="16" y="49" width="22" height="4" rx="2" fill="url(#${u}a)" stroke="#d4b040" stroke-width="1"/>` +
-      `<text x="27" y="31" text-anchor="middle" font-size="12" fill="#ffe080" opacity="0.8">★</text>` +
-      `<ellipse cx="20" cy="18" rx="4.5" ry="7" fill="white" opacity="0.2" transform="rotate(-10 20 18)"/>`
+      `<defs>${F}${lg('a','15%','0%','85%','100%',[[0,'#f8f8f8'],[25,'#e0e8f0'],[60,'#a0b0c0'],[100,'#505868']])}${lg('b','0%','0%','100%','100%',[[0,'#fff8c0'],[40,'#d4a020'],[100,'#7a5000']])}</defs>` +
+      // Sockel-Basis
+      `<ellipse cx="27" cy="51" rx="13" ry="3" fill="url(#${u}b)" stroke="#c09010" stroke-width="0.8" ${flt}/>` +
+      // Schaft
+      `<rect x="23" y="43" width="8" height="9" rx="2" fill="url(#${u}a)" stroke="#8090a0" stroke-width="0.8"/>` +
+      // Goldring am Schaft
+      `<ellipse cx="27" cy="43" rx="7" ry="2" fill="url(#${u}b)" stroke="#c09010" stroke-width="0.8"/>` +
+      // Kuppa (Kelch)
+      `<path d="M17 12 Q14 20 14 28 Q14 38 20 41 Q23 43 27 43 Q31 43 34 41 Q40 38 40 28 Q40 20 37 12 Z" fill="url(#${u}a)" stroke="#8090a0" stroke-width="1"/>` +
+      // Goldrand oben
+      `<path d="M17 12 Q21 8 27 8 Q33 8 37 12" stroke="url(#${u}b)" stroke-width="4" fill="none" stroke-linecap="round"/>` +
+      // Goldband Mitte
+      `<path d="M15 28 Q17 30 27 30 Q37 30 39 28" stroke="url(#${u}b)" stroke-width="1.5" fill="none"/>` +
+      // Goldband unten
+      `<ellipse cx="27" cy="41" rx="12" ry="2" fill="url(#${u}b)" stroke="#c09010" stroke-width="0.8"/>` +
+      // Medaillon
+      `<circle cx="27" cy="24" r="7" fill="url(#${u}b)" stroke="#c09010" stroke-width="1"/>` +
+      `<circle cx="27" cy="24" r="4.5" fill="#e8c030" opacity="0.5"/>` +
+      // Glanzlicht
+      `<ellipse cx="21" cy="17" rx="4" ry="6" fill="white" opacity="0.2" transform="rotate(-10 21 17)"/>`
     ),
     'Goldpokal': () => wrap(
       `<defs>${F}${lg('a','0','0','0','1',[[0,'#ffe898'],[35,'#f0c040'],[65,'#c09028'],[100,'#5a3800']])}</defs>` +
@@ -630,12 +680,11 @@ function _ruckTreasureIcon(name, size) {
       `<rect x="19" y="43" width="16" height="5" rx="2.5" fill="#28104a" stroke="#5020a0" stroke-width="0.8"/>`
     ),
     'Meeresperle': () => wrap(
-      `<defs>${F}${rg('a',38,25,65,[[0,'#f8f8ff'],[25,'#d0e8f8'],[55,'#8ab0d0'],[100,'#304860']])}</defs>` +
-      `<path d="M14 32 Q10 20 20 12 Q27 6 34 12 Q44 20 40 32 Q36 40 27 42 Q18 40 14 32Z" fill="#b8d0b0" stroke="#80a060" stroke-width="1" ${flt}/>` +
-      `<path d="M15 31 Q14 24 20 18" fill="none" stroke="#a0b890" stroke-width="1" opacity="0.6"/>` +
-      `<path d="M39 31 Q40 24 34 18" fill="none" stroke="#a0b890" stroke-width="1" opacity="0.6"/>` +
-      `<circle cx="27" cy="28" r="10" fill="url(#${u}a)" stroke="#a0b8c8" stroke-width="0.8"/>` +
-      `<ellipse cx="22" cy="23" rx="5" ry="3" fill="white" opacity="0.5" transform="rotate(-20 22 23)"/>`
+      `<defs>${F}${rg('a',38,30,60,[[0,'#ffffff'],[20,'#f0f4f8'],[55,'#c0d0e0'],[100,'#607080']])}</defs>` +
+      `<circle cx="27" cy="27" r="20" fill="url(#${u}a)" stroke="#a0b8c8" stroke-width="1" ${flt}/>` +
+      `<ellipse cx="20" cy="18" rx="7" ry="4" fill="white" opacity="0.55" transform="rotate(-30 20 18)"/>` +
+      `<ellipse cx="32" cy="32" rx="4" ry="5" fill="white" opacity="0.12"/>` +
+      `<circle cx="34" cy="20" r="2.5" fill="white" opacity="0.25"/>`
     ),
 
     // ── PHÖNIXFEDER ────────────────────────────────────────────────────
@@ -1418,7 +1467,8 @@ function showRewardPopup(reward) {
     badge.className = 'reward-rarity-badge rarity-' + r.rarity;
   }
 
-  $('reward-item-icon').innerHTML = _ruckTreasureIcon(reward.name, 72);
+  const iconEl = $('reward-item-icon');
+  if (iconEl) iconEl.innerHTML = _ruckTreasureIcon(r.name, 72);
 
   const nameEl = $('reward-item-name');
   if (nameEl) nameEl.textContent = r.name;
@@ -2029,7 +2079,7 @@ function init() {
     });
   }
 
-  $('btn-reward-close').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
+  $('popup-reward').addEventListener('click', () => $('popup-reward').classList.add('hidden'));
 
   // Stern-Popup: ganzer Screen schließt per Tap
   $('popup-star').addEventListener('click', () => {
@@ -4058,10 +4108,6 @@ function _ruckPopTreasure() {
 <path d="M12 56 Q70 52 130 58 Q195 64 255 57 Q310 50 356 54" stroke="#120602" stroke-width="0.7" fill="none" opacity="0.4"/>
 <path d="M12 68 Q85 64 150 70 Q210 76 270 68 Q320 61 356 66" stroke="#1a0804" stroke-width="0.9" fill="none" opacity="0.45"/>
 <path d="M12 80 Q65 76 125 82 Q190 88 248 81 Q305 74 356 78" stroke="#140602" stroke-width="0.7" fill="none" opacity="0.4"/>
-<ellipse cx="295" cy="56" rx="18" ry="11" fill="#0e0402" opacity="0.7"/>
-<ellipse cx="295" cy="56" rx="13" ry="7" fill="#080200" opacity="0.8"/>
-<ellipse cx="293" cy="54" rx="5" ry="3" fill="#120604" opacity="0.5"/>
-<path d="M277 52 Q295 46 313 52 M277 60 Q295 66 313 60" stroke="#180804" stroke-width="0.6" fill="none" opacity="0.5"/>
 <rect x="12" y="12" width="356" height="30" fill="url(#fhl)"/>
 <rect x="12" y="102" width="356" height="6" fill="#060200"/>
 <rect x="12" y="102" width="356" height="3" fill="url(#ffg)"/>
@@ -4084,12 +4130,6 @@ function _ruckPopTreasure() {
 <path d="M12 258 Q85 254 150 260 Q210 266 272 258 Q320 251 356 256" stroke="#120602" stroke-width="0.7" fill="none" opacity="0.4"/>
 <path d="M12 272 Q75 268 138 274 Q200 280 262 272 Q316 265 356 270" stroke="#1a0804" stroke-width="0.9" fill="none" opacity="0.45"/>
 <path d="M12 284 Q65 281 130 287 Q196 293 256 285 Q312 278 356 282" stroke="#140602" stroke-width="0.7" fill="none" opacity="0.4"/>
-<ellipse cx="95" cy="252" rx="22" ry="13" fill="#0a0300" opacity="0.72"/>
-<ellipse cx="95" cy="252" rx="16" ry="8.5" fill="#060100" opacity="0.82"/>
-<ellipse cx="93" cy="250" rx="6" ry="3.5" fill="#100504" opacity="0.5"/>
-<path d="M73 248 Q95 241 117 248 M73 256 Q95 263 117 256" stroke="#180804" stroke-width="0.6" fill="none" opacity="0.5"/>
-<ellipse cx="318" cy="268" rx="9" ry="6" fill="#0a0300" opacity="0.65"/>
-<ellipse cx="318" cy="268" rx="5" ry="3.5" fill="#060100" opacity="0.75"/>
 <rect x="12" y="203" width="356" height="25" fill="url(#fhl)"/>
 <rect x="12" y="292" width="356" height="6" fill="#060200"/>
 <rect x="12" y="292" width="356" height="3" fill="url(#ffg)"/>
@@ -4112,8 +4152,6 @@ function _ruckPopTreasure() {
 <path d="M12 450 Q85 446 150 452 Q210 458 272 450 Q320 443 356 448" stroke="#120602" stroke-width="0.7" fill="none" opacity="0.4"/>
 <path d="M12 464 Q75 461 138 467 Q200 473 262 465 Q316 458 356 462" stroke="#1a0804" stroke-width="0.9" fill="none" opacity="0.45"/>
 <path d="M12 476 Q65 473 128 479 Q196 485 256 477 Q312 470 356 474" stroke="#140602" stroke-width="0.7" fill="none" opacity="0.4"/>
-<ellipse cx="200" cy="445" rx="14" ry="8" fill="#0a0300" opacity="0.65"/>
-<ellipse cx="200" cy="445" rx="9" ry="5" fill="#060100" opacity="0.75"/>
 <rect x="12" y="393" width="356" height="25" fill="url(#fhl)"/>
 <circle cx="38" cy="104" r="6.5" fill="#1a0c02" stroke="#6a4408" stroke-width="0.8"/><circle cx="38" cy="104" r="5" fill="url(#fng)" stroke="#c89010" stroke-width="1"/><circle cx="38" cy="104" r="2.5" fill="#f0e060" opacity="0.55"/><circle cx="38" cy="104" r="1" fill="white" opacity="0.3"/>
 <circle cx="152" cy="104" r="6.5" fill="#1a0c02" stroke="#6a4408" stroke-width="0.8"/><circle cx="152" cy="104" r="5" fill="url(#fng2)" stroke="#c89010" stroke-width="1"/><circle cx="152" cy="104" r="2.5" fill="#f0e060" opacity="0.5"/><circle cx="152" cy="104" r="1" fill="white" opacity="0.3"/>
