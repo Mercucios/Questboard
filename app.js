@@ -3806,8 +3806,8 @@ function _attachItemDrag(item, idx, allItems, floorEl) {
 
   function startDrag(clientX, clientY) {
     const r  = floorEl.getBoundingClientRect();
-    dragOffX   = clientX - r.left  - parseFloat(item.style.left)  / 100 * r.width;
-    dragOffY   = clientY - r.top   - parseFloat(item.style.top)   / 100 * r.height;
+    dragOffX   = clientX - r.left  - (parseFloat(item.style.left)  || 0) / 100 * r.width;
+    dragOffY   = clientY - r.top   - (parseFloat(item.style.top)   || 0) / 100 * r.height;
     dragStartX = clientX;
     dragStartY = clientY;
     dragging   = true;
@@ -4258,58 +4258,7 @@ function _ruckPopTreasure() {
   _ruckChestTimers.push(setTimeout(() => {
     const bgL = document.getElementById('ruck-bg-layer');
     if (!bgL) return;
-    let bgHtml = '';
-
-    // 13 Münzen
-    const coinPts = [[4,8],[12,55],[20,22],[30,72],[38,38],[48,10],[56,62],[64,30],[72,78],[80,18],[88,50],[25,85],[70,88]];
-    coinPts.forEach(([l, t], i) => {
-      const jl = Math.max(2, Math.min(90, l + (Math.random()-0.5)*8)).toFixed(1);
-      const jt = Math.max(2, Math.min(88, t + (Math.random()-0.5)*8)).toFixed(1);
-      const sz = 16 + Math.floor(Math.random() * 10);
-      const cid = 'bc' + i;
-      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:${sz}px;height:${sz}px" viewBox="0 0 20 20"><defs><radialGradient id="${cid}" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffab0"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs><circle cx="10" cy="10" r="9" fill="url(#${cid})" stroke="#b08010" stroke-width="1"/></svg>`;
-    });
-
-    // 4 Münzstapel
-    [[15,40],[45,25],[68,55],[85,20]].forEach(([l, t], i) => {
-      const jl = (l + (Math.random()-0.5)*6).toFixed(1);
-      const jt = Math.max(2, t + (Math.random()-0.5)*6).toFixed(1);
-      const sid = 'bs' + i;
-      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:22px;height:26px" viewBox="0 0 22 26"><defs><radialGradient id="${sid}" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffab0"/><stop offset="100%" stop-color="#c49020"/></radialGradient></defs>
-        <ellipse cx="11" cy="22" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
-        <ellipse cx="11" cy="18" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
-        <ellipse cx="11" cy="14" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
-        <ellipse cx="11" cy="10" rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/>
-        <ellipse cx="11" cy="7"  rx="9" ry="3.5" fill="url(#${sid})" stroke="#b08010" stroke-width="1"/></svg>`;
-    });
-
-    // 9 Edelsteine
-    [{l:8,t:35,c:'#e03030',sc:'#ff9090'},{l:22,t:68,c:'#2060e0',sc:'#80b0ff'},
-     {l:36,t:48,c:'#20b040',sc:'#80ff90'},{l:50,t:80,c:'#a030d0',sc:'#d888ff'},
-     {l:62,t:25,c:'#e84030',sc:'#ff9868'},{l:76,t:58,c:'#1890e0',sc:'#70d8ff'},
-     {l:40,t:15,c:'#d0a030',sc:'#ffe088'},{l:88,t:75,c:'#e03060',sc:'#ff90b0'},
-     {l:14,t:88,c:'#30c090',sc:'#80ffc0'}].forEach((g, i) => {
-      const jl = Math.max(2, Math.min(90, g.l + (Math.random()-0.5)*8)).toFixed(1);
-      const jt = Math.max(2, Math.min(88, g.t + (Math.random()-0.5)*8)).toFixed(1);
-      const sz = 12 + Math.floor(Math.random() * 8);
-      bgHtml += `<svg class="ruck-chest-bg-gem" style="left:${jl}%;top:${jt}%;width:${sz}px;height:${sz}px" viewBox="0 0 20 20"><polygon points="10,1 18,7 15,19 5,19 2,7" fill="${g.c}" stroke="${g.sc}" stroke-width="1.2" opacity="0.9"/></svg>`;
-    });
-
-    // 3 Goldbarren
-    [[30,60],[58,40],[78,85]].forEach(([l, t], i) => {
-      const jl = (l + (Math.random()-0.5)*6).toFixed(1);
-      const jt = Math.max(2, t + (Math.random()-0.5)*6).toFixed(1);
-      const bid = 'gb' + i;
-      bgHtml += `<svg class="ruck-chest-bg-coin" style="left:${jl}%;top:${jt}%;width:32px;height:16px" viewBox="0 0 32 16"><defs><linearGradient id="${bid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe898"/><stop offset="100%" stop-color="#9a6808"/></linearGradient></defs>
-        <rect x="2" y="2" width="28" height="12" rx="2" fill="url(#${bid})" stroke="#c49020" stroke-width="1.2"/>
-        <line x1="8" y1="2" x2="8" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
-        <line x1="16" y1="2" x2="16" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
-        <line x1="24" y1="2" x2="24" y2="14" stroke="#c49020" stroke-width="0.7" opacity="0.6"/>
-        <ellipse cx="8" cy="6" rx="4" ry="1.8" fill="white" opacity="0.2"/></svg>`;
-    });
-
-    bgL.innerHTML = bgHtml;
-    requestAnimationFrame(() => bgL.classList.add('bg-fade-in'));
+    bgL.innerHTML = ''; // Kein vorgerendeter Hintergrund
   }, 1000));
 
   // 5. Belohnungs-Icons (1.4s) – fixe persistierte Positionen
