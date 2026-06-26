@@ -266,6 +266,12 @@
         <div id="treasure-list" class="treasure-list"></div>
       </div>
 
+      <!-- === QUEST POOL SYSTEM === Aufträge annehmen Button -->
+      <button id="quest-pool-btn" class="quest-pool-btn" aria-label="Neue Aufträge annehmen">
+        <span class="quest-pool-btn-icon">⚔️</span>
+        <span>Neue Aufträge</span>
+      </button>
+
       <!-- FEATURE 2: Sidequest Section -->
       <!-- === FIX: SIDEQUEST & UNTERSEITEN === -->
       <div id="sidequest-section" class="sidequest-section">
@@ -684,6 +690,16 @@
       <div class="cat-modal-handle"></div>
       <div class="cat-modal-title">✦ Welchen Pfad wirst du beschreiten? ✦</div>
       <div class="cat-grid" id="cat-grid"></div>
+    </div>
+  </div>
+
+  <!-- === QUEST POOL SYSTEM === Vollbild-Modal: Aufträge annehmen -->
+  <div class="quest-pool-overlay" id="questPoolOverlay">
+    <div class="quest-pool-modal">
+      <button class="nav-btn" id="quest-pool-close-btn" aria-label="Schließen">✕</button>
+      <div class="quest-pool-title">⚔️ Neue Aufträge ⚔️</div>
+      <div class="quest-pool-sub">Wähle deinen nächsten Auftrag, Abenteurer</div>
+      <div id="quest-pool-list" class="quest-pool-list"></div>
     </div>
   </div>
 

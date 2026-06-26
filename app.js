@@ -874,39 +874,19 @@ function markRhythmDone(name, rhythm) {
 // === FIX: QUEST REMOVE ===
 function _genQuestId() { return 'q_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
 
+// === QUEST POOL SYSTEM === Duschen ist täglich fix, alles andere wird frei
+// aus dem Pool gewählt (per "Neue Aufträge" Button). Keine zufällige
+// Tages-Zuteilung mehr.
 function selectQuests(allQuests, mood) {
-  const rhythm     = loadRhythm();
-  const restQuests = allQuests.filter(q => q.rest);
+  const shower = allQuests.find(q => q.name === 'Duschen');
+  const quests = shower ? [{ ...shower, done: false, id: _genQuestId() }] : [];
 
-  if (mood === 'nur-ueberleben') {
-    const shown = shuffle(restQuests).slice(0, 2);
-    const shownNames = new Set(shown.map(q => q.name));
-    return {
-      quests: shown.map(q => ({ ...q, done: false, id: _genQuestId() })), // === FIX: QUEST REMOVE ===
-      pool:   restQuests.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false, id: _genQuestId() })),
-    };
-  }
+  const shownNames = new Set(quests.map(q => q.name));
+  const pool = allQuests
+    .filter(q => !shownNames.has(q.name))
+    .map(q => ({ ...q, done: false, id: _genQuestId() }));
 
-  const cfg        = MOOD_CONFIG[mood];
-  const dueActions = allQuests.filter(q => !q.rest && isQuestDue(q.name, rhythm));
-
-  // Duschen is always first if due
-  const shower   = dueActions.find(q => q.name === 'Duschen');
-  const others   = shuffle(dueActions.filter(q => q.name !== 'Duschen'));
-  const fillCount = shower ? cfg.regularCount - 1 : cfg.regularCount;
-  const actions  = shower
-    ? [shower, ...others.slice(0, fillCount)]
-    : others.slice(0, fillCount);
-
-  const rests         = shuffle(restQuests).slice(0, cfg.restCount);
-  const allSelected   = [...actions, ...rests];
-  const selectedNames = new Set(allSelected.map(q => q.name));
-  const pool          = allQuests.filter(q => !selectedNames.has(q.name));
-
-  return {
-    quests: allSelected.map(q => ({ ...q, done: false, id: _genQuestId() })), // === FIX: QUEST REMOVE ===
-    pool:   pool.map(q => ({ ...q, done: false, id: _genQuestId() })),
-  };
+  return { quests, pool };
 }
 
 // ── Screens ───────────────────────────────────────────────────────────────────
@@ -1211,6 +1191,94 @@ function swapQuest(name) {
 
   saveDayState(appState);
   renderBoard();
+}
+
+// === QUEST POOL SYSTEM === Aufträge annehmen: Karte für eine wählbare
+// Pool-Quest. Sichtbar für alle, aber nur antippbar wenn genug Mana da ist.
+function makePoolQuestCard(q) {
+  const mana       = appState.mana;
+  const canAfford  = q.rest || mana >= q.mana;
+  const diffCount  = q.mana > 0
+    ? (q.mana >= 10 ? Math.min(5, Math.ceil(q.mana / 10)) : Math.min(5, q.mana))
+    : 0;
+
+  const card = document.createElement('div');
+  card.className = `quest-card pool-quest-card${q.rest ? ' rest-card rast-quest' : ''}${diffCount > 0 ? ` difficulty-${diffCount}` : ''}${canAfford ? '' : ' pool-quest-disabled'}`;
+  card.dataset.category = q.category || '';
+  card.dataset.questId  = q.id;
+
+  const costHtml = q.mana > 0
+    ? `<span class="quest-cost-runes">${manaSymbols(q.mana)}</span>`
+    : `<span class="quest-rest-tag">🌙 Rast</span>`;
+
+  let catHtml = '';
+  if (!q.rest) {
+    const tagStyle = TAG_CAT_STYLE[q.category];
+    if (tagStyle) {
+      catHtml = `<span class="quest-cat-tag" style="background:${tagStyle.bg};color:${tagStyle.text};border:1.5px solid ${tagStyle.border}" title="${q.category}">${tagStyle.icon || tagStyle.emoji} ${q.category}</span>`;
+    }
+  }
+
+  const acceptSvg = `<svg width="22" height="22" viewBox="0 0 28 28"><path d="M5 14 L11 21 L23 8" fill="none" stroke="#f0c040" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  card.innerHTML = `
+    <div class="quest-info">
+      <div class="quest-name">${q.name}</div>
+      <div class="quest-meta">
+        ${catHtml}
+        ${costHtml}
+      </div>
+    </div>
+    <div class="quest-actions">
+      <button class="quest-complete-btn pool-accept-btn${canAfford ? '' : ' cant-afford'}"
+              ${canAfford ? '' : 'disabled'}
+              aria-label="${q.name} annehmen">
+        ${canAfford ? acceptSvg : '<span style="color:rgba(255,255,255,0.2)">—</span>'}
+      </button>
+    </div>`;
+
+  if (canAfford) {
+    card.querySelector('.pool-accept-btn').addEventListener('click', () => acceptPoolQuest(q.id));
+  }
+  return card;
+}
+
+function renderQuestPoolList() {
+  const list = $('quest-pool-list');
+  if (!list || !appState) return;
+  list.innerHTML = '';
+  if (!appState.pool || appState.pool.length === 0) {
+    list.innerHTML = '<div class="pool-empty">✦ Keine weiteren Aufträge verfügbar – komm morgen wieder! ✦</div>';
+    return;
+  }
+  appState.pool.forEach(q => list.appendChild(makePoolQuestCard(q)));
+}
+
+function openQuestPoolModal() {
+  renderQuestPoolList();
+  const overlay = $('questPoolOverlay');
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeQuestPoolModal() {
+  const overlay = $('questPoolOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function acceptPoolQuest(questId) {
+  if (!appState) return;
+  const idx = appState.pool.findIndex(q => q.id === questId);
+  if (idx === -1) return;
+
+  const quest     = appState.pool[idx];
+  const canAfford = quest.rest || appState.mana >= quest.mana;
+  if (!canAfford) return;
+
+  appState.pool.splice(idx, 1);
+  appState.quests.push({ ...quest, done: false });
+  saveDayState(appState);
+  renderBoard();
+  renderQuestPoolList();
 }
 
 // === FIX: QUEST COMPLETE FLOW ===
@@ -2046,11 +2114,14 @@ function init() {
     // === FIX: QUEST REMOVE === backward compat: IDs + completedCount
     if (!appState.completedCount) appState.completedCount = appState.quests.filter(q => q.done).length;
     appState.quests.forEach(q => { if (!q.id) q.id = _genQuestId(); });
-    if (appState.pool) appState.pool.forEach(q => { if (!q.id) q.id = _genQuestId(); });
-    if (!appState.pool || appState.pool.length === 0) {
+    // === QUEST POOL SYSTEM === nur befüllen wenn pool wirklich fehlt (alte
+    // Speicherstände ohne pool-Feld) – NICHT wenn er leer ist, weil der
+    // Pool durch Annehmen aller Aufträge legitim leer sein kann!
+    if (!appState.pool) {
       const shownNames = new Set(appState.quests.map(q => q.name));
-      appState.pool = QUESTS_DATA.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false }));
+      appState.pool = QUESTS_DATA.filter(q => !shownNames.has(q.name)).map(q => ({ ...q, done: false, id: _genQuestId() }));
     }
+    appState.pool.forEach(q => { if (!q.id) q.id = _genQuestId(); });
     $('mood-badge').textContent = `${MOOD_GLYPH[saved.mood]} ${MOOD_LABEL[saved.mood]}`;
     renderBoard();
     showScreen('screen-board');
@@ -2157,6 +2228,12 @@ function init() {
     Notification.requestPermission();
   }
   scheduleDailyReminder();
+
+  // === QUEST POOL SYSTEM === "Neue Aufträge" Button + Modal
+  $('quest-pool-btn')?.addEventListener('click', openQuestPoolModal);
+  $('quest-pool-close-btn')?.addEventListener('click', closeQuestPoolModal);
+  const _qpOverlay = $('questPoolOverlay');
+  if (_qpOverlay) _qpOverlay.addEventListener('click', e => { if (e.target === _qpOverlay) closeQuestPoolModal(); });
 
   // === RUCKSACK ===
   initRucksack();
